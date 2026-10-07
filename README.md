@@ -28,16 +28,18 @@ Flexpress draws one line of text as a path from one font's outlines, placing gly
 advances and the font's pair kerning. That is what lets the axes animate without the player ever
 loading a font, and it is also what it gives up against platform text. The animations below are the
 `Limitation*Preview`s in `flexpress-remote`: Compose `Text` on top, re-instancing its font with new
-variation settings on every frame, and `RemoteVariableFontText` below, at the same animated weight.
+variation settings on every frame (with `TextMotion.Animated`), and `RemoteVariableFontText` below,
+played by the embedded Compose player (`RcPlayer`) at the same animated weight.
 The preview workflow renders them on every pull request, so a change to any of these behaviours
 shows up in its diff.
 
 ### No ligatures or contextual forms
 
 Glyphs come from `cmap` one character at a time. `GSUB` is not applied, so ligatures (`ffi`, `fl`),
-contextual alternates and stylistic sets are not used.
+contextual alternates and stylistic sets are not used. Below, Fira Code: Compose draws its `=>` and
+`!=` ligatures as ⇒ and ≠; flexpress draws the separate characters.
 
-![Ligatures: Compose joins "ffi" and "fl"; flexpress draws separate letters](docs/limitations/ligatures.gif)
+![Ligatures: Compose draws Fira Code's ⇒ and ≠ ligatures; flexpress draws => and !=](docs/limitations/ligatures.gif)
 
 ### No font fallback
 

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-@file:OptIn(ExperimentalTextApi::class)
+@file:OptIn(ExperimentalTextApi::class, ExperimentalRemotePlayerApi::class)
 
 package ee.schimke.flexpress
 
+import android.annotation.SuppressLint
 import androidx.annotation.RawRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -27,19 +28,31 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.remote.creation.compose.capture.rememberRemoteDocument
+import androidx.compose.remote.creation.compose.state.asRdp
+import androidx.compose.remote.creation.compose.state.rc
+import androidx.compose.remote.creation.compose.state.rememberNamedRemoteFloat
+import androidx.compose.remote.creation.compose.state.rf
+import androidx.compose.remote.player.compose.ExperimentalRemotePlayerApi
+import androidx.compose.remote.player.compose.RemoteComposePlayerFlags
+import androidx.compose.remote.player.compose.embedded.RcPlayer
+import androidx.compose.remote.player.compose.embedded.rememberRcPlayerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,8 +61,9 @@ import ee.schimke.flexpress.remote.R
 
 // What flexpress gives up by drawing text as a path from one font, against Compose UI's own text,
 // which re-instances the font with new variation settings on every frame of the same weight
-// animation. Each is a limitation documented in the repository README. Top row: Compose `Text`.
-// Bottom row: `RemoteVariableFontText`.
+// animation. Each is a limitation documented in the repository README. Top row: Compose `Text`,
+// with `TextMotion.Animated`. Bottom row: `RemoteVariableFontText`, played by the embedded Compose
+// player.
 
 /**
  * Ligatures: Compose shapes "ffi" and "fj" with the font's `GSUB` ligatures; flexpress does not.
@@ -58,7 +72,7 @@ import ee.schimke.flexpress.remote.R
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)
 @Composable
 fun LimitationLigaturesPreview() {
-  LimitationComparison("office fluff", R.raw.fraunces_liga, height = 70, size = 48)
+  LimitationComparison("a => b != c", R.raw.fira_code, height = 70, size = 40, maxWeight = 700f)
 }
 
 /**
@@ -99,12 +113,13 @@ private fun LimitationComparison(
   @RawRes fontResId: Int,
   height: Int = 50,
   size: Int = SIZE,
+  maxWeight: Float = 800f,
 ) {
   val transition = rememberInfiniteTransition(label = "Weight")
   val weight by
     transition.animateFloat(
       initialValue = 300f,
-      targetValue = 800f,
+      targetValue = maxWeight,
       animationSpec =
         infiniteRepeatable(tween(2000, easing = LinearEasing), repeatMode = RepeatMode.Reverse),
       label = "wght",
@@ -118,6 +133,8 @@ private fun LimitationComparison(
         TextStyle(
           color = Color.White,
           fontSize = size.sp,
+          // Laid out for animation: no pixel snapping or hinting between frames.
+          textMotion = TextMotion.Animated,
           fontFamily =
             FontFamily(
               Font(
@@ -127,18 +144,45 @@ private fun LimitationComparison(
             ),
         ),
     )
-    Label("flexpress")
-    Row {
-      VariableFontTextPreview(
-        text,
-        mapOf("wght" to weight),
-        Modifier.size(WIDTH.dp, height.dp),
-        fontResId = fontResId,
-        fontSize = size.dp,
-        documentWidth = WIDTH,
-        documentHeight = height,
-      )
-    }
+    Label("flexpress, embedded player")
+    EmbeddedVariableFontText(text, weight, fontResId, size, WIDTH, height)
+  }
+}
+
+/**
+ * A [RemoteVariableFontText] document with its `wght` axis the named float `axis.wght`, played by
+ * the embedded Compose player (`RcPlayer`) with that float set to [weight]. One document serves
+ * every frame; only the player's float changes.
+ */
+@SuppressLint("RestrictedApi")
+@Composable
+private fun EmbeddedVariableFontText(
+  text: String,
+  weight: Float,
+  @RawRes fontResId: Int,
+  size: Int,
+  width: Int,
+  height: Int,
+) {
+  val context = LocalContext.current
+  val font = remember(fontResId) { context.variableFont(fontResId) }
+  val doc = rememberRemoteDocument {
+    val wght = rememberNamedRemoteFloat("axis.wght") { weight.rf }
+    RemoteVariableFontText(
+      text,
+      font,
+      mapOf("wght" to wght),
+      size.dp.asRdp(),
+      color = Color.White.rc,
+    )
+  }
+  // The embedded player is behind a flag in this Remote Compose release.
+  RemoteComposePlayerFlags.isEmbeddedPlayerEnabled = true
+  doc.value?.let { document ->
+    val state = rememberRcPlayerState(document)
+    // Written after composition: a state write during composition would recompose it again.
+    SideEffect { state.floatState("axis.wght").value = weight }
+    RcPlayer(state, Modifier.size(width.dp, height.dp))
   }
 }
 
