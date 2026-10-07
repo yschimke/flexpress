@@ -22,25 +22,17 @@ import java.io.File
 import org.junit.Test
 
 /**
- * The sources in `src/debug/.../generated` are what [VariableFontCodegen] makes of [specs]. Set
- * `CODEGEN_WRITE=1` to regenerate them.
+ * The sources in `src/debug/.../generated` are what [VariableFontCodegen] makes of [specs]: the
+ * recipe in `flexpress-codegen/README.md`. Set `CODEGEN_WRITE=1` to regenerate them.
  */
 class VariableFontCodegenTest {
   @Test
   fun generatedSourcesAreUpToDate() {
-    val write = System.getenv("CODEGEN_WRITE") == "1"
-    val stale = mutableListOf<String>()
-    for (spec in specs) {
-      val file = File(DIR, "${spec.function}.kt")
-      val source = spec.generate()
-      if (write) {
-        file.parentFile!!.mkdirs()
-        file.writeText(source)
-      } else if (!file.exists() || file.readText() != source) {
-        stale += file.name
-      }
+    val update = System.getenv("CODEGEN_WRITE") == "1"
+    val stale = specs.filterNot { it.write(update) }.map { it.function }
+    if (!update) {
+      assertWithMessage("stale generated sources; run with CODEGEN_WRITE=1").that(stale).isEmpty()
     }
-    assertWithMessage("stale generated sources; run with CODEGEN_WRITE=1").that(stale).isEmpty()
   }
 
   internal class Spec(
@@ -52,8 +44,9 @@ class VariableFontCodegenTest {
   ) {
     val font = testFonts[1]
 
-    fun generate(): String =
-      VariableFontCodegen.generate(
+    fun write(update: Boolean): Boolean =
+      VariableFontCodegen.write(
+        SOURCE_ROOT,
         PACKAGE,
         function,
         font.font,
@@ -62,12 +55,34 @@ class VariableFontCodegenTest {
         axes,
         pixelSize = pixelSize,
         tolerancePixels = tolerancePixels,
+        fileHeader = LICENSE,
+        update = update,
       )
   }
 
   companion object {
     const val PACKAGE = "ee.schimke.flexpress.generated"
-    val DIR = File("src/debug/kotlin/" + PACKAGE.replace('.', '/'))
+    val SOURCE_ROOT = File("src/debug/kotlin")
+
+    val LICENSE =
+      """
+      /*
+       * Copyright 2026 The Android Open Source Project
+       *
+       * Licensed under the Apache License, Version 2.0 (the "License");
+       * you may not use this file except in compliance with the License.
+       * You may obtain a copy of the License at
+       *
+       *      https://www.apache.org/licenses/LICENSE-2.0
+       *
+       * Unless required by applicable law or agreed to in writing, software
+       * distributed under the License is distributed on an "AS IS" BASIS,
+       * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       * See the License for the specific language governing permissions and
+       * limitations under the License.
+       */
+      """
+        .trimIndent()
 
     internal val specs =
       listOf(

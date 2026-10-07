@@ -190,10 +190,11 @@ outlines or one expression per coordinate), the tents as clamped ramps of the ax
 box; `encode` writes it compactly as a string (whole numbers, as most font values are, in one
 character, path coordinates as differences). "Hamburg" with `wght` is 2,344 characters.
 
-`VariableFontCodegen` (in the tests) writes such an outline into a Kotlin file with a composable that
-draws it; `VariableFontCodegenTest` regenerates the examples in `src/debug/.../generated`
-(`CODEGEN_WRITE=1`) and fails when they are stale, and `GeneratedVsLibraryTest` checks each writes
-the same document as `RemoteVariableFontText` from the font, byte for byte.
+`VariableFontCodegen`, in [`flexpress-codegen`](../flexpress-codegen/README.md), writes such an
+outline into a Kotlin file with a composable that draws it, from a golden unit test in the app.
+Here `VariableFontCodegenTest` is that test for the examples in `src/debug/.../generated`
+(`CODEGEN_WRITE=1` regenerates them), and `GeneratedVsLibraryTest` checks each writes the same
+document as `RemoteVariableFontText` from the font, byte for byte.
 
 ### Simplifying for a pixel size
 

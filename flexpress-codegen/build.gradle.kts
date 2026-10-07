@@ -13,4 +13,10 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
-dependencies { implementation(projects.flexpressCore) }
+dependencies {
+  implementation(projects.flexpressCore)
+
+  testImplementation(testFixtures(projects.flexpressCore))
+  testImplementation(libs.junit)
+  testImplementation(libs.truth)
+}
