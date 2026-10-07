@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "bd2cb6216ec3cab4b9c76bf1fd539afaaea11690",
+    "generatedFrom": "d2cd59e2d2505a3999b20c4902d2405b6b53bbcb",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
@@ -66,6 +66,13 @@
             "path": "renders/flexpress-remote/LimitationComplexScriptPreview-8905ba86.gif",
             "versions": [
                 {
+                    "blob": "3cf36ed9de883e07e05b04305600cf96e5ee846c",
+                    "commit": "d2cd59e2d2505a3999b20c4902d2405b6b53bbcb",
+                    "date": "2026-10-07T22:39:34Z",
+                    "sourceSha": "ba87827f",
+                    "commits": 1
+                },
+                {
                     "blob": "c4d0becaccc60ab25eb9d5b7f1abb6fe0aa62820",
                     "commit": "bd2cb6216ec3cab4b9c76bf1fd539afaaea11690",
                     "date": "2026-10-07T22:12:55Z",
@@ -87,7 +94,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 0
         },
