@@ -16,6 +16,9 @@
 
 package ee.schimke.flexpress
 
+import java.util.BitSet
+import java.util.concurrent.ConcurrentHashMap
+
 /**
  * Glyph substitution from a font's `GSUB` table: the lookups of the requested features, for a
  * script, applied to a run of glyphs in lookup-list order, as a shaper applies them.
@@ -106,11 +109,20 @@ internal class Gsub(
   }
 
   /** Applies lookup [index] across [buffer], at the glyphs that have [mask] (all, for 0). */
+  /** Each lookup this table has been asked for, parsed once: a font is shaped many times. */
+  private val lookupCache = ConcurrentHashMap<Int, Lookup>()
+
+  private fun lookup(index: Int): Lookup = lookupCache.computeIfAbsent(index) { Lookup(it) }
+
   private fun applyLookup(buffer: Buffer, index: Int, mask: Int) {
-    val lookup = Lookup(index)
+    val lookup = lookup(index)
     var i = 0
     while (i < buffer.size) {
-      if (lookup.skips(buffer[i]) || (mask != 0 && buffer.mask(i) and mask == 0)) {
+      if (
+        !lookup.canStartWith(buffer[i]) ||
+          lookup.skips(buffer[i]) ||
+          (mask != 0 && buffer.mask(i) and mask == 0)
+      ) {
         i++
         continue
       }
@@ -147,6 +159,38 @@ internal class Gsub(
         else -> false
       }
     }
+
+    /**
+     * Every glyph a subtable's match can start with: the union of their first coverage tables, so a
+     * glyph outside it is passed over without trying each subtable. Null when a subtable's first
+     * glyph is not given by a coverage table, and any glyph may start a match.
+     */
+    private val starts: BitSet? by lazy {
+      val set = BitSet()
+      for (sub in subtables) {
+        val coverage =
+          when {
+            type in SINGLE..LIGATURE -> sub + data.u16(sub + 2)
+            (type == CONTEXT || type == CHAINING) && data.u16(sub) in 1..2 ->
+              sub + data.u16(sub + 2)
+            type == CONTEXT && data.u16(sub) == 3 -> sub + data.u16(sub + 6)
+            type == CHAINING && data.u16(sub) == 3 -> {
+              val input = sub + 4 + data.u16(sub + 2) * 2
+              if (data.u16(input) == 0) return@lazy null
+              sub + data.u16(input + 2)
+            }
+            else -> return@lazy null
+          }
+        data.addCoverage(coverage, set)
+      }
+      set
+    }
+
+    /**
+     * Whether some subtable's match could start with [glyph]; never for the negative placeholder of
+     * a default-ignorable character.
+     */
+    fun canStartWith(glyph: Int): Boolean = glyph >= 0 && (starts?.get(glyph) ?: true)
 
     /** The next unskipped position after [i], or -1. */
     fun next(buffer: Buffer, i: Int): Int {
@@ -406,7 +450,7 @@ internal class Gsub(
         if (sequenceIndex >= positions.size) continue
         val at = positions[sequenceIndex]
         val before = buffer.size
-        Lookup(lookupIndex).applyAt(buffer, at)
+        lookup(lookupIndex).applyAt(buffer, at)
         val change = buffer.size - before
         if (change != 0) {
           // The nested lookup changed the length: later positions move with it.

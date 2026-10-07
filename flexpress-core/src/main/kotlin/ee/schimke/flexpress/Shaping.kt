@@ -46,16 +46,9 @@ internal fun shapeText(
   coords: FloatArray = FloatArray(0),
 ): List<ShapedGlyph> {
   if (text.isEmpty()) return emptyList()
-  val bidi = Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT)
-  val runCount = bidi.runCount
-  val levels = ByteArray(runCount) { bidi.getRunLevel(it).toByte() }
-  val runs: Array<Any> = Array(runCount) { it }
-  Bidi.reorderVisually(levels, 0, runs, 0, runCount)
   val glyphs = mutableListOf<ShapedGlyph>()
-  for (run in runs) {
-    val r = run as Int
-    val rtl = bidi.getRunLevel(r) % 2 == 1
-    val runText = text.substring(bidi.getRunStart(r), bidi.getRunLimit(r))
+  for ((start, limit, rtl) in bidiRuns(text)) {
+    val runText = text.substring(start, limit)
     val hasGlyph = { cp: Int -> glyphId(cp) != 0 }
     val codePoints =
       compose(canonicalMarkOrder(decompose(runText.codePoints().toArray(), hasGlyph)), hasGlyph)
@@ -322,6 +315,24 @@ private fun arabicMarkClass(cp: Int): Int =
 private fun isMark(cp: Int): Boolean {
   val type = Character.getType(cp)
   return type == Character.NON_SPACING_MARK.toInt() || type == Character.ENCLOSING_MARK.toInt()
+}
+
+/**
+ * [text]'s bidirectional runs in visual order: `(start, limit, rightToLeft)`. Text with nothing
+ * right to left is one left-to-right run, without running the bidirectional algorithm.
+ */
+private fun bidiRuns(text: String): List<Triple<Int, Int, Boolean>> {
+  val chars = text.toCharArray()
+  if (!Bidi.requiresBidi(chars, 0, chars.size)) return listOf(Triple(0, text.length, false))
+  val bidi = Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT)
+  val runCount = bidi.runCount
+  val levels = ByteArray(runCount) { bidi.getRunLevel(it).toByte() }
+  val runs: Array<Any> = Array(runCount) { it }
+  Bidi.reorderVisually(levels, 0, runs, 0, runCount)
+  return runs.map {
+    val r = it as Int
+    Triple(bidi.getRunStart(r), bidi.getRunLimit(r), bidi.getRunLevel(r) % 2 == 1)
+  }
 }
 
 /** The `GSUB` features a shaper applies by default to horizontal text. */
