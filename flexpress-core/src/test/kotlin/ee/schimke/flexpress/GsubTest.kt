@@ -30,6 +30,22 @@ class GsubTest {
   }
 
   @Test
+  fun requiredFeatureAppliesInTheStageOfItsTag() {
+    // Required fina maps 1 → 2; optional isol maps 2 → 3. Run in fina's own stage, after isol,
+    // glyph 1 becomes 2; run in the first stage, isol would then turn it into 3.
+    val gsub =
+      gsub(
+        listOf(
+          Feature("fina", SINGLE, u16(2, 8, 1, 2) + u16(1, 1, 1)),
+          Feature("isol", SINGLE, u16(2, 8, 1, 3) + u16(1, 1, 2)),
+        ),
+        required = 0,
+      )
+    val stages = listOf(setOf("isol"), setOf("fina"))
+    assertThat(gsub.substitute(listOf(1), listOf(0), "DFLT", stages, emptyMap())).containsExactly(2)
+  }
+
+  @Test
   fun nullContextRuleSetMatchesNothing() {
     // Format 1, glyph 1 covered, with a null rule set offset.
     val gsub = gsub(CONTEXT, u16(1, 8, 1, 0) + u16(1, 1, 1))
@@ -46,25 +62,51 @@ class GsubTest {
    * A `GSUB` table whose `DFLT` script's default language system has one required feature, with one
    * lookup of [type] holding one [subtable].
    */
-  private fun gsub(type: Int, subtable: ByteArray): Gsub {
+  private fun gsub(type: Int, subtable: ByteArray): Gsub =
+    gsub(listOf(Feature("rqrd", type, subtable)), required = 0)
+
+  /** A feature of a test table: its [tag] and one lookup of [type] holding one [subtable]. */
+  private class Feature(val tag: String, val type: Int, val subtable: ByteArray)
+
+  /**
+   * A `GSUB` table whose `DFLT` script's default language system has [features], feature `i` with
+   * lookup `i`, of which feature [required] is the required one and the rest are optional.
+   */
+  private fun gsub(features: List<Feature>, required: Int): Gsub {
+    val n = features.size
+    val optional = features.indices.filter { it != required }
+    // Script list: DFLT, whose script table has a default language system and no others.
+    val scriptList = u16(1) + tag("DFLT") + u16(8) + u16(4, 0) + u16(0, required, optional.size)
+    val scripts = scriptList + u16(*optional.toIntArray())
+    // Feature list: feature i with lookup i.
+    val featureRecords = 2 + n * 6
+    val featureList =
+      u16(n) +
+        features
+          .mapIndexed { i, f -> tag(f.tag) + u16(featureRecords + i * 6) }
+          .fold(ByteArray(0), ByteArray::plus) +
+        features.indices.map { u16(0, 1, it) }.fold(ByteArray(0), ByteArray::plus)
+    // Lookup list: lookup i with its one subtable, after the lookup tables.
+    val lookupTables = 2 + n * 2
+    var subtableAt = lookupTables + n * 8
+    val lookupOffsets = mutableListOf<Int>()
+    var lookups = ByteArray(0)
+    for ((i, f) in features.withIndex()) {
+      lookupOffsets += lookupTables + i * 8
+      lookups += u16(f.type, 0, 1, subtableAt - (lookupTables + i * 8))
+      subtableAt += f.subtable.size
+    }
+    val lookupList =
+      u16(n) +
+        u16(*lookupOffsets.toIntArray()) +
+        lookups +
+        features.map { it.subtable }.fold(ByteArray(0), ByteArray::plus)
+    val header = 10
     val table =
-      u16(1, 0, SCRIPT_LIST, FEATURE_LIST, LOOKUP_LIST) +
-        // Script list: DFLT, whose script table has a default language system and no others.
-        u16(1) +
-        tag("DFLT") +
-        u16(8) +
-        u16(4, 0) +
-        // Language system: required feature 0, no other features.
-        u16(0, 0, 0) +
-        // Feature list: feature 0 with lookup 0.
-        u16(1) +
-        tag("rqrd") +
-        u16(8) +
-        u16(0, 1, 0) +
-        // Lookup list: lookup 0 with its one subtable.
-        u16(1, 4) +
-        u16(type, 0, 1, 8) +
-        subtable
+      u16(1, 0, header, header + scripts.size, header + scripts.size + featureList.size) +
+        scripts +
+        featureList +
+        lookupList
     return Gsub(FontBytes(table), 0) { 0 }
   }
 
@@ -77,8 +119,5 @@ class GsubTest {
     const val SINGLE = 1
     const val CONTEXT = 5
     const val CHAINING = 6
-    const val SCRIPT_LIST = 10
-    const val FEATURE_LIST = 28
-    const val LOOKUP_LIST = 42
   }
 }

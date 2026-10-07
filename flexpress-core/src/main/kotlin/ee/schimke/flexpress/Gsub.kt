@@ -54,10 +54,13 @@ internal class Gsub(
     featureMasks: Map<String, Int>,
   ): List<Int> {
     val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
+    // The language system's required feature, if any, applies once: in the stage of its tag, as
+    // HarfBuzz schedules it, or the first stage when no stage names it.
+    val requiredTag = requiredFeature(script)
+    val requiredStage = stages.indexOfFirst { requiredTag in it }.coerceAtLeast(0)
     for ((index, stage) in stages.withIndex()) {
       val lookupMasks = sortedMapOf<Int, Int>()
-      // The language system's required feature, if any, applies once, with the first stage.
-      for ((feature, lookups) in lookups(script, stage, required = index == 0)) {
+      for ((feature, lookups) in lookups(script, stage, required = index == requiredStage)) {
         val mask = featureMasks[feature] ?: 0
         for (lookup in lookups) {
           // A lookup shared by several features applies wherever any of them does.
@@ -128,6 +131,13 @@ internal class Gsub(
         (result[tag].orEmpty() + List(data.u16(feature + 2)) { data.u16(feature + 4 + it * 2) })
     }
     return result
+  }
+
+  /** The tag of [script]'s default language system's required feature, or null. */
+  private fun requiredFeature(script: String): String? {
+    val langSys = defaultLangSys(script) ?: defaultLangSys("DFLT") ?: defaultLangSys("latn")
+    val index = langSys?.let { data.u16(it + 2) } ?: return null
+    return if (index == 0xFFFF) null else data.tag(featureList + 2 + index * 6)
   }
 
   private fun defaultLangSys(tag: String): Int? {
