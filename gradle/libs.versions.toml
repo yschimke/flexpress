@@ -1,0 +1,54 @@
+[versions]
+agp = "9.4.0"
+kotlin = "2.4.10"
+composeBom = "2026.04.01"
+composeAnimation = "1.11.4"
+composeRemote = "1.0.0-alpha21"
+composeAiTools = "2.35.0"
+# The preview annotations come from compose-preview-daemon, at the version the plugin above pins.
+composeAiPreviewDaemon = "3.13.2"
+androidxActivity = "1.13.0"
+androidxTestExt = "1.3.0"
+junit = "4.13.2"
+kotlinxSerialization = "1.11.0"
+ktfmt = "0.27.0"
+mavenPublish = "0.37.0"
+metalava = "0.5.0"
+robolectric = "4.16.1"
+truth = "1.4.5"
+
+[libraries]
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "composeAnimation" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+compose-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
+compose-ui-unit = { group = "androidx.compose.ui", name = "ui-unit" }
+compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-preview-annotations = { module = "ee.schimke.composeai:preview-annotations", version.ref = "composeAiPreviewDaemon" }
+compose-remote-core = { module = "androidx.compose.remote:remote-core", version.ref = "composeRemote" }
+compose-remote-creation = { module = "androidx.compose.remote:remote-creation", version.ref = "composeRemote" }
+compose-remote-creation-compose = { module = "androidx.compose.remote:remote-creation-compose", version.ref = "composeRemote" }
+compose-remote-player-core = { module = "androidx.compose.remote:remote-player-core", version.ref = "composeRemote" }
+compose-remote-player-compose = { module = "androidx.compose.remote:remote-player-compose", version.ref = "composeRemote" }
+compose-remote-player-view = { module = "androidx.compose.remote:remote-player-view", version.ref = "composeRemote" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+androidx-test-ext-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "androidxTestExt" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
+metalava = { id = "me.tylerbwong.gradle.metalava", version.ref = "metalava" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+compose-preview = { id = "ee.schimke.composeai.preview", version.ref = "composeAiTools" }

@@ -1,0 +1,135 @@
+# Publishes every module to Maven Central for a tag.
+#
+# A published coordinate is PERMANENT: Central does not accept a second upload of the same GAV, and
+# `publishToMavenCentral(automaticRelease = true)` promotes without a human looking. So every check
+# that can run before the upload runs before it, and the release stays a draft until the upload
+# succeeds.
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        description: The `vX.Y.Z` tag to publish.
+        required: true
+        type: string
+    secrets:
+      # Optional so a missing one reaches the preflight step, which names it.
+      SIGNING_KEY: {required: false}
+      SIGNING_KEY_ID: {required: false}
+      SIGNING_KEY_PASSWORD: {required: false}
+      MAVEN_CENTRAL_USERNAME: {required: false}
+      MAVEN_CENTRAL_PASSWORD: {required: false}
+  # Re-publish a tag whose first attempt failed before the upload. Not a way to replace a published
+  # version: Central rejects that.
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: The `vX.Y.Z` tag to publish.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag_name }}
+  cancel-in-progress: false
+
+env:
+  TAG_NAME: ${{ inputs.tag_name }}
+
+jobs:
+  publish:
+    name: Publish to Maven Central
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # un-draft the release once the upload succeeds
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Check publishing credentials are configured
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: |
+          set -euo pipefail
+          missing=0
+          check() {
+            if [ -z "${2:-}" ]; then
+              echo "::error::$1 is not set. $3"
+              missing=1
+            fi
+          }
+          check SIGNING_KEY "${SIGNING_KEY:-}" "The armoured GPG private key; Central rejects unsigned artifacts."
+          check SIGNING_KEY_ID "${SIGNING_KEY_ID:-}" "The GPG key id for that key."
+          check SIGNING_KEY_PASSWORD "${SIGNING_KEY_PASSWORD:-}" "The passphrase for that key."
+          check MAVEN_CENTRAL_USERNAME "${MAVEN_CENTRAL_USERNAME:-}" "The Central Portal token username."
+          check MAVEN_CENTRAL_PASSWORD "${MAVEN_CENTRAL_PASSWORD:-}" "The Central Portal token password."
+          [ "$missing" -eq 0 ] || exit 1
+          echo "all five credentials present"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG_NAME }}
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: zulu
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      # The tag decides what is published, and a published GAV cannot be taken back.
+      - name: Check the tag matches the manifest
+        run: |
+          set -euo pipefail
+          want="${TAG_NAME#v}"
+          have="$(python3 -c 'import json;print(json.load(open(".release-please-manifest.json"))["."])')"
+          if [ "$want" != "$have" ]; then
+            echo "::error::tag $TAG_NAME implies $want but .release-please-manifest.json says $have. Cut the tag from a release-please commit."
+            exit 1
+          fi
+          echo "publishing $have"
+
+      - name: Check
+        env:
+          PLUGIN_VERSION: ${{ inputs.tag_name }}
+        run: ./gradlew --no-daemon ktfmtCheck metalavaCheckCompatibility test lintDebug
+
+      # A dry run against the local repository, signed: finding a broken POM here costs nothing,
+      # finding it on Central costs a version number.
+      - name: Publish to Maven Local first
+        env:
+          PLUGIN_VERSION: ${{ inputs.tag_name }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          V="${TAG_NAME#v}"
+          ./gradlew --no-daemon publishToMavenLocal
+          for m in flexpress-core flexpress-remote flexpress-compose flexpress-codegen; do
+            pom="$HOME/.m2/repository/ee/schimke/flexpress/$m/$V/$m-$V.pom"
+            [ -f "$pom" ] || { echo "::error::$m did not produce a POM at $V"; exit 1; }
+          done
+
+      - name: Publish to Maven Central
+        env:
+          PLUGIN_VERSION: ${{ inputs.tag_name }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: ./gradlew --no-daemon publishToMavenCentral
+
+      # Only now is the release real.
+      - name: Publish the release (un-draft + mark latest)
+        run: |
+          set -euo pipefail
+          gh release edit "$TAG_NAME" --draft=false --latest
+          echo "published $TAG_NAME"
