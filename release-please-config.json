@@ -6,7 +6,8 @@
       "package-name": "flexpress",
       "include-component-in-tag": false,
       "bump-minor-pre-major": true,
-      "draft": true
+      "draft": true,
+      "initial-version": "0.1.0"
     }
   }
 }
