@@ -2,7 +2,8 @@
 package ee.schimke.flexpress.codegen {
 
   public final class VariableFontCodegen {
-    method public java.lang.String generate(java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels);
+    method public java.lang.String generate(java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader);
+    method public boolean write(File sourceRoot, java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader, optional boolean update);
     field public static final ee.schimke.flexpress.codegen.VariableFontCodegen INSTANCE;
   }
 
