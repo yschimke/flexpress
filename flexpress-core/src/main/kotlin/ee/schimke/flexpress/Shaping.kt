@@ -30,9 +30,11 @@ import java.text.Normalizer
  * and Syriac's `fin2`, `fin3` and `med2`) by [joiningForms], in stages as HarfBuzz's Arabic shaper
  * applies them. Right-to-left runs are then reversed, and the runs placed in visual order.
  *
- * Adjacent combining marks are first put in HarfBuzz's order ([canonicalMarkOrder]). With [marks],
- * each mark glyph is then attached to its base or preceding mark by the font's `GPOS` `mark` and
- * `mkmk` anchors at normalized [coords].
+ * Characters are first normalized as HarfBuzz's normalizer does: split into their parts when the
+ * font lacks them ([decompose]), adjacent combining marks put in HarfBuzz's order
+ * ([canonicalMarkOrder]), and a mark composed onto its letter when the font has the composite
+ * ([compose]). With [marks], each mark glyph is then attached to its base or preceding mark by the
+ * font's `GPOS` `mark` and `mkmk` anchors at normalized [coords].
  *
  * Not done: cursive attachment, and the reordering of Indic scripts.
  */
@@ -54,7 +56,9 @@ internal fun shapeText(
     val r = run as Int
     val rtl = bidi.getRunLevel(r) % 2 == 1
     val runText = text.substring(bidi.getRunStart(r), bidi.getRunLimit(r))
-    val codePoints = canonicalMarkOrder(runText.codePoints().toArray())
+    val hasGlyph = { cp: Int -> glyphId(cp) != 0 }
+    val codePoints =
+      compose(canonicalMarkOrder(decompose(runText.codePoints().toArray(), hasGlyph)), hasGlyph)
     // Each script in the run is shaped with its own script's features, in logical order.
     val drawn = mutableListOf<Int>()
     val attachments = mutableListOf<Attachment?>()
@@ -96,6 +100,72 @@ internal fun shapeText(
     placed.mapTo(glyphs) { it!! }
   }
   return glyphs
+}
+
+/**
+ * [codePoints] with each character the font lacks ([hasGlyph] false) replaced by its canonical
+ * decomposition when the font has every part, as HarfBuzz's normalizer does: `é` drawn as `e` and a
+ * combining acute.
+ */
+internal fun decompose(codePoints: IntArray, hasGlyph: (Int) -> Boolean): IntArray {
+  if (codePoints.all(hasGlyph)) return codePoints
+  val out = ArrayList<Int>(codePoints.size + 4)
+  for (cp in codePoints) {
+    if (hasGlyph(cp) || isDefaultIgnorable(cp)) {
+      out += cp
+      continue
+    }
+    val parts = Normalizer.normalize(String(Character.toChars(cp)), Normalizer.Form.NFD)
+    val partCodePoints = parts.codePoints().toArray()
+    if (partCodePoints.size > 1 && partCodePoints.all(hasGlyph)) out += partCodePoints.toList()
+    else out += cp
+  }
+  return out.toIntArray()
+}
+
+/**
+ * [codePoints] with each combining mark composed onto the character before it when Unicode composes
+ * the pair and the font has the composite ([hasGlyph]), as HarfBuzz's normalizer does: Arabic alef
+ * and hamza above drawn as `أ`. As in canonical composition, a mark is blocked by a mark between
+ * them of the same or a higher combining class. Text without marks is returned as is.
+ */
+internal fun compose(codePoints: IntArray, hasGlyph: (Int) -> Boolean): IntArray {
+  if (codePoints.none(::isMark)) return codePoints
+  val out = ArrayList<Int>(codePoints.size)
+  var starter = -1
+  for (cp in codePoints) {
+    if (!isMark(cp)) {
+      starter = out.size
+      out += cp
+      continue
+    }
+    val composite = if (starter >= 0) composite(out[starter], cp) else null
+    val blocked = (starter + 1 until out.size).any { !sortsBefore(out[it], cp) }
+    if (composite != null && !blocked && hasGlyph(composite)) out[starter] = composite
+    else out += cp
+  }
+  return out.toIntArray()
+}
+
+/** The canonical composite of [base] and [mark], or null when Unicode composes no such pair. */
+private fun composite(base: Int, mark: Int): Int? {
+  val composed =
+    Normalizer.normalize(
+      String(Character.toChars(base)) + String(Character.toChars(mark)),
+      Normalizer.Form.NFC,
+    )
+  return if (composed.codePointCount(0, composed.length) == 1) composed.codePointAt(0) else null
+}
+
+/**
+ * Whether mark [a]'s combining class is lower than [b]'s: canonical order moves it first. A
+ * modifier mark ahead of another mark is one [moveModifierMarksFirst] moved, which HarfBuzz gives a
+ * class below every Arabic mark's.
+ */
+private fun sortsBefore(a: Int, b: Int): Boolean {
+  if (a in MODIFIER_MARKS && b !in MODIFIER_MARKS) return true
+  val pair = String(Character.toChars(b)) + String(Character.toChars(a))
+  return Normalizer.normalize(pair, Normalizer.Form.NFD).codePointAt(0) == a
 }
 
 /**
