@@ -1,0 +1,432 @@
+// Signature format: 4.0
+package ee.schimke.flexpress {
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class AnimatedForm {
+    ctor public AnimatedForm(float constant, java.util.Map<java.util.List<ee.schimke.flexpress.Tent>,java.lang.Float> terms);
+    method public float component1();
+    method public java.util.Map<java.util.List<ee.schimke.flexpress.Tent>,java.lang.Float> component2();
+    method public ee.schimke.flexpress.AnimatedForm copy(optional float constant, optional java.util.Map<java.util.List<ee.schimke.flexpress.Tent>,java.lang.Float> terms);
+    method public boolean equals(java.lang.Object? other);
+    method public float evaluate(float[] coords);
+    method @InaccessibleFromKotlin public float getConstant();
+    method @InaccessibleFromKotlin public java.util.Map<java.util.List<ee.schimke.flexpress.Tent>,java.lang.Float> getTerms();
+    method public int hashCode();
+    method @InaccessibleFromKotlin public boolean isConstant();
+    method public java.lang.String toString();
+    property public float constant;
+    property public boolean isConstant;
+    property public java.util.Map<java.util.List<ee.schimke.flexpress.Tent>,java.lang.Float> terms;
+  }
+
+  public final class AxisKeyframesKt {
+    method public static java.util.List<java.lang.Float> axisKeyframes(ee.schimke.flexpress.VariableFont, java.lang.String text, java.lang.String axis, optional kotlin.ranges.ClosedFloatingPointRange<java.lang.Float>? range);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static void emit(ee.schimke.flexpress.TextOutline, ee.schimke.flexpress.PathSink<java.lang.Float> sink);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static void emit(ee.schimke.flexpress.VariedOutline, ee.schimke.flexpress.PathSink<ee.schimke.flexpress.LinearForm> sink);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<java.lang.Integer> glyphIds(ee.schimke.flexpress.VariableFont, java.lang.String text);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static ee.schimke.flexpress.TextOutline layout(ee.schimke.flexpress.VariableFont, java.lang.String text, java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float>? kerningLocation);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static ee.schimke.flexpress.VariedOutline variedLayout(ee.schimke.flexpress.VariableFont, java.lang.String text, optional java.util.Map<java.lang.String,java.lang.Float>? kerningLocation);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class AxisSpecialization {
+    ctor public AxisSpecialization(java.util.Set<java.lang.Integer> animated, float[] fixed);
+    method public ee.schimke.flexpress.AnimatedForm specialize(ee.schimke.flexpress.LinearForm form);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class Contour {
+    ctor public Contour(float[] xs, float[] ys, boolean[] onCurve);
+    method @InaccessibleFromKotlin public boolean[] getOnCurve();
+    method @InaccessibleFromKotlin public int getSize();
+    method @InaccessibleFromKotlin public float[] getXs();
+    method @InaccessibleFromKotlin public float[] getYs();
+    method public ee.schimke.flexpress.Contour transformed(float xx, float xy, float yx, float yy, float dx, float dy);
+    property public boolean[] onCurve;
+    property public int size;
+    property public float[] xs;
+    property public float[] ys;
+  }
+
+  public final class FontAxis {
+    ctor public FontAxis(java.lang.String tag, float minValue, float defaultValue, float maxValue);
+    method public java.lang.String component1();
+    method public float component2();
+    method public float component3();
+    method public float component4();
+    method public ee.schimke.flexpress.FontAxis copy(optional java.lang.String tag, optional float minValue, optional float defaultValue, optional float maxValue);
+    method public boolean equals(java.lang.Object? other);
+    method @InaccessibleFromKotlin public float getDefaultValue();
+    method @InaccessibleFromKotlin public float getMaxValue();
+    method @InaccessibleFromKotlin public float getMinValue();
+    method @InaccessibleFromKotlin public java.lang.String getTag();
+    method public int hashCode();
+    method public java.lang.String toString();
+    property public float defaultValue;
+    property public float maxValue;
+    property public float minValue;
+    property public String tag;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class FontBytes {
+    ctor public FontBytes(byte[] bytes);
+    method public float f2dot14(int p);
+    method public float fixed(int p);
+    method public int i16(int p);
+    method public int i32(int p);
+    method public int i8(int p);
+    method public java.lang.String tag(int p);
+    method public int u16(int p);
+    method public long u32(int p);
+    method public int u8(int p);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public abstract sealed exhaustive class Glyf {
+    method @InaccessibleFromKotlin public final int getXMin();
+    property public final int xMin;
+    field public static final ee.schimke.flexpress.Glyf.Companion Companion;
+  }
+
+  public static final class Glyf.Companion {
+    method public ee.schimke.flexpress.Glyf read(ee.schimke.flexpress.FontBytes data, int offset);
+  }
+
+  public static final class Glyf.Component {
+    ctor public Glyf.Component(int glyphId, int dx, int dy, float xx, float xy, float yx, float yy);
+    method @InaccessibleFromKotlin public int getDx();
+    method @InaccessibleFromKotlin public int getDy();
+    method @InaccessibleFromKotlin public int getGlyphId();
+    method @InaccessibleFromKotlin public float getXx();
+    method @InaccessibleFromKotlin public float getXy();
+    method @InaccessibleFromKotlin public float getYx();
+    method @InaccessibleFromKotlin public float getYy();
+    property public int dx;
+    property public int dy;
+    property public int glyphId;
+    property public float xx;
+    property public float xy;
+    property public float yx;
+    property public float yy;
+  }
+
+  public static final class Glyf.Composite extends ee.schimke.flexpress.Glyf {
+    ctor public Glyf.Composite(int xMin, java.util.List<ee.schimke.flexpress.Glyf.Component> components);
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.Glyf.Component> getComponents();
+    property public java.util.List<ee.schimke.flexpress.Glyf.Component> components;
+  }
+
+  public static final class Glyf.Simple extends ee.schimke.flexpress.Glyf {
+    ctor public Glyf.Simple(int xMin, int[] endPts, int[] xs, int[] ys, boolean[] onCurve);
+    method public java.util.List<ee.schimke.flexpress.Contour> contours(float[] px, float[] py);
+    method @InaccessibleFromKotlin public int[] getEndPts();
+    method @InaccessibleFromKotlin public boolean[] getOnCurve();
+    method @InaccessibleFromKotlin public int[] getXs();
+    method @InaccessibleFromKotlin public int[] getYs();
+    property public int[] endPts;
+    property public boolean[] onCurve;
+    property public int[] xs;
+    property public int[] ys;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class GlyphOutline {
+    ctor public GlyphOutline(java.util.List<ee.schimke.flexpress.Contour> contours, float advance);
+    method @InaccessibleFromKotlin public float getAdvance();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.Contour> getContours();
+    property public float advance;
+    property public java.util.List<ee.schimke.flexpress.Contour> contours;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class Gpos {
+    ctor public Gpos(ee.schimke.flexpress.FontBytes data, int offset, ee.schimke.flexpress.ItemVariationStore? variations);
+    method public float kerning(int first, int second, float[] coords);
+    field public static final int EXTENSION = 9; // 0x9
+    field public static final int PAIR = 2; // 0x2
+    field public static final int VARIATION_INDEX = 32768; // 0x8000
+    field public static final int X_ADVANCE = 4; // 0x4
+    field public static final int X_ADVANCE_DEVICE = 64; // 0x40
+    field public static final int X_PLACEMENT = 1; // 0x1
+    field public static final int X_PLACEMENT_DEVICE = 16; // 0x10
+    field public static final int Y_PLACEMENT = 2; // 0x2
+    field public static final int Y_PLACEMENT_DEVICE = 32; // 0x20
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class Gvar {
+    ctor public Gvar(ee.schimke.flexpress.FontBytes data, int offset, int axisCount);
+    method public void apply(int glyphId, float[] coords, float[] xs, float[] ys, int[]? endPts);
+    method public void forEachTuple(int glyphId, float[] origX, float[] origY, int[]? endPts, optional kotlin.jvm.functions.Function1<? super ee.schimke.flexpress.TupleRegion,java.lang.Boolean> include, kotlin.jvm.functions.Function3<? super ee.schimke.flexpress.TupleRegion,? super float[],? super float[],kotlin.Unit> block);
+    method public java.util.List<ee.schimke.flexpress.TupleRegion> tuples(int glyphId);
+    field public static final ee.schimke.flexpress.Gvar.Companion Companion;
+  }
+
+  public static final class Gvar.Companion {
+    method public void interpolateUntouched(int[] endPts, float[] origX, float[] origY, float[] deltaX, float[] deltaY, boolean[] touched);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class Hvar {
+    ctor public Hvar(ee.schimke.flexpress.FontBytes data, int offset);
+    method public float advanceDelta(int glyphId, float[] coords);
+    method public java.util.List<kotlin.Pair<ee.schimke.flexpress.TupleRegion,java.lang.Float>> advanceTerms(int glyphId);
+    method public java.util.List<ee.schimke.flexpress.TupleRegion> regions(int glyphId);
+  }
+
+  @kotlin.RequiresOptIn(level=kotlin.RequiresOptIn.Level.ERROR, message="Flexpress internal API, shared between its modules; it may change without notice.") @kotlin.annotation.Retention(kotlin.annotation.AnnotationRetention.BINARY) @kotlin.annotation.Target(allowedTargets={kotlin.annotation.AnnotationTarget.CLASS, kotlin.annotation.AnnotationTarget.FUNCTION, kotlin.annotation.AnnotationTarget.PROPERTY, kotlin.annotation.AnnotationTarget.CONSTRUCTOR, kotlin.annotation.AnnotationTarget.TYPEALIAS}) public @interface InternalFlexpressApi {
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class ItemVariationStore {
+    ctor public ItemVariationStore(ee.schimke.flexpress.FontBytes data, int store);
+    method public float delta(int outer, int inner, float[] coords);
+    method public java.util.List<kotlin.Pair<java.lang.Integer,java.lang.Integer>> deltas(int outer, int inner);
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.TupleRegion> getRegions();
+    property public java.util.List<ee.schimke.flexpress.TupleRegion> regions;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class LinearForm {
+    ctor public LinearForm(float constant, optional java.util.Map<ee.schimke.flexpress.TupleRegion,java.lang.Float> terms);
+    method public float evaluate(float[] coords);
+    method @InaccessibleFromKotlin public float getConstant();
+    method @InaccessibleFromKotlin public java.util.Map<ee.schimke.flexpress.TupleRegion,java.lang.Float> getTerms();
+    method @InaccessibleFromKotlin public boolean isConstant();
+    method public operator ee.schimke.flexpress.LinearForm minus(ee.schimke.flexpress.LinearForm other);
+    method public operator ee.schimke.flexpress.LinearForm plus(ee.schimke.flexpress.LinearForm other);
+    method public operator ee.schimke.flexpress.LinearForm times(float k);
+    property public float constant;
+    property public boolean isConstant;
+    property public java.util.Map<ee.schimke.flexpress.TupleRegion,java.lang.Float> terms;
+    field public static final ee.schimke.flexpress.LinearForm.Companion Companion;
+  }
+
+  public static final class LinearForm.Companion {
+    method @InaccessibleFromKotlin public ee.schimke.flexpress.LinearForm getZERO();
+    method public ee.schimke.flexpress.LinearForm mid(ee.schimke.flexpress.LinearForm a, ee.schimke.flexpress.LinearForm b);
+    method public ee.schimke.flexpress.LinearForm of(float value);
+    property public ee.schimke.flexpress.LinearForm ZERO;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public interface PathSink<T> {
+    method public void close();
+    method public void lineTo(T x, T y);
+    method public void moveTo(T x, T y);
+    method public void quadTo(T x1, T y1, T x2, T y2);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class Tent {
+    ctor public Tent(int axis, float start, float peak, float end);
+    method public int component1();
+    method public float component2();
+    method public float component3();
+    method public float component4();
+    method public ee.schimke.flexpress.Tent copy(optional int axis, optional float start, optional float peak, optional float end);
+    method public boolean equals(java.lang.Object? other);
+    method public float evaluate(float n);
+    method @InaccessibleFromKotlin public int getAxis();
+    method @InaccessibleFromKotlin public float getEnd();
+    method @InaccessibleFromKotlin public float getPeak();
+    method @InaccessibleFromKotlin public float getStart();
+    method public int hashCode();
+    method public java.lang.String toString();
+    property public int axis;
+    property public float end;
+    property public float peak;
+    property public float start;
+  }
+
+  public final class TentsKt {
+    method @ee.schimke.flexpress.InternalFlexpressApi public static kotlin.Pair<java.lang.Float,java.util.List<kotlin.Triple<java.lang.Float,java.lang.Float,java.lang.Float>>> tentRamps(ee.schimke.flexpress.VariableFont, ee.schimke.flexpress.Tent tent);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<ee.schimke.flexpress.Tent> tents(ee.schimke.flexpress.TupleRegion);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class TextOutline {
+    ctor public TextOutline(java.util.List<ee.schimke.flexpress.Contour> contours, float advance);
+    method @InaccessibleFromKotlin public float getAdvance();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.Contour> getContours();
+    property public float advance;
+    property public java.util.List<ee.schimke.flexpress.Contour> contours;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class TupleRegion {
+    ctor public TupleRegion(float[] start, float[] peak, float[] end);
+    method public boolean equals(java.lang.Object? other);
+    method @InaccessibleFromKotlin public float[] getEnd();
+    method @InaccessibleFromKotlin public float[] getPeak();
+    method @InaccessibleFromKotlin public float[] getStart();
+    method public int hashCode();
+    method public float scalar(float[] coords);
+    property public float[] end;
+    property public float[] peak;
+    property public float[] start;
+  }
+
+  public final class VariableFont {
+    method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<java.lang.Float> avarBreakpoints(int axisIndex);
+    method @ee.schimke.flexpress.InternalFlexpressApi public float denormalize(int axisIndex, float normalized);
+    method @InaccessibleFromKotlin public int getAscender();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.FontAxis> getAxes();
+    method @InaccessibleFromKotlin public int getDescender();
+    method @InaccessibleFromKotlin public int getUnitsPerEm();
+    method public int glyphId(int codePoint);
+    method @ee.schimke.flexpress.InternalFlexpressApi public float kerning(int first, int second, java.util.Map<java.lang.String,java.lang.Float> location);
+    method @ee.schimke.flexpress.InternalFlexpressApi public float[] normalize(java.util.Map<java.lang.String,java.lang.Float> location);
+    method @ee.schimke.flexpress.InternalFlexpressApi public java.util.Set<java.lang.Float> normalizedBreakpoints(int axisIndex, java.util.Collection<java.lang.Integer> glyphIds);
+    method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.GlyphOutline outline(int glyphId, float[] coords);
+    method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.VariedOutline variedOutline(int glyphId);
+    property public int ascender;
+    property public java.util.List<ee.schimke.flexpress.FontAxis> axes;
+    property public int descender;
+    property public int unitsPerEm;
+    field public static final ee.schimke.flexpress.VariableFont.Companion Companion;
+  }
+
+  public static final class VariableFont.Companion {
+    method public ee.schimke.flexpress.VariableFont parse(byte[] bytes);
+  }
+
+  public final class VariableTextOutline {
+    ctor @ee.schimke.flexpress.InternalFlexpressApi public VariableTextOutline(java.util.List<java.lang.String> axes, int unitsPerEm, int ascender, int descender, float width, java.util.List<ee.schimke.flexpress.VariableTextOutline.TentRamps> tents, byte[] verbs, ee.schimke.flexpress.VariableTextOutline.Body body);
+    method public java.lang.String encode();
+    method @ee.schimke.flexpress.InternalFlexpressApi public float[] evaluate(float[] values);
+    method @InaccessibleFromKotlin public int getAscender();
+    method @InaccessibleFromKotlin public java.util.List<java.lang.String> getAxes();
+    method @InaccessibleFromKotlin public ee.schimke.flexpress.VariableTextOutline.Body getBody();
+    method @InaccessibleFromKotlin public int getDescender();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.VariableTextOutline.TentRamps> getTents();
+    method @InaccessibleFromKotlin public int getUnitsPerEm();
+    method @InaccessibleFromKotlin public byte[] getVerbs();
+    method @InaccessibleFromKotlin public float getWidth();
+    property @ee.schimke.flexpress.InternalFlexpressApi public int ascender;
+    property public java.util.List<java.lang.String> axes;
+    property @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.VariableTextOutline.Body body;
+    property @ee.schimke.flexpress.InternalFlexpressApi public int descender;
+    property @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<ee.schimke.flexpress.VariableTextOutline.TentRamps> tents;
+    property @ee.schimke.flexpress.InternalFlexpressApi public int unitsPerEm;
+    property @ee.schimke.flexpress.InternalFlexpressApi public byte[] verbs;
+    property @ee.schimke.flexpress.InternalFlexpressApi public float width;
+    field public static final ee.schimke.flexpress.VariableTextOutline.Companion Companion;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public static sealed exhaustive interface VariableTextOutline.Body {
+  }
+
+  public static final class VariableTextOutline.Companion {
+    method public ee.schimke.flexpress.VariableTextOutline decode(java.lang.String... parts);
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public static final class VariableTextOutline.Forms implements ee.schimke.flexpress.VariableTextOutline.Body {
+    ctor public VariableTextOutline.Forms(java.util.List<int[]> regions, float[] constants, int[] termStart, int[] regionOf, float[] coefficients, int[] slots, float[] literals);
+    method @InaccessibleFromKotlin public float[] getCoefficients();
+    method @InaccessibleFromKotlin public float[] getConstants();
+    method @InaccessibleFromKotlin public float[] getLiterals();
+    method @InaccessibleFromKotlin public int[] getRegionOf();
+    method @InaccessibleFromKotlin public java.util.List<int[]> getRegions();
+    method @InaccessibleFromKotlin public int[] getSlots();
+    method @InaccessibleFromKotlin public int[] getTermStart();
+    property public float[] coefficients;
+    property public float[] constants;
+    property public float[] literals;
+    property public int[] regionOf;
+    property public java.util.List<int[]> regions;
+    property public int[] slots;
+    property public int[] termStart;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public static final class VariableTextOutline.Keys implements ee.schimke.flexpress.VariableTextOutline.Body {
+    ctor public VariableTextOutline.Keys(float[] base, java.util.List<float[]> keys);
+    method @InaccessibleFromKotlin public float[] getBase();
+    method @InaccessibleFromKotlin public java.util.List<float[]> getKeys();
+    property public float[] base;
+    property public java.util.List<float[]> keys;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public static final class VariableTextOutline.TentRamps {
+    ctor public VariableTextOutline.TentRamps(int axis, float y0, float[] knots, float[] widths, float[] slopes);
+    method public float evaluate(float v);
+    method @InaccessibleFromKotlin public int getAxis();
+    method @InaccessibleFromKotlin public float[] getKnots();
+    method @InaccessibleFromKotlin public float[] getSlopes();
+    method @InaccessibleFromKotlin public float[] getWidths();
+    method @InaccessibleFromKotlin public float getY0();
+    property public int axis;
+    property public float[] knots;
+    property public float[] slopes;
+    property public float[] widths;
+    property public float y0;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class VariableTextOutlineEvaluator {
+    ctor public VariableTextOutlineEvaluator(ee.schimke.flexpress.VariableTextOutline outline);
+    method public void evaluate(float[] values, float[] out);
+    method @InaccessibleFromKotlin public int getAscender();
+    method @InaccessibleFromKotlin public java.util.List<java.lang.String> getAxes();
+    method @InaccessibleFromKotlin public int getCoordinateCount();
+    method @InaccessibleFromKotlin public int getDescender();
+    method @InaccessibleFromKotlin public ee.schimke.flexpress.VariableTextOutline getOutline();
+    method @InaccessibleFromKotlin public int getTentCount();
+    method @InaccessibleFromKotlin public int getTermCount();
+    method @InaccessibleFromKotlin public int getUnitsPerEm();
+    method @InaccessibleFromKotlin public byte[] getVerbs();
+    method @InaccessibleFromKotlin public float getWidth();
+    method @InaccessibleFromKotlin public boolean isKeys();
+    property public int ascender;
+    property public java.util.List<java.lang.String> axes;
+    property public int coordinateCount;
+    property public int descender;
+    property public boolean isKeys;
+    property public ee.schimke.flexpress.VariableTextOutline outline;
+    property public int tentCount;
+    property public int termCount;
+    property public int unitsPerEm;
+    property public byte[] verbs;
+    property public float width;
+    field public static final ee.schimke.flexpress.VariableTextOutlineEvaluator.Companion Companion;
+    field public static final byte VERB_CLOSE = 3; // 0x3
+    field public static final byte VERB_LINE = 1; // 0x1
+    field public static final byte VERB_MOVE = 0; // 0x0
+    field public static final byte VERB_QUAD = 2; // 0x2
+  }
+
+  public static final class VariableTextOutlineEvaluator.Companion {
+    method public ee.schimke.flexpress.VariableTextOutline exactOutline(ee.schimke.flexpress.VariableFont font, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional boolean allowKeys);
+    method public float[] glyphOrigins(ee.schimke.flexpress.VariableFont font, java.lang.String text, java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
+    method public float[] instanceCoordinates(ee.schimke.flexpress.VariableFont font, java.lang.String text, java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
+    property public static byte VERB_CLOSE;
+    property public static byte VERB_LINE;
+    property public static byte VERB_MOVE;
+    property public static byte VERB_QUAD;
+  }
+
+  public final class VariableTextOutlineKt {
+    method @ee.schimke.flexpress.InternalFlexpressApi public static float maxAdvance(ee.schimke.flexpress.VariableFont, java.lang.String text, ee.schimke.flexpress.LinearForm advance, java.util.Set<java.lang.Integer> animated, float[] fixed);
+    method public static ee.schimke.flexpress.VariableTextOutline outline(ee.schimke.flexpress.VariableFont, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional java.lang.Float? pixelSize, optional float tolerancePixels);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static ee.schimke.flexpress.VariableTextOutline outline(ee.schimke.flexpress.VariableFont, java.lang.String text, java.util.List<java.lang.String> axes, java.util.Map<java.lang.String,java.lang.Float> location, java.util.Map<java.lang.String,java.lang.Float> kerningLocation, java.lang.Float? pixelSize, float tolerancePixels, boolean allowKeys);
+    property @ee.schimke.flexpress.InternalFlexpressApi public static int CLOSE;
+    property public static float DEFAULT_TOLERANCE_PIXELS;
+    property @ee.schimke.flexpress.InternalFlexpressApi public static int LINE;
+    property @ee.schimke.flexpress.InternalFlexpressApi public static int MOVE;
+    property @ee.schimke.flexpress.InternalFlexpressApi public static int QUAD;
+    field public static final int CLOSE = 3; // 0x3
+    field public static final float DEFAULT_TOLERANCE_PIXELS = 0.0625f;
+    field public static final int LINE = 1; // 0x1
+    field public static final int MOVE = 0; // 0x0
+    field public static final int QUAD = 2; // 0x2
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class VariedContour {
+    ctor public VariedContour(java.util.List<ee.schimke.flexpress.LinearForm> xs, java.util.List<ee.schimke.flexpress.LinearForm> ys, boolean[] onCurve);
+    method public ee.schimke.flexpress.Contour evaluate(float[] coords);
+    method @InaccessibleFromKotlin public boolean[] getOnCurve();
+    method @InaccessibleFromKotlin public int getSize();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.LinearForm> getXs();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.LinearForm> getYs();
+    method public ee.schimke.flexpress.VariedContour transformed(float xx, float xy, float yx, float yy, ee.schimke.flexpress.LinearForm dx, ee.schimke.flexpress.LinearForm dy);
+    property public boolean[] onCurve;
+    property public int size;
+    property public java.util.List<ee.schimke.flexpress.LinearForm> xs;
+    property public java.util.List<ee.schimke.flexpress.LinearForm> ys;
+  }
+
+  @ee.schimke.flexpress.InternalFlexpressApi public final class VariedOutline {
+    ctor public VariedOutline(java.util.List<ee.schimke.flexpress.VariedContour> contours, ee.schimke.flexpress.LinearForm advance);
+    method @InaccessibleFromKotlin public ee.schimke.flexpress.LinearForm getAdvance();
+    method @InaccessibleFromKotlin public java.util.List<ee.schimke.flexpress.VariedContour> getContours();
+    property public ee.schimke.flexpress.LinearForm advance;
+    property public java.util.List<ee.schimke.flexpress.VariedContour> contours;
+  }
+
+}
+
