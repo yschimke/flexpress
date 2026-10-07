@@ -43,6 +43,8 @@ internal class MarkAttachment(
   private val markAttachClassOf: (Int) -> Int = { 0 },
   /** Whether a glyph is in one of `GDEF`'s mark glyph sets, by set index then glyph. */
   private val inMarkSet: (Int, Int) -> Boolean = { _, _ -> true },
+  /** Whether the font has `GDEF` glyph classes, so [glyphClassOf] identifies every mark. */
+  private val hasGlyphClasses: Boolean = true,
 ) {
   /** A mark lookup: its type, flag, mark filtering set (or -1) and subtables. */
   private class Lookup(val type: Int, val flag: Int, val filterSet: Int, val subtables: List<Int>)
@@ -80,8 +82,9 @@ internal class MarkAttachment(
    */
   fun attach(glyphs: List<Int>, script: String, coords: FloatArray): List<Attachment?> {
     val result = arrayOfNulls<Attachment>(glyphs.size)
-    // Only marks attach: a run without them has nothing to look up.
-    if (glyphs.none(::isMark)) return result.toList()
+    // Only marks attach: a run without them has nothing to look up. Without GDEF glyph classes
+    // marks are known only by the lookups' coverage, so every run is looked up.
+    if (hasGlyphClasses && glyphs.none(::isMark)) return result.toList()
     for (lookup in lookups(script)) {
       for (i in glyphs.indices) {
         // The lookup applies only to the marks its flag and filtering set admit.
