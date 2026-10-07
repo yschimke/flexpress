@@ -63,6 +63,20 @@ public class VariableFont private constructor(private val data: FontBytes) {
   private val cmap: Map<Int, Int> = readCmap()
   private val gpos: Gpos? =
     tables["GPOS"]?.let { Gpos(data, it, tables["GDEF"]?.let { gdef -> gdefVariations(gdef) }) }
+  private val gsub: Gsub? = tables["GSUB"]?.let { Gsub(data, it, ::gdefGlyphClass) }
+
+  /**
+   * [text] as glyphs in visual order, with bidirectional reordering and the font's ligatures and
+   * contextual alternates applied; see [shapeText].
+   */
+  @InternalFlexpressApi fun shape(text: String): List<Int> = shapeText(text, ::glyphId, gsub)
+
+  /** `GDEF`'s glyph class of [glyph]: 1 base, 2 ligature, 3 mark, 4 component, 0 none. */
+  private fun gdefGlyphClass(glyph: Int): Int {
+    val gdef = tables["GDEF"] ?: return 0
+    val classDef = data.u16(gdef + 4)
+    return if (classDef == 0) 0 else data.glyphClass(gdef + classDef, glyph)
+  }
 
   /**
    * The `GPOS` pair kerning between glyphs [first] and [second] at user-space [location], in font

@@ -44,10 +44,9 @@ import androidx.compose.ui.graphics.Color
  * axis between those keyframes, the result is the font's own outline at every value, not an
  * approximation, and the document needs no font.
  *
- * The trade-off is that the text is fixed at creation time and drawn as a path: there is no
- * kerning, ligature or complex-script shaping (glyphs are placed by their nominal advances), no
- * font fallback for characters [font] lacks, and no accessible text unless the caller adds a
- * content description.
+ * The trade-off is that the text is fixed at creation time and drawn as a path: there is no kerning
+ * or joining-script shaping (glyphs are placed by their nominal advances), no font fallback for
+ * characters [font] lacks, and no accessible text unless the caller adds a content description.
  *
  * @param text The single line of text to draw.
  * @param font The variable font to take outlines from.

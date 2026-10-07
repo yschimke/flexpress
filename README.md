@@ -33,13 +33,17 @@ played by the embedded Compose player (`RcPlayer`) at the same animated weight.
 The preview workflow renders them on every pull request, so a change to any of these behaviours
 shows up in its diff.
 
-### No ligatures or contextual forms
+### Ligatures and contextual alternates: `String` text only
 
-Glyphs come from `cmap` one character at a time. `GSUB` is not applied, so ligatures (`ffi`, `fl`),
-contextual alternates and stylistic sets are not used. Below, Fira Code: Compose draws its `=>` and
-`!=` ligatures as ⇒ and ≠; flexpress draws the separate characters.
+Text given as a `String` is shaped with the font's `GSUB` lookups for the features a shaper applies
+by default (`ccmp`, `locl`, `rlig`, `liga`, `clig`, `calt`), checked glyph for glyph against
+HarfBuzz. Below, Fira Code's `=>` and `!=` become ⇒ and ≠ in both. Optional features (stylistic
+sets, discretionary ligatures) are not applied, and glyphs are chosen once, at one design-space
+location, so a font that swaps glyphs as an axis moves (`GSUB` feature variations) keeps the glyphs
+it starts with. `RemoteString` text, which the player assembles one character at a time, is not
+shaped.
 
-![Ligatures: Compose draws Fira Code's ⇒ and ≠ ligatures; flexpress draws => and !=](docs/limitations/ligatures.gif)
+![Ligatures: both draw Fira Code's ⇒ and ≠ ligatures](docs/limitations/ligatures.gif)
 
 ### No font fallback
 
@@ -49,14 +53,15 @@ easy to hit: choose the font's character coverage for the text you will draw.
 
 ![Font fallback: Compose draws the arrow and the kanji from system fonts; flexpress draws boxes](docs/limitations/font-fallback.gif)
 
-### No complex-script shaping
+### Right to left, but no joining or mark positioning
 
-There is no shaping engine: no right-to-left layout, no joining forms, no reordering and no mark
-positioning (`GPOS` is read for pair kerning only). Arabic, Indic and similar scripts do not render
-correctly, even in a font that covers them: below, both draw from the same Noto Sans Arabic, but
-flexpress places each letter's isolated form, left to right.
+Bidirectional text is split into runs and placed in visual order, with brackets mirrored in
+right-to-left runs, so Hebrew and mixed-direction text read correctly. Arabic and other joining
+scripts are not given their positional (initial, medial, final) forms, marks are not positioned
+(`GPOS` is read for pair kerning only), and Indic scripts are not reordered. Below, both draw Noto
+Sans Arabic right to left, but only Compose joins the letters.
 
-![Complex scripts: Compose shapes Arabic right to left with joined letters; flexpress draws isolated letters left to right](docs/limitations/complex-script.gif)
+![Complex scripts: both right to left; Compose joins the Arabic letters, flexpress draws them isolated](docs/limitations/complex-script.gif)
 
 ### One line, no wrapping
 

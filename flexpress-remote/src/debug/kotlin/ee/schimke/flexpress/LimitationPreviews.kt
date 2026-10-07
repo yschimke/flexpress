@@ -61,12 +61,14 @@ import ee.schimke.flexpress.remote.R
 
 // What flexpress gives up by drawing text as a path from one font, against Compose UI's own text,
 // which re-instances the font with new variation settings on every frame of the same weight
-// animation. Each is a limitation documented in the repository README. Top row: Compose `Text`,
+// animation. Each is a limitation, or a former one, documented in the repository README. Top row:
+// Compose `Text`,
 // with `TextMotion.Animated`. Bottom row: `RemoteVariableFontText`, played by the embedded Compose
 // player.
 
 /**
- * Ligatures: Compose shapes "ffi" and "fj" with the font's `GSUB` ligatures; flexpress does not.
+ * Ligatures: both apply Fira Code's `GSUB` contextual alternates, drawing `=>` and `!=` as ⇒ and ≠.
+ * Kept as a regression check that flexpress shapes the way Compose does.
  */
 @Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 200)
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)
@@ -87,9 +89,8 @@ fun LimitationFontFallbackPreview() {
 }
 
 /**
- * Complex scripts: both draw from the same Arabic-capable font, but Compose shapes the text right
- * to left with joined letter forms, while flexpress places each character's isolated glyph, left to
- * right.
+ * Complex scripts: both draw from the same Arabic-capable font, right to left, but Compose joins
+ * the letters with their positional forms while flexpress draws each letter's isolated form.
  */
 @Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 220)
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)
