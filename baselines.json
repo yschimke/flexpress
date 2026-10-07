@@ -36,7 +36,7 @@
     "functionName": "LimitationComplexScriptPreview",
     "module": "flexpress-remote",
     "renderBasename": "LimitationComplexScriptPreview-8905ba86.gif",
-    "sha256": "4591398fefe1a7ae4961bae59014fd2423a10269aaee02bf192831f8e9aecd2e",
+    "sha256": "86c4674feda16a04ed3e1eccabbb81e6834df65e6bf1291f70916f080e2f7a76",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationFontFallbackPreview": {
@@ -52,7 +52,7 @@
     "functionName": "LimitationLigaturesPreview",
     "module": "flexpress-remote",
     "renderBasename": "LimitationLigaturesPreview-c485aaeb.gif",
-    "sha256": "58c557c98d9cfd49fcbd6785305fb4b1c2ee69b6d2b60b9438892c76638e8793",
+    "sha256": "25788ec7a4876defd28ba22b8fefc218a85e9c1971149bb3cdb916d310de7604",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationSingleLinePreview": {
