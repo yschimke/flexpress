@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
+    "generatedFrom": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
@@ -55,6 +55,66 @@
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
                     "date": "2026-10-07T19:24:12Z",
                     "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationComplexScriptPreview": {
+            "path": "renders/flexpress-remote/LimitationComplexScriptPreview-8905ba86.gif",
+            "versions": [
+                {
+                    "blob": "5e053f79c8221c572cebb96c0e65c1b7a41d6fe4",
+                    "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
+                    "date": "2026-10-07T21:54:25Z",
+                    "sourceSha": "d13e6361",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationFontFallbackPreview": {
+            "path": "renders/flexpress-remote/LimitationFontFallbackPreview-2273b32f.gif",
+            "versions": [
+                {
+                    "blob": "b443ccd2cc9702992f463942d5b1e470fd111c37",
+                    "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
+                    "date": "2026-10-07T21:54:25Z",
+                    "sourceSha": "d13e6361",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationLigaturesPreview": {
+            "path": "renders/flexpress-remote/LimitationLigaturesPreview-c485aaeb.gif",
+            "versions": [
+                {
+                    "blob": "eed6df019de9ce5c8ad6ce71473e7d72eaac3aa5",
+                    "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
+                    "date": "2026-10-07T21:54:25Z",
+                    "sourceSha": "d13e6361",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationSingleLinePreview": {
+            "path": "renders/flexpress-remote/LimitationSingleLinePreview-4c4803df.gif",
+            "versions": [
+                {
+                    "blob": "eca0d36d3a36d7d39e57bacc9b634683f5c91163",
+                    "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
+                    "date": "2026-10-07T21:54:25Z",
+                    "sourceSha": "d13e6361",
                     "commits": 1
                 }
             ],
