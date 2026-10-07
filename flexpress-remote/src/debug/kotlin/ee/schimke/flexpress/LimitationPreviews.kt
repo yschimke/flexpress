@@ -89,14 +89,14 @@ fun LimitationFontFallbackPreview() {
 }
 
 /**
- * Complex scripts: both draw the same Arabic-capable font right to left with joined letters; marks
- * are positioned by Compose only.
+ * Complex scripts: both draw the same Arabic-capable font right to left, with joined letters and
+ * marks attached by its anchors.
  */
 @Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 220)
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)
 @Composable
 fun LimitationComplexScriptPreview() {
-  LimitationComparison("Hi مرحبا", R.raw.noto_sans_arabic, height = 90)
+  LimitationComparison("Hi بِسْمِ مَرْحَبًا", R.raw.noto_sans_arabic, height = 90)
 }
 
 /** Single line: Compose wraps text to its width; flexpress draws one line and is clipped. */

@@ -32,8 +32,6 @@ internal class Gsub(
   /** `GDEF`'s glyph class of a glyph: 1 base, 2 ligature, 3 mark, 4 component, 0 none. */
   private val glyphClassOf: (Int) -> Int,
 ) {
-  private val scriptList = offset + data.u16(offset + 4)
-  private val featureList = offset + data.u16(offset + 6)
   private val lookupList = offset + data.u16(offset + 8)
 
   /** [glyphs], with the lookups of [features] for [script] (an OpenType script tag) applied. */
@@ -56,11 +54,12 @@ internal class Gsub(
     val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
     // The language system's required feature, if any, applies once: in the stage of its tag, as
     // HarfBuzz schedules it, or the first stage when no stage names it.
-    val requiredTag = requiredFeature(script)
+    val requiredTag = data.requiredFeature(offset, script)
     val requiredStage = stages.indexOfFirst { requiredTag in it }.coerceAtLeast(0)
     for ((index, stage) in stages.withIndex()) {
       val lookupMasks = sortedMapOf<Int, Int>()
-      for ((feature, lookups) in lookups(script, stage, required = index == requiredStage)) {
+      val required = index == requiredStage
+      for ((feature, lookups) in data.featureLookups(offset, script, stage, required)) {
         val mask = featureMasks[feature] ?: 0
         for (lookup in lookups) {
           // A lookup shared by several features applies wherever any of them does.
@@ -104,55 +103,6 @@ internal class Gsub(
       ids.addAll(i, glyphs)
       masks.addAll(i, List(glyphs.size) { mask })
     }
-  }
-
-  /**
-   * Each of [features] that [script]'s default language system has, with its lookup indices, and
-   * its required feature when [required] is set.
-   */
-  private fun lookups(
-    script: String,
-    features: Set<String>,
-    required: Boolean,
-  ): Map<String, List<Int>> {
-    val langSys = defaultLangSys(script) ?: defaultLangSys("DFLT") ?: defaultLangSys("latn")
-    langSys ?: return emptyMap()
-    val result = mutableMapOf<String, List<Int>>()
-    val requiredIndex = data.u16(langSys + 2)
-    val featureIndices =
-      List(data.u16(langSys + 4)) { data.u16(langSys + 6 + it * 2) } +
-        if (required && requiredIndex != 0xFFFF) listOf(requiredIndex) else emptyList()
-    for (f in featureIndices) {
-      val record = featureList + 2 + f * 6
-      val tag = data.tag(record)
-      if (tag !in features && !(required && f == requiredIndex)) continue
-      val feature = featureList + data.u16(record + 4)
-      result[tag] =
-        (result[tag].orEmpty() + List(data.u16(feature + 2)) { data.u16(feature + 4 + it * 2) })
-    }
-    return result
-  }
-
-  /** The tag of [script]'s default language system's required feature, or null. */
-  private fun requiredFeature(script: String): String? {
-    val langSys = defaultLangSys(script) ?: defaultLangSys("DFLT") ?: defaultLangSys("latn")
-    val index = langSys?.let { data.u16(it + 2) } ?: return null
-    return if (index == 0xFFFF) null else data.tag(featureList + 2 + index * 6)
-  }
-
-  private fun defaultLangSys(tag: String): Int? {
-    for (s in 0 until data.u16(scriptList)) {
-      val record = scriptList + 2 + s * 6
-      if (data.tag(record) != tag) continue
-      val script = scriptList + data.u16(record + 4)
-      val default = data.u16(script)
-      return when {
-        default != 0 -> script + default
-        data.u16(script + 2) > 0 -> script + data.u16(script + 4 + 4)
-        else -> null
-      }
-    }
-    return null
   }
 
   /** Applies lookup [index] across [buffer], at the glyphs that have [mask] (all, for 0). */

@@ -268,8 +268,9 @@ public class VariableTextOutlineEvaluator(
     }
 
     /**
-     * The x of each glyph's origin in [text] (one per code point) at user-space [location], in font
-     * units, with pair kerning at [kerningLocation]: where a renderer of the outline places them.
+     * The x of each glyph's origin in [text] (one per shaped glyph, in visual order) at user-space
+     * [location], in font units, with pair kerning at [kerningLocation]: where a renderer of the
+     * outline places them.
      */
     public fun glyphOrigins(
       font: VariableFont,
@@ -278,15 +279,18 @@ public class VariableTextOutlineEvaluator(
       kerningLocation: Map<String, Float> = location,
     ): FloatArray {
       val coords = font.normalize(location)
-      val glyphs = font.glyphIds(text)
-      val origins = FloatArray(glyphs.size)
-      var x = 0f
-      glyphs.forEachIndexed { i, glyph ->
-        if (i > 0) x += font.kerning(glyphs[i - 1], glyph, kerningLocation)
-        origins[i] = x
-        x += font.outline(glyph, coords).advance
-      }
-      return origins
+      val glyphs = font.shapePositioned(text, kerningLocation)
+      return font
+        .placeGlyphs(
+          glyphs,
+          kerningLocation,
+          0f,
+          { font.outline(glyphs[it].id, coords).advance },
+          { it },
+          Float::plus,
+        )
+        .x
+        .toFloatArray()
     }
   }
 }
