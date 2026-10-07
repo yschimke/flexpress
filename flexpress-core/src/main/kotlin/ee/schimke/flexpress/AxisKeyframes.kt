@@ -22,10 +22,11 @@ package ee.schimke.flexpress
 /**
  * Lays [text] out on one line at [location] using nominal glyph advances.
  *
- * This is `cmap` + advance layout, with `GPOS` pair kerning at [kerningLocation] when one is given,
- * and no ligatures or complex-script shaping. The point is that the result is structurally
- * identical at every location — the same glyphs, contours and points in the same order — so two
- * layouts can be tweened point by point.
+ * The glyphs are [shaped][VariableFont.shape]: bidirectional runs in visual order, with the font's
+ * ligatures and contextual alternates. They are placed by advance, with `GPOS` pair kerning at
+ * [kerningLocation] when one is given, and no mark positioning. The point is that the result is
+ * structurally identical at every location — the same glyphs, contours and points in the same order
+ * — so two layouts can be tweened point by point.
  */
 @InternalFlexpressApi
 fun VariableFont.layout(
@@ -74,17 +75,8 @@ fun VariableFont.variedLayout(
   return VariedOutline(contours, x)
 }
 
-@InternalFlexpressApi
-fun VariableFont.glyphIds(text: String): List<Int> {
-  val ids = mutableListOf<Int>()
-  var i = 0
-  while (i < text.length) {
-    val cp = text.codePointAt(i)
-    ids += glyphId(cp)
-    i += Character.charCount(cp)
-  }
-  return ids
-}
+/** [text]'s glyphs, shaped and in visual order: see [VariableFont.shape]. */
+@InternalFlexpressApi fun VariableFont.glyphIds(text: String): List<Int> = shape(text)
 
 /**
  * The [axis] values at which [text] must be sampled so that linear interpolation between

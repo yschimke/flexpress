@@ -154,8 +154,9 @@ filling the path.
 
 ## Limits
 
-- One line, left-aligned in its box. No ligatures or complex-script shaping (advances and `GPOS`
-  pair kerning only), no font fallback for characters the font lacks, no `TextStyle`.
+- One line, left-aligned in its box. Ligatures, contextual alternates and right-to-left reordering
+  are applied, but not Arabic joining forms or mark positioning; no font fallback for characters the
+  font lacks, no `TextStyle`.
 - TrueType (`glyf`/`gvar`) variable fonts only. CFF2 fonts are not supported. Composite glyphs that
   place a component by point matching throw.
 - Glyph substitution through `GSUB` feature variations (Recursive's `CRSV`, Fraunces' `WONK`) is

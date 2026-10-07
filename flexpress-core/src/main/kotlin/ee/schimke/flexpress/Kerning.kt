@@ -129,45 +129,9 @@ class Gpos(
 
   private fun valueRecordSize(format: Int): Int = 2 * Integer.bitCount(format and 0xFF)
 
-  private fun coverage(table: Int, glyph: Int): Int? {
-    when (data.u16(table)) {
-      1 -> {
-        var lo = 0
-        var hi = data.u16(table + 2) - 1
-        while (lo <= hi) {
-          val mid = (lo + hi) ushr 1
-          val g = data.u16(table + 4 + mid * 2)
-          when {
-            g < glyph -> lo = mid + 1
-            g > glyph -> hi = mid - 1
-            else -> return mid
-          }
-        }
-        return null
-      }
-      2 ->
-        return (0 until data.u16(table + 2))
-          .map { table + 4 + it * 6 }
-          .firstOrNull { glyph in data.u16(it)..data.u16(it + 2) }
-          ?.let { data.u16(it + 4) + glyph - data.u16(it) }
-      else -> return null
-    }
-  }
+  private fun coverage(table: Int, glyph: Int): Int? = data.coverageIndex(table, glyph)
 
-  private fun classOf(table: Int, glyph: Int): Int =
-    when (data.u16(table)) {
-      1 -> {
-        val start = data.u16(table + 2)
-        if (glyph - start in 0 until data.u16(table + 4)) data.u16(table + 6 + (glyph - start) * 2)
-        else 0
-      }
-      2 ->
-        (0 until data.u16(table + 2))
-          .map { table + 4 + it * 6 }
-          .firstOrNull { glyph in data.u16(it)..data.u16(it + 2) }
-          ?.let { data.u16(it + 4) } ?: 0
-      else -> 0
-    }
+  private fun classOf(table: Int, glyph: Int): Int = data.glyphClass(table, glyph)
 
   private companion object {
     const val PAIR = 2
@@ -181,3 +145,66 @@ class Gpos(
     const val VARIATION_INDEX = 0x8000
   }
 }
+
+/** [glyph]'s index in the OpenType coverage table at [table], or null when it is not covered. */
+internal fun FontBytes.coverageIndex(table: Int, glyph: Int): Int? {
+  when (u16(table)) {
+    1 -> {
+      var lo = 0
+      var hi = u16(table + 2) - 1
+      while (lo <= hi) {
+        val mid = (lo + hi) ushr 1
+        val g = u16(table + 4 + mid * 2)
+        when {
+          g < glyph -> lo = mid + 1
+          g > glyph -> hi = mid - 1
+          else -> return mid
+        }
+      }
+      return null
+    }
+    2 -> {
+      var lo = 0
+      var hi = u16(table + 2) - 1
+      while (lo <= hi) {
+        val mid = (lo + hi) ushr 1
+        val r = table + 4 + mid * 6
+        when {
+          u16(r + 2) < glyph -> lo = mid + 1
+          u16(r) > glyph -> hi = mid - 1
+          else -> return u16(r + 4) + glyph - u16(r)
+        }
+      }
+      return null
+    }
+    else -> return null
+  }
+}
+
+/** [glyph]'s class in the OpenType class definition table at [table]; 0 when it has none. */
+internal fun FontBytes.glyphClass(table: Int, glyph: Int): Int =
+  when (u16(table)) {
+    1 -> {
+      val start = u16(table + 2)
+      if (glyph - start in 0 until u16(table + 4)) u16(table + 6 + (glyph - start) * 2) else 0
+    }
+    2 -> {
+      var lo = 0
+      var hi = u16(table + 2) - 1
+      var found = 0
+      while (lo <= hi) {
+        val mid = (lo + hi) ushr 1
+        val r = table + 4 + mid * 6
+        when {
+          u16(r + 2) < glyph -> lo = mid + 1
+          u16(r) > glyph -> hi = mid - 1
+          else -> {
+            found = u16(r + 4)
+            break
+          }
+        }
+      }
+      found
+    }
+    else -> 0
+  }
