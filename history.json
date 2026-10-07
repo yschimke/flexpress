@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+    "generatedFrom": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
@@ -141,6 +141,13 @@
             "path": "renders/flexpress-remote/RemoteStringClockPreview-0298239f.gif",
             "versions": [
                 {
+                    "blob": "c92cda3e0a8ddc49374e46a3b59567ea18023626",
+                    "commit": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
+                    "date": "2026-10-07T21:02:31Z",
+                    "sourceSha": "94c25f98",
+                    "commits": 1
+                },
+                {
                     "blob": "939d0669789bc8027a0da10ac8f0489006f44249",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
                     "date": "2026-10-07T19:24:12Z",
@@ -148,7 +155,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -186,6 +193,13 @@
             "path": "renders/flexpress-remote/RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
             "versions": [
                 {
+                    "blob": "d567bb3e655959e724d2b5c5bf7a213e7abf3d33",
+                    "commit": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
+                    "date": "2026-10-07T21:02:31Z",
+                    "sourceSha": "94c25f98",
+                    "commits": 1
+                },
+                {
                     "blob": "2b35f9f9e2e28b76bf3137b27ecdf1b92db4cb33",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
                     "date": "2026-10-07T19:24:12Z",
@@ -193,7 +207,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         }
