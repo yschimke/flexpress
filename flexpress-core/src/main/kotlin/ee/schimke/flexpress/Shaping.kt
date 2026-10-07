@@ -117,8 +117,12 @@ internal fun decompose(codePoints: IntArray, hasGlyph: (Int) -> Boolean): IntArr
     }
     val parts = Normalizer.normalize(String(Character.toChars(cp)), Normalizer.Form.NFD)
     val partCodePoints = parts.codePoints().toArray()
-    if (partCodePoints.size > 1 && partCodePoints.all(hasGlyph)) out += partCodePoints.toList()
-    else out += cp
+    // A singleton decomposition counts too: the Kelvin sign is drawn as K.
+    if (!partCodePoints.contentEquals(intArrayOf(cp)) && partCodePoints.all(hasGlyph)) {
+      out += partCodePoints.toList()
+    } else {
+      out += cp
+    }
   }
   return out.toIntArray()
 }

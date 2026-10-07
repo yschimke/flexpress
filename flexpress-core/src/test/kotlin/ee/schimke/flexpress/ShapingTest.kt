@@ -261,6 +261,8 @@ class ShapingTest {
     val font = font("google_sans_flex_wght_rond")
     assertThat(font.shape("Cafe\u0301")).isEqualTo(listOf(10, 57, 75, 71))
     assertThat(font.shape("Caf\u00E9")).isEqualTo(listOf(10, 57, 75, 71))
+    // A singleton decomposition: the Kelvin sign, which the font lacks, is drawn as K.
+    assertThat(font.shape("\u212A")).isEqualTo(font.shape("K"))
   }
 
   @Test
