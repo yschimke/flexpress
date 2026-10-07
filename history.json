@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
+    "generatedFrom": "097b06883dcccc92a48b1e2e8283e92978ad872b",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
@@ -66,6 +66,13 @@
             "path": "renders/flexpress-remote/LimitationComplexScriptPreview-8905ba86.gif",
             "versions": [
                 {
+                    "blob": "9c3991b2fd35b94f8c85c1cc81076fef39fb72fe",
+                    "commit": "097b06883dcccc92a48b1e2e8283e92978ad872b",
+                    "date": "2026-10-07T22:07:41Z",
+                    "sourceSha": "f223db07",
+                    "commits": 1
+                },
+                {
                     "blob": "5e053f79c8221c572cebb96c0e65c1b7a41d6fe4",
                     "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
                     "date": "2026-10-07T21:54:25Z",
@@ -73,7 +80,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -96,6 +103,13 @@
             "path": "renders/flexpress-remote/LimitationLigaturesPreview-c485aaeb.gif",
             "versions": [
                 {
+                    "blob": "2ff9dc459a6fe42d75a7f1d975cfc861c0420ae9",
+                    "commit": "097b06883dcccc92a48b1e2e8283e92978ad872b",
+                    "date": "2026-10-07T22:07:41Z",
+                    "sourceSha": "f223db07",
+                    "commits": 1
+                },
+                {
                     "blob": "eed6df019de9ce5c8ad6ce71473e7d72eaac3aa5",
                     "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
                     "date": "2026-10-07T21:54:25Z",
@@ -103,7 +117,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
