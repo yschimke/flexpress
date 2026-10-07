@@ -2,7 +2,11 @@ plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.metalava)
+  alias(libs.plugins.maven.publish)
+  alias(libs.plugins.compose.preview)
 }
+
+description = "Variable-font axis animation for Compose UI, without re-instancing a typeface."
 
 android {
   namespace = "ee.schimke.flexpress.compose"

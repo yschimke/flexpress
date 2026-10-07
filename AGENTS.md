@@ -36,6 +36,15 @@ Declarations shared between modules but not meant for apps are public behind
   `CODEGEN_WRITE=1 ./gradlew :flexpress-remote:testDebugUnitTest --tests '*VariableFontCodegenTest*'`.
 - **A change to what is drawn carries before/after renders** embedded in the PR from a GitHub-hosted
   origin (a committed PNG at a commit-pinned `raw.githubusercontent.com` URL).
+- **Releases are cut by release-please.** Merging its `chore(main): release X.Y.Z` PR tags a draft
+  release and `.github/workflows/release.yml` publishes every module to Maven Central as
+  `ee.schimke.flexpress:<module>`, then un-drafts it. Never hand-edit
+  `.release-please-manifest.json` or publish by hand. Between releases the build is the next patch
+  `-SNAPSHOT`.
+- **Previews are the visual review surface.** `.github/workflows/compose-preview.yml` renders every
+  debug `@Preview` in `flexpress-remote` and `flexpress-compose` and comments the before/after
+  diff on the PR. Add a preview with any new visual surface; render locally with
+  `./gradlew composePreviewRender`.
 - **Re-check PR state before every push**; if the PR has merged, branch fresh from `origin/main`.
 - **Don't merge your own PR.**
 

@@ -2,7 +2,12 @@ plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.metalava)
+  alias(libs.plugins.maven.publish)
+  alias(libs.plugins.compose.preview)
 }
+
+description =
+  "Variable-font axis animation for Remote Compose, without loading a font on the player."
 
 android {
   namespace = "ee.schimke.flexpress.remote"

@@ -21,10 +21,16 @@ Remote Compose expressions, the players it is checked against, document sizes, t
 [`flexpress-compose`](flexpress-compose/README.md). The test fonts and their licences are described
 in [`fonts/README.md`](fonts/README.md).
 
+## Using
+
+Published to Maven Central as `ee.schimke.flexpress:flexpress-remote`, `flexpress-compose`,
+`flexpress-core` and `flexpress-codegen`, all at one version.
+
 ## Building
 
 ```
 ./gradlew ktfmtFormat test lintDebug
+./gradlew composePreviewRender   # the debug previews, as PNGs and GIFs
 ```
 
 Remote Compose is `androidx.compose.remote` 1.0.0-alpha21. Contributor and agent rules are in
