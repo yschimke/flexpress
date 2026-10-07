@@ -209,8 +209,35 @@ class ShapingTest {
   }
 
   @Test
+  fun syriacJoiningMatchesHarfBuzz() {
+    val font = font("noto_sans_syriac")
+    // HarfBuzz's full Syriac shaping, positioning off. The words marked * draw differently
+    // without fin2, fin3 and med2: each has an Alaph after a letter that cannot join it.
+    val expected =
+      mapOf(
+        "\u0710" to listOf(4),
+        "\u0718\u0710" to listOf(6, 28), // *
+        "\u0715\u0710" to listOf(5, 22), // *
+        "\u0712\u0710" to listOf(177, 13),
+        "\u0712\u0710\u0712" to listOf(10, 179, 13), // *
+        "\u072B\u0720\u0721\u0710" to listOf(177, 59, 55, 96),
+        "\u0721\u072A\u071D\u0710" to listOf(7, 47, 92, 60),
+        "\u0710\u0720\u0717\u0710" to listOf(6, 27, 56, 4), // *
+        "\u0715\u072A\u0710" to listOf(5, 91, 22), // *
+        "\u0712\u072A\u0710" to listOf(5, 92, 13), // *
+        "\u0723\u0718\u072A\u071D\u071D\u0710" to listOf(7, 46, 47, 91, 29, 68),
+        "\u0725\u0720\u0721\u0710 \u0715\u0710" to listOf(5, 22, 1, 177, 59, 55, 76), // *
+        "\u0710\u0712\u0710" to listOf(177, 13, 4),
+      )
+    for ((text, glyphs) in expected) {
+      assertWithMessage(text).that(font.shape(text)).isEqualTo(glyphs)
+    }
+  }
+
+  @Test
   fun joiningFormsFollowTheUnicodeAlgorithm() {
-    // beh (dual), alef (right), fatha (transparent), tatweel (join causing), zwnj (non joining).
+    // beh (dual), alef (right), fatha (transparent), tatweel (join causing), zwnj (non joining);
+    // Syriac beth (dual), waw (right), dalath (Dalath-Rish group), alaph (Alaph group).
     fun forms(text: String) = joiningForms(text.codePoints().toArray()).toList()
     val (isol, fina, medi, init) = listOf(1, 2, 4, 8)
     assertThat(forms("ب")).containsExactly(isol)
@@ -221,7 +248,16 @@ class ShapingTest {
     // A transparent mark between two letters takes no form and does not break the join.
     assertThat(forms("بَب")).containsExactly(init, 0, fina).inOrder()
     assertThat(forms("ب\u200cب")).containsExactly(isol, 0, isol).inOrder()
-    assertThat(forms("ب\u0640")).containsExactly(init, 0).inOrder()
+    // Tatweel causes joining, and as HarfBuzz does, takes a form itself.
+    assertThat(forms("ب\u0640")).containsExactly(init, fina).inOrder()
+    // Syriac Alaph after letters that cannot join it: waw (fin2), dalath (fin3); after beth it
+    // joins (fina), and becomes med2 when a letter follows.
+    val (fin2, fin3, med2) = listOf(16, 32, 64)
+    assertThat(forms("\u0710")).containsExactly(isol)
+    assertThat(forms("\u0718\u0710")).containsExactly(isol, fin2).inOrder()
+    assertThat(forms("\u0715\u0710")).containsExactly(isol, fin3).inOrder()
+    assertThat(forms("\u0712\u0710")).containsExactly(init, fina).inOrder()
+    assertThat(forms("\u0712\u0710\u0712")).containsExactly(init, med2, isol).inOrder()
   }
 
   @Test

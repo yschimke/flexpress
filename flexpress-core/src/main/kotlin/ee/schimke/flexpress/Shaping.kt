@@ -22,13 +22,13 @@ import java.text.Normalizer
 /**
  * One line of text as glyphs in visual order, left to right.
  *
- * The text is split into runs by the Unicode bidirectional algorithm. Each run is mapped through
- * `cmap` in logical order (characters in right-to-left runs mirrored, as `(` to `)`), and the
- * font's `GSUB` lookups for [DEFAULT_FEATURES] in the run's script are applied, so ligatures and
- * contextual alternates are formed. In joining scripts (Arabic, Syriac) each letter is also given
- * its positional form (`isol`, `fina`, `medi` or `init`) by the Unicode joining algorithm, in
- * stages as HarfBuzz's Arabic shaper applies them. Right-to-left runs are then reversed, and the
- * runs placed in visual order.
+ * The text is split into runs by the Unicode bidirectional algorithm, and each run into runs of one
+ * script ([scriptRuns]). Each script run is mapped through `cmap` in logical order (characters in
+ * right-to-left runs mirrored, as `(` to `)`), and the font's `GSUB` lookups for [DEFAULT_FEATURES]
+ * in that script are applied, so ligatures and contextual alternates are formed. In joining scripts
+ * (Arabic, Syriac) each letter is also given its positional form (`isol`, `fina`, `medi`, `init`,
+ * and Syriac's `fin2`, `fin3` and `med2`) by [joiningForms], in stages as HarfBuzz's Arabic shaper
+ * applies them. Right-to-left runs are then reversed, and the runs placed in visual order.
  *
  * Adjacent combining marks are first put in HarfBuzz's order ([canonicalMarkOrder]). With [marks],
  * each mark glyph is then attached to its base or preceding mark by the font's `GPOS` `mark` and
@@ -55,21 +55,32 @@ internal fun shapeText(
     val rtl = bidi.getRunLevel(r) % 2 == 1
     val runText = text.substring(bidi.getRunStart(r), bidi.getRunLimit(r))
     val codePoints = canonicalMarkOrder(runText.codePoints().toArray())
-    // Default-ignorable characters (joiners, bidi controls) take part in shaping but draw nothing.
-    val ids = codePoints.map {
-      if (isDefaultIgnorable(it)) IGNORED else glyphId(if (rtl) mirror(it) else it)
-    }
-    val script = scriptTag(runText)
-    val shaped =
-      when {
-        gsub == null -> ids
-        script in JOINING_SCRIPTS ->
-          gsub.substitute(ids, joiningForms(codePoints).toList(), script, JOINING_STAGES, FORMS)
-        else -> gsub.substitute(ids, script, DEFAULT_FEATURES)
+    // Each script in the run is shaped with its own script's features, in logical order.
+    val drawn = mutableListOf<Int>()
+    val attachments = mutableListOf<Attachment?>()
+    for ((from, to, script) in scriptRuns(codePoints)) {
+      val part = codePoints.copyOfRange(from, to)
+      // Default-ignorable characters (joiners, bidi controls) take part in shaping but draw
+      // nothing.
+      val ids = part.map {
+        if (isDefaultIgnorable(it)) IGNORED else glyphId(if (rtl) mirror(it) else it)
       }
-    val drawn = shaped.filter { it != IGNORED }
-    // Marks attach in logical order; the run is then placed in visual order.
-    val attachments = marks?.attach(drawn, script, coords)
+      val shaped =
+        when {
+          gsub == null -> ids
+          script in JOINING_SCRIPTS ->
+            gsub.substitute(ids, joiningForms(part).toList(), script, JOINING_STAGES, FORMS)
+          else -> gsub.substitute(ids, script, DEFAULT_FEATURES)
+        }
+      val partDrawn = shaped.filter { it != IGNORED }
+      // Marks attach within their own script's glyphs.
+      val offset = drawn.size
+      val partAttachments = marks?.attach(partDrawn, script, coords)
+      drawn += partDrawn
+      partDrawn.indices.mapTo(attachments) { k ->
+        partAttachments?.get(k)?.let { it.copy(base = it.base + offset) }
+      }
+    }
     val start = glyphs.size
     fun visual(k: Int) = start + if (rtl) drawn.size - 1 - k else k
     val placed = arrayOfNulls<ShapedGlyph>(drawn.size)
@@ -77,7 +88,7 @@ internal fun shapeText(
     // comes earlier in logical order, so its height is known by then.
     val heights = FloatArray(drawn.size)
     drawn.forEachIndexed { k, id ->
-      val a = attachments?.get(k)
+      val a = attachments[k]
       if (a != null) heights[k] = heights[a.base] + a.dy
       placed[visual(k) - start] =
         ShapedGlyph(id, a?.let { visual(it.base) } ?: -1, a?.dx ?: 0f, heights[k], rtl)
@@ -278,13 +289,26 @@ internal fun isDefaultIgnorable(cp: Int): Boolean =
 /** Scripts whose letters take positional forms by the Unicode joining algorithm. */
 private val JOINING_SCRIPTS = setOf("arab", "syrc")
 
+private const val NONE = 0
 private const val ISOL = 1
 private const val FINA = 2
 private const val MEDI = 4
 private const val INIT = 8
+private const val FIN2 = 16
+private const val FIN3 = 32
+private const val MED2 = 64
 
 /** The positional-form features, each limited to the letters with its mask bit. */
-private val FORMS = mapOf("isol" to ISOL, "fina" to FINA, "medi" to MEDI, "init" to INIT)
+private val FORMS =
+  mapOf(
+    "isol" to ISOL,
+    "fina" to FINA,
+    "fin2" to FIN2,
+    "fin3" to FIN3,
+    "medi" to MEDI,
+    "med2" to MED2,
+    "init" to INIT,
+  )
 
 /** The `GSUB` stages of HarfBuzz's Arabic shaper: each feature group applied in turn. */
 private val JOINING_STAGES =
@@ -292,64 +316,168 @@ private val JOINING_STAGES =
     setOf("ccmp", "locl"),
     setOf("isol"),
     setOf("fina"),
+    setOf("fin2"),
+    setOf("fin3"),
     setOf("medi"),
+    setOf("med2"),
     setOf("init"),
     setOf("rlig"),
     setOf("calt", "liga", "clig", "mset"),
   )
 
 /**
- * Each code point's positional form, as a [FORMS] mask bit: the Unicode joining algorithm over
- * [codePoints] in logical order. A letter joins the letter before it (on its right) when it can
- * join on its right and that letter can join on its left, and likewise the letter after it;
- * transparent characters, such as vowel marks, are passed over and take no form, as do non-joining
- * and join-causing characters.
+ * Each code point's positional form, as a [FORMS] mask bit: HarfBuzz's Arabic joining state machine
+ * over [codePoints] in logical order, which is the Unicode joining algorithm plus Syriac's Alaph
+ * forms. A letter joins the letter before it (on its right) when it can join on its right and that
+ * letter can join on its left, and likewise the letter after it. Transparent characters, such as
+ * vowel marks, are passed over and take no form, as do non-joining characters.
+ *
+ * Alaph joins only on its right, and takes a form of its own after a letter that cannot join it:
+ * `fin3` after Dalath or Rish, `fin2` after others, and `med2` when it is joined and a letter
+ * follows.
  */
 internal fun joiningForms(codePoints: IntArray): IntArray {
-  val types = codePoints.map(::joiningType)
-  fun joinsLeft(t: JoiningType) =
-    t == JoiningType.DUAL || t == JoiningType.LEFT || t == JoiningType.JOIN_CAUSING
-  fun joinsRight(t: JoiningType) =
-    t == JoiningType.DUAL || t == JoiningType.RIGHT || t == JoiningType.JOIN_CAUSING
-  return IntArray(codePoints.size) { i ->
-    val type = types[i]
-    if (
-      type == JoiningType.TRANSPARENT ||
-        type == JoiningType.NON_JOINING ||
-        type == JoiningType.JOIN_CAUSING
-    ) {
-      return@IntArray 0
-    }
-    var p = i - 1
-    while (p >= 0 && types[p] == JoiningType.TRANSPARENT) p--
-    var n = i + 1
-    while (n < types.size && types[n] == JoiningType.TRANSPARENT) n++
-    val before = p >= 0 && joinsLeft(types[p]) && joinsRight(type)
-    val after = n < types.size && joinsLeft(type) && joinsRight(types[n])
-    when {
-      before && after -> MEDI
-      before -> FINA
-      after -> INIT
-      else -> ISOL
-    }
+  val forms = IntArray(codePoints.size)
+  var prev = -1
+  var state = 0
+  for ((i, cp) in codePoints.withIndex()) {
+    val column =
+      when {
+        cp == ALAPH -> JOIN_ALAPH
+        cp in DALATH_RISH -> JOIN_DALATH_RISH
+        else ->
+          when (joiningType(cp)) {
+            JoiningType.TRANSPARENT -> continue
+            JoiningType.NON_JOINING -> JOIN_U
+            JoiningType.LEFT -> JOIN_L
+            JoiningType.RIGHT -> JOIN_R
+            JoiningType.DUAL,
+            JoiningType.JOIN_CAUSING -> JOIN_D
+          }
+      }
+    val (prevAction, action, next) = JOINING_STATES[state][column]
+    if (prevAction != NONE && prev >= 0) forms[prev] = prevAction
+    forms[i] = action
+    prev = i
+    state = next
   }
+  return forms
 }
 
-/** The OpenType script tag of the first character in [text] with a script of its own. */
-private fun scriptTag(text: String): String {
-  var i = 0
-  while (i < text.length) {
-    val cp = text.codePointAt(i)
-    when (Character.UnicodeScript.of(cp)) {
-      Character.UnicodeScript.COMMON,
-      Character.UnicodeScript.INHERITED,
-      Character.UnicodeScript.UNKNOWN -> {}
-      else -> return SCRIPT_TAGS[Character.UnicodeScript.of(cp)] ?: "DFLT"
+private const val ALAPH = 0x0710
+
+/** Dalath, dotless Dalath-Rish, Rish and Persian Dhalath: the letters `fin3` follows. */
+private val DALATH_RISH = setOf(0x0715, 0x0716, 0x072A, 0x072F)
+
+private const val JOIN_U = 0
+private const val JOIN_L = 1
+private const val JOIN_R = 2
+private const val JOIN_D = 3
+private const val JOIN_ALAPH = 4
+private const val JOIN_DALATH_RISH = 5
+
+/**
+ * HarfBuzz's `arabic_state_table`. Rows are states, columns the next character's joining type
+ * (`JOIN_*`); each entry is the form to give the previous joining character (or [NONE] to leave
+ * it), the form for this one, and the next state.
+ */
+private val JOINING_STATES: Array<Array<Triple<Int, Int, Int>>> =
+  arrayOf(
+    // 0: the previous character was non-joining; not willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, ISOL, 1),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, ISOL, 1),
+      Triple(NONE, ISOL, 6),
+    ),
+    // 1: it was right-joining, or an isolated Alaph; not willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, ISOL, 1),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, FIN2, 5),
+      Triple(NONE, ISOL, 6),
+    ),
+    // 2: it was dual- or left-joining, isolated so far; willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(INIT, FINA, 1),
+      Triple(INIT, FINA, 3),
+      Triple(INIT, FINA, 4),
+      Triple(INIT, FINA, 6),
+    ),
+    // 3: it was dual-joining, final so far; willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(MEDI, FINA, 1),
+      Triple(MEDI, FINA, 3),
+      Triple(MEDI, FINA, 4),
+      Triple(MEDI, FINA, 6),
+    ),
+    // 4: it was a final Alaph; not willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(MED2, ISOL, 1),
+      Triple(MED2, ISOL, 2),
+      Triple(MED2, FIN2, 5),
+      Triple(MED2, ISOL, 6),
+    ),
+    // 5: it was an Alaph in fin2 or fin3; not willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(ISOL, ISOL, 1),
+      Triple(ISOL, ISOL, 2),
+      Triple(ISOL, FIN2, 5),
+      Triple(ISOL, ISOL, 6),
+    ),
+    // 6: it was Dalath or Rish; not willing to join.
+    arrayOf(
+      Triple(NONE, NONE, 0),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, ISOL, 1),
+      Triple(NONE, ISOL, 2),
+      Triple(NONE, FIN3, 5),
+      Triple(NONE, ISOL, 6),
+    ),
+  )
+
+/**
+ * [codePoints] split into runs of one script: `(from, to, tag)`, with `to` exclusive and `tag` an
+ * OpenType script tag. Characters of no script of their own (common and inherited: spaces, digits,
+ * punctuation, combining marks) join the run before them, or the first run when they lead.
+ */
+internal fun scriptRuns(codePoints: IntArray): List<Triple<Int, Int, String>> {
+  val tags = codePoints.map(::scriptOf)
+  var current = tags.firstOrNull { it != null } ?: "DFLT"
+  val runs = mutableListOf<Triple<Int, Int, String>>()
+  var from = 0
+  for (i in codePoints.indices) {
+    val tag = tags[i] ?: continue
+    if (tag != current) {
+      if (i > from) runs += Triple(from, i, current)
+      from = i
+      current = tag
     }
-    i += Character.charCount(cp)
   }
-  return "DFLT"
+  if (codePoints.size > from) runs += Triple(from, codePoints.size, current)
+  return runs
 }
+
+/** [cp]'s OpenType script tag, or null for a character of no script of its own. */
+private fun scriptOf(cp: Int): String? =
+  when (val script = Character.UnicodeScript.of(cp)) {
+    Character.UnicodeScript.COMMON,
+    Character.UnicodeScript.INHERITED,
+    Character.UnicodeScript.UNKNOWN -> null
+    else -> SCRIPT_TAGS[script] ?: "DFLT"
+  }
 
 private val SCRIPT_TAGS =
   mapOf(
