@@ -5,7 +5,11 @@ composeBom = "2026.04.01"
 composeAnimation = "1.11.4"
 composeRemote = "1.0.0-alpha21"
 composeAiTools = "2.35.0"
-# The preview annotations come from compose-preview-daemon, at the version the plugin above pins.
+# The preview annotations come from compose-preview-daemon, on its own release line, and resolve
+# through compose-preview-daemon-bom: the daemon publishes only the modules a release changed, so a
+# per-module pin 404s the first time a release skips one. The BOM may lead the plugin (its renderer
+# resolves in the consumer runtime graph) but must not predate the daemon the plugin bakes in
+# (2.35.0 bakes 3.13.2).
 composeAiPreviewDaemon = "3.13.2"
 androidxActivity = "1.13.0"
 androidxTestExt = "1.3.0"
@@ -30,7 +34,9 @@ compose-ui-unit = { group = "androidx.compose.ui", name = "ui-unit" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-compose-preview-annotations = { module = "ee.schimke.composeai:preview-annotations", version.ref = "composeAiPreviewDaemon" }
+compose-preview-daemon-bom = { module = "ee.schimke.composeai:compose-preview-daemon-bom", version.ref = "composeAiPreviewDaemon" }
+# Versionless: resolved through compose-preview-daemon-bom. Never add a version here.
+compose-preview-annotations = { module = "ee.schimke.composeai:preview-annotations" }
 compose-remote-core = { module = "androidx.compose.remote:remote-core", version.ref = "composeRemote" }
 compose-remote-creation = { module = "androidx.compose.remote:remote-creation", version.ref = "composeRemote" }
 compose-remote-creation-compose = { module = "androidx.compose.remote:remote-creation-compose", version.ref = "composeRemote" }

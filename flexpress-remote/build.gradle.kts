@@ -53,6 +53,7 @@ dependencies {
   debugImplementation(libs.compose.remote.player.compose)
   debugImplementation(libs.compose.remote.player.view)
   debugImplementation(libs.compose.ui.tooling.preview)
+  debugImplementation(platform(libs.compose.preview.daemon.bom))
   debugImplementation(libs.compose.preview.annotations)
 
   testImplementation(testFixtures(projects.flexpressCore))
