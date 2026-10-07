@@ -31,6 +31,38 @@
     "sha256": "4b443c4db83453ad176be97168de0aacd1b7f0f55aa4b6d763efb297b8f52334",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
   },
+  "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationComplexScriptPreview": {
+    "captureLabel": "",
+    "functionName": "LimitationComplexScriptPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "LimitationComplexScriptPreview-8905ba86.gif",
+    "sha256": "4591398fefe1a7ae4961bae59014fd2423a10269aaee02bf192831f8e9aecd2e",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationFontFallbackPreview": {
+    "captureLabel": "",
+    "functionName": "LimitationFontFallbackPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "LimitationFontFallbackPreview-2273b32f.gif",
+    "sha256": "1434a8d35f8d858067aa01bf70c07036b635a8be213c80d083089e4c159864ec",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationLigaturesPreview": {
+    "captureLabel": "",
+    "functionName": "LimitationLigaturesPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "LimitationLigaturesPreview-c485aaeb.gif",
+    "sha256": "58c557c98d9cfd49fcbd6785305fb4b1c2ee69b6d2b60b9438892c76638e8793",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationSingleLinePreview": {
+    "captureLabel": "",
+    "functionName": "LimitationSingleLinePreview",
+    "module": "flexpress-remote",
+    "renderBasename": "LimitationSingleLinePreview-4c4803df.gif",
+    "sha256": "8782288b5aa2cdf3ec6c17d8f39ab2ea554fced3bea80b8647b3c06fe2c7978f",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
+  },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
     "captureLabel": "",
     "functionName": "HelloRoundness0Preview",
