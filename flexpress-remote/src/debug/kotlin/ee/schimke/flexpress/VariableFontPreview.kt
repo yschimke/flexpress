@@ -26,6 +26,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.remote.core.RemoteClock
+import androidx.compose.remote.core.SystemClock
 import androidx.compose.remote.creation.compose.capture.rememberRemoteDocument
 import androidx.compose.remote.creation.compose.layout.RemoteTime
 import androidx.compose.remote.creation.compose.state.RemoteFloat
@@ -36,14 +37,60 @@ import androidx.compose.remote.creation.compose.state.rememberNamedRemoteFloat
 import androidx.compose.remote.creation.compose.state.rf
 import androidx.compose.remote.player.compose.RemoteDocumentPlayer
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ee.schimke.flexpress.remote.R
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
+
+/**
+ * A clock for previews of documents that read their own time: 10:10:00 UTC on 2026-01-01, advanced
+ * by the Compose frame time since the preview's first frame. The preview renderer drives frame
+ * time, so every render of a clock-driven preview draws the same frames, where [RemoteClock.SYSTEM]
+ * would draw whatever time the render ran at and show as changed on every preview diff.
+ */
+@Composable
+fun rememberPreviewClock(): RemoteClock {
+  val clock = remember { PreviewClock() }
+  LaunchedEffect(clock) {
+    var start = -1L
+    while (true) {
+      withFrameNanos { now ->
+        if (start < 0) start = now
+        clock.nanos = now - start
+      }
+    }
+  }
+  return clock
+}
+
+/** 10:10:00 UTC on 2026-01-01, plus [nanos]. */
+class PreviewClock : RemoteClock {
+  @Volatile var nanos = 0L
+
+  private fun instant() = START.plusNanos(nanos)
+
+  override fun millis(): Long = instant().toEpochMilli()
+
+  override fun nanoTime(): Long = nanos
+
+  override fun getZoneId(): String = "UTC"
+
+  override fun snapshot(millis: Long?): RemoteClock.TimeSnapshot =
+    SystemClock(Clock.fixed(instant(), ZoneOffset.UTC)).snapshot(millis)
+
+  private companion object {
+    val START: Instant = Instant.parse("2026-01-01T10:10:00Z")
+  }
+}
 
 /** Reads a variable font from a raw resource. */
 fun Context.variableFont(@RawRes resId: Int): VariableFont =
@@ -252,7 +299,7 @@ fun VariableFontSelfAnimatedPreview(
   color: Color = Color.White,
   documentWidth: Int = 400,
   documentHeight: Int = 100,
-  clock: RemoteClock = RemoteClock.SYSTEM,
+  clock: RemoteClock = rememberPreviewClock(),
 ) {
   val context = LocalContext.current
   val font = remember(fontResId) { context.variableFont(fontResId) }
@@ -283,7 +330,7 @@ fun SelfAnimatedDocumentPreview(
   modifier: Modifier = Modifier,
   documentWidth: Int = 400,
   documentHeight: Int = 100,
-  clock: RemoteClock = RemoteClock.SYSTEM,
+  clock: RemoteClock = rememberPreviewClock(),
   content: @Composable () -> Unit,
 ) {
   val doc = rememberRemoteDocument(clock = clock) { content() }
