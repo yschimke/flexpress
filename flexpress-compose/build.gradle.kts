@@ -49,6 +49,7 @@ dependencies {
   debugImplementation(libs.compose.foundation)
   debugImplementation(libs.compose.foundation.layout)
   debugImplementation(libs.compose.ui.tooling.preview)
+  debugImplementation(platform(libs.compose.preview.daemon.bom))
   debugImplementation(libs.compose.preview.annotations)
 
   testImplementation(testFixtures(projects.flexpressCore))
