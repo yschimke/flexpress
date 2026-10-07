@@ -73,14 +73,15 @@ fun LimitationFontFallbackPreview() {
 }
 
 /**
- * Complex scripts: Compose shapes Arabic right to left, joining its letters, from a fallback font;
- * flexpress lays out one glyph per character, left to right, from its one font.
+ * Complex scripts: both draw from the same Arabic-capable font, but Compose shapes the text right
+ * to left with joined letter forms, while flexpress places each character's isolated glyph, left to
+ * right.
  */
-@Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 140)
+@Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 220)
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)
 @Composable
 fun LimitationComplexScriptPreview() {
-  LimitationComparison("Hi مرحبا", R.raw.google_sans_flex_wght_rond)
+  LimitationComparison("Hi مرحبا", R.raw.noto_sans_arabic, height = 90)
 }
 
 /** Single line: Compose wraps text to its width; flexpress draws one line and is clipped. */

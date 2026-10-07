@@ -51,9 +51,10 @@ easy to hit: choose the font's character coverage for the text you will draw.
 
 There is no shaping engine: no right-to-left layout, no joining forms, no reordering and no mark
 positioning (`GPOS` is read for pair kerning only). Arabic, Indic and similar scripts do not render
-correctly, even in a font that covers them.
+correctly, even in a font that covers them: below, both draw from the same Noto Sans Arabic, but
+flexpress places each letter's isolated form, left to right.
 
-![Complex scripts: Compose shapes Arabic right to left; flexpress cannot](docs/limitations/complex-script.gif)
+![Complex scripts: Compose shapes Arabic right to left with joined letters; flexpress draws isolated letters left to right](docs/limitations/complex-script.gif)
 
 ### One line, no wrapping
 
@@ -78,9 +79,11 @@ composite that anchors a component by point matching is rejected when it is draw
 
 ### Accessibility and rasterization
 
-The text is drawn as a filled path, so there is no accessible text unless you add a content
-description, and edges are anti-aliased as a path fill, not by the platform's text rasterizer: light
-weights at small sizes look lighter than platform text, which thickens thin stems.
+The text is drawn as a filled path. `RemoteVariableFontText` carries no accessible text, so give it
+one with `RemoteModifier.semantics { contentDescription = RemoteString("…") }`; in Compose UI, `VariableFontText` from a font and string
+exposes its text to accessibility services, while the precomputed-outline overload does so only
+through its `contentDescription`. Edges are anti-aliased as a path fill, not by the platform's text
+rasterizer: light weights at small sizes look lighter than platform text, which thickens thin stems.
 
 ### Document size grows with animated axes
 
