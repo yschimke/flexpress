@@ -89,17 +89,23 @@ package ee.schimke.flexpress {
   }
 
   public static final class Glyf.Component {
-    ctor public Glyf.Component(int glyphId, int dx, int dy, float xx, float xy, float yx, float yy);
+    ctor public Glyf.Component(int glyphId, int dx, int dy, float xx, float xy, float yx, float yy, optional boolean scaledOffset);
     method @InaccessibleFromKotlin public int getDx();
     method @InaccessibleFromKotlin public int getDy();
     method @InaccessibleFromKotlin public int getGlyphId();
+    method @InaccessibleFromKotlin public boolean getScaledOffset();
     method @InaccessibleFromKotlin public float getXx();
     method @InaccessibleFromKotlin public float getXy();
     method @InaccessibleFromKotlin public float getYx();
     method @InaccessibleFromKotlin public float getYy();
+    method public ee.schimke.flexpress.LinearForm offsetX(ee.schimke.flexpress.LinearForm x, ee.schimke.flexpress.LinearForm y);
+    method public float offsetX(float x, float y);
+    method public ee.schimke.flexpress.LinearForm offsetY(ee.schimke.flexpress.LinearForm x, ee.schimke.flexpress.LinearForm y);
+    method public float offsetY(float x, float y);
     property public int dx;
     property public int dy;
     property public int glyphId;
+    property public boolean scaledOffset;
     property public float xx;
     property public float xy;
     property public float yx;

@@ -113,7 +113,8 @@ internal constructor(
  * [RemoteFloat]s, to share between several [RemoteVariableFontText]s in this document.
  *
  * @param font The variable font to take outlines from.
- * @param characters Every character the texts may contain.
+ * @param characters Every character the texts may contain. The player splits the text into UTF-16
+ *   units, so only characters in the Basic Multilingual Plane (no surrogate pairs) are supported.
  * @param axes The animated axes, by tag, with their values in the axis' user units.
  * @param location Values for the axes not in [axes], held fixed; missing axes take their defaults.
  * @param kerningLocation Where in the design space the font's `GPOS` pair kerning is taken.
@@ -141,7 +142,13 @@ internal fun variableFontGlyphs(
   require(indices.values.none { it < 0 }) {
     "${indices.filterValues { it < 0 }.keys} not among ${font.axes.map { it.tag }}"
   }
-  val set = characters.codePoints().toArray().distinct().map { String(Character.toChars(it)) }
+  // The player takes the text apart one UTF-16 unit at a time, so a character made of a surrogate
+  // pair could never be matched: refuse it here rather than drop it on the player.
+  require(characters.none { it.isSurrogate() }) {
+    "characters outside the Basic Multilingual Plane are not supported: " +
+      characters.codePoints().toArray().filter { it > 0xFFFF }.joinToString { "U+%X".format(it) }
+  }
+  val set = characters.toList().distinct().map { it.toString() }
   val outlines = set.map { font.variedLayout(it) }
   val animated = indices.values.toSet()
   val fixed = font.normalize(location)
@@ -174,7 +181,8 @@ internal fun variableFontGlyphs(
  * overload that takes them: the outlines are then in the document once rather than once per text.
  *
  * @param text The text to draw; it may change on the player.
- * @param characters Every character [text] may contain.
+ * @param characters Every character [text] may contain. The player splits [text] into UTF-16 units,
+ *   so only characters in the Basic Multilingual Plane (no surrogate pairs) are supported.
  * @param maxLength The most characters [text] may have.
  * @param font The variable font to take outlines from.
  * @param axes The animated axes, by tag, with their values in the axis' user units.

@@ -232,7 +232,14 @@ public class VariableFont private constructor(private val data: FontBytes) {
         is Glyf.Composite ->
           glyph.components.flatMapIndexed { i, c ->
             variedOutline(c.glyphId).contours.map {
-              it.transformed(c.xx, c.xy, c.yx, c.yy, formX[i], formY[i])
+              it.transformed(
+                c.xx,
+                c.xy,
+                c.yx,
+                c.yy,
+                c.offsetX(formX[i], formY[i]),
+                c.offsetY(formX[i], formY[i]),
+              )
             }
           }
         null -> emptyList()
@@ -292,7 +299,14 @@ public class VariableFont private constructor(private val data: FontBytes) {
         val contours =
           glyph.components.flatMapIndexed { i, c ->
             outline(c.glyphId, coords).contours.map { contour ->
-              contour.transformed(c.xx, c.xy, c.yx, c.yy, xs[i], ys[i])
+              contour.transformed(
+                c.xx,
+                c.xy,
+                c.yx,
+                c.yy,
+                c.offsetX(xs[i], ys[i]),
+                c.offsetY(xs[i], ys[i]),
+              )
             }
           }
         GlyphOutline(contours, xs[count + 1] - xs[count])
@@ -317,20 +331,23 @@ public class VariableFont private constructor(private val data: FontBytes) {
     return advance to lsb
   }
 
+  // Guarded by itself: one parsed font is often shared by concurrent document builds.
   private val glyphCache = HashMap<Int, Glyf?>()
 
   private fun glyph(glyphId: Int): Glyf? =
-    glyphCache.getOrPut(glyphId) {
-      require(glyphId in 0 until numGlyphs) { "glyph $glyphId out of range" }
-      val loca = table("loca")
-      val (start, end) =
-        if (indexToLocFormat == 0) {
-          data.u16(loca + glyphId * 2) * 2 to data.u16(loca + glyphId * 2 + 2) * 2
-        } else {
-          data.u32(loca + glyphId * 4).toInt() to data.u32(loca + glyphId * 4 + 4).toInt()
-        }
-      if (end <= start) null else Glyf.read(data, table("glyf") + start)
-    }
+    synchronized(glyphCache) { glyphCache.getOrPut(glyphId) { readGlyph(glyphId) } }
+
+  private fun readGlyph(glyphId: Int): Glyf? {
+    require(glyphId in 0 until numGlyphs) { "glyph $glyphId out of range" }
+    val loca = table("loca")
+    val (start, end) =
+      if (indexToLocFormat == 0) {
+        data.u16(loca + glyphId * 2) * 2 to data.u16(loca + glyphId * 2 + 2) * 2
+      } else {
+        data.u32(loca + glyphId * 4).toInt() to data.u32(loca + glyphId * 4 + 4).toInt()
+      }
+    return if (end <= start) null else Glyf.read(data, table("glyf") + start)
+  }
 
   private fun table(tag: String): Int =
     tables[tag] ?: throw IllegalArgumentException("font has no '$tag' table")

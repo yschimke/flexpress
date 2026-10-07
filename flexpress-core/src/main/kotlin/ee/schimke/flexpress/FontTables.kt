@@ -69,7 +69,21 @@ sealed class Glyf(val xMin: Int) {
     val xy: Float,
     val yx: Float,
     val yy: Float,
-  )
+    /**
+     * Whether the offset is in the component's own units and so transformed with it
+     * (`SCALED_COMPONENT_OFFSET`), rather than in the composite's (the default).
+     */
+    val scaledOffset: Boolean = false,
+  ) {
+    /** The offset ([x], [y]) as it applies to the component's transformed points. */
+    fun offsetX(x: Float, y: Float): Float = if (scaledOffset) x * xx + y * yx else x
+
+    fun offsetY(x: Float, y: Float): Float = if (scaledOffset) x * xy + y * yy else y
+
+    fun offsetX(x: LinearForm, y: LinearForm): LinearForm = if (scaledOffset) x * xx + y * yx else x
+
+    fun offsetY(x: LinearForm, y: LinearForm): LinearForm = if (scaledOffset) x * xy + y * yy else y
+  }
 
   class Composite(xMin: Int, val components: List<Component>) : Glyf(xMin)
 
@@ -87,6 +101,8 @@ sealed class Glyf(val xMin: Int) {
     private const val MORE_COMPONENTS = 0x0020
     private const val WE_HAVE_AN_X_AND_Y_SCALE = 0x0040
     private const val WE_HAVE_A_TWO_BY_TWO = 0x0080
+    private const val SCALED_COMPONENT_OFFSET = 0x0800
+    private const val UNSCALED_COMPONENT_OFFSET = 0x1000
 
     fun read(data: FontBytes, offset: Int): Glyf {
       val numberOfContours = data.i16(offset)
@@ -175,7 +191,9 @@ sealed class Glyf(val xMin: Int) {
             p += 8
           }
         }
-        components += Component(glyphId, dx, dy, xx, xy, yx, yy)
+        val scaledOffset =
+          flags and SCALED_COMPONENT_OFFSET != 0 && flags and UNSCALED_COMPONENT_OFFSET == 0
+        components += Component(glyphId, dx, dy, xx, xy, yx, yy, scaledOffset)
       } while (flags and MORE_COMPONENTS != 0)
       return Composite(xMin, components)
     }
