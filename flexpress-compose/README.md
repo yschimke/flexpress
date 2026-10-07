@@ -154,8 +154,8 @@ filling the path.
 
 ## Limits
 
-- One line, left-aligned in its box. Ligatures, contextual alternates and right-to-left reordering
-  are applied, but not Arabic joining forms or mark positioning; no font fallback for characters the
+- One line, left-aligned in its box. Ligatures, contextual alternates, right-to-left reordering and
+  Arabic joining are applied, but marks are not positioned; no font fallback for characters the
   font lacks, no `TextStyle`.
 - TrueType (`glyf`/`gvar`) variable fonts only. CFF2 fonts are not supported. Composite glyphs that
   place a component by point matching throw.

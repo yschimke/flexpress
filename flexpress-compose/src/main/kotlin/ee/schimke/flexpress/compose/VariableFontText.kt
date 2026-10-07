@@ -71,10 +71,9 @@ import kotlin.math.roundToInt
  * slanted overhangs, are not clipped.
  *
  * The text is shaped by the font's ligatures and contextual alternates, with right-to-left runs
- * reordered, and glyphs are placed by their advances and the font's `GPOS` pair kerning at
- * [kerningLocation]. Joining scripts' positional forms and mark positioning are not applied, and
- * there is no font fallback for characters [font] lacks. The text is exposed to accessibility
- * services as [text].
+ * reordered and Arabic letters joined, and glyphs are placed by their advances and the font's
+ * `GPOS` pair kerning at [kerningLocation]. Marks are not positioned, and there is no font fallback
+ * for characters [font] lacks. The text is exposed to accessibility services as [text].
  *
  * @param text The single line of text to draw.
  * @param font The variable font to take outlines from. CFF2 fonts are not supported.

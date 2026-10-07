@@ -57,18 +57,63 @@ class ShapingTest {
   }
 
   @Test
-  fun arabicIsVisualOrderAndMatchesHarfBuzz() {
+  fun arabicJoiningMatchesHarfBuzz() {
     val font = font("noto_sans_arabic")
-    // HarfBuzz returns right-to-left runs in visual order, as shape does.
+    // HarfBuzz's full Arabic shaping, positioning off. HarfBuzz returns right-to-left runs in
+    // visual order, as shape does. It also keeps a zero-width space glyph (1) for each joiner,
+    // where shape drops default-ignorable characters; those are left out here.
     val expected =
       mapOf(
-        "مرحبا" to listOf(4, 221, 10, 16, 24, 64),
-        "لا" to listOf(4, 58),
-        "(سلام)" to listOf(528, 64, 4, 58, 26, 529),
+        "مرحبا" to listOf(5, 221, 12, 21, 25, 69),
+        "لا" to listOf(6, 63),
+        "(سلام)" to listOf(528, 64, 7, 61, 29, 529),
+        "السلام عليكم" to listOf(67, 50, 222, 13, 60, 41, 1, 64, 7, 61, 28, 62, 4),
+        "محمد" to listOf(23, 68, 20, 69),
+        "بببب" to listOf(221, 11, 221, 12, 221, 12, 221, 14),
+        "ب" to listOf(221, 10),
+        // Tatweel joins on both sides and takes no form of its own.
+        "بـب" to listOf(221, 11, 94, 221, 14),
+        // The zero width non-joiner breaks the join; the joiner forces one.
+        "ب\u200cب" to listOf(221, 10, 221, 10),
+        "ب\u200dا" to listOf(5, 221, 14),
+        // Vowel marks are transparent to joining.
+        "بِسْمِ" to listOf(270, 67, 250, 28, 270, 221, 14),
+        "سنة" to listOf(201, 73, 200, 12, 29),
+        "عين" to listOf(200, 71, 222, 13, 41),
+        "لله" to listOf(73, 60, 62),
+        "كتب" to listOf(221, 11, 201, 13, 51),
+        "في" to listOf(222, 91, 200, 45),
       )
     for ((text, glyphs) in expected) {
       assertWithMessage(text).that(font.shape(text)).isEqualTo(glyphs)
     }
+  }
+
+  @Test
+  fun joiningFormsFollowTheUnicodeAlgorithm() {
+    // beh (dual), alef (right), fatha (transparent), tatweel (join causing), zwnj (non joining).
+    fun forms(text: String) = joiningForms(text.codePoints().toArray()).toList()
+    val (isol, fina, medi, init) = listOf(1, 2, 4, 8)
+    assertThat(forms("ب")).containsExactly(isol)
+    assertThat(forms("بب")).containsExactly(init, fina).inOrder()
+    assertThat(forms("ببب")).containsExactly(init, medi, fina).inOrder()
+    // Alef joins only the letter before it, so the beh after it starts again.
+    assertThat(forms("بابب")).containsExactly(init, fina, init, fina).inOrder()
+    // A transparent mark between two letters takes no form and does not break the join.
+    assertThat(forms("بَب")).containsExactly(init, 0, fina).inOrder()
+    assertThat(forms("ب\u200cب")).containsExactly(isol, 0, isol).inOrder()
+    assertThat(forms("ب\u0640")).containsExactly(init, 0).inOrder()
+  }
+
+  @Test
+  fun numbersStayLeftToRightInsideRightToLeftText() {
+    val font = font("noto_sans_arabic")
+    // A right-to-left paragraph: the Arabic-Indic digits are a left-to-right run, drawn in reading
+    // order at the left end of the line, then the space, then the word, itself right to left.
+    val digits = font.shape("\u0661\u0662\u0663")
+    assertThat(digits).isEqualTo("\u0661\u0662\u0663".map { font.glyphId(it.code) })
+    assertThat(font.shape("سنة \u0661\u0662\u0663"))
+      .isEqualTo(digits + font.shape(" ") + font.shape("سنة"))
   }
 
   @Test
