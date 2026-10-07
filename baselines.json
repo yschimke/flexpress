@@ -1,0 +1,106 @@
+{
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "GoogleSansFlexWeightAndRoundnessAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
+    "sha256": "bcc26d1af8e959a68de86f825b379d2e8bce07bfebf7a4968b1dcd17b3a6a94f",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWeightAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexWeightAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "RobotoFlexWeightAnimatedPreview-68862367.gif",
+    "sha256": "9b0fb5f2c229b7b52f0a299bb630089d5ba2be89ca9b029899d44048944b2d40",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWeightsPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexWeightsPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "RobotoFlexWeightsPreview-33f3a283.png",
+    "sha256": "d6ebef1642cccecee23bcfb945b651043886affebdf80227a34e411823610bb8",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWidthAndSlantPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexWidthAndSlantPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "RobotoFlexWidthAndSlantPreview-91251a7f.png",
+    "sha256": "4b443c4db83453ad176be97168de0aacd1b7f0f55aa4b6d763efb297b8f52334",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
+    "captureLabel": "",
+    "functionName": "HelloRoundness0Preview",
+    "module": "flexpress-remote",
+    "renderBasename": "HelloRoundness0Preview-b38da3bf.png",
+    "sha256": "f1e6b2f8a78b0ca29be352ee1bc64a8527e7536f2dc4714b798b46f9771e8421",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness100Preview": {
+    "captureLabel": "",
+    "functionName": "HelloRoundness100Preview",
+    "module": "flexpress-remote",
+    "renderBasename": "HelloRoundness100Preview-f0616a07.png",
+    "sha256": "0020f4edfdaaf3b263bf554a07b535d527403a1e5c4e8fb7bff69e63821c99c2",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundnessAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "HelloRoundnessAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "HelloRoundnessAnimatedPreview-3885a1ae.gif",
+    "sha256": "59cbfb2e541195607e10de868f77d19fc1b3678638caacdc5591b741872e3c77",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAndRoundnessExpressionAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "HelloWeightAndRoundnessExpressionAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "HelloWeightAndRoundnessExpressionAnimatedPreview-fed1ecd1.gif",
+    "sha256": "154684756fe40bd2330da1de7e999b91d3f718770235cbf658386b6a1dc35c64",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "HelloWeightAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "HelloWeightAnimatedPreview-e7c9afce.gif",
+    "sha256": "3a68943b7a67d9290e00d2bb6fcda66718b31defcd05673bc16b611fb3db719b",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RemoteStringClockPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteStringClockPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteStringClockPreview-0298239f.gif",
+    "sha256": "831d8196f71a4a9545d89c0d5df443f5f282acd546a6e2d1bbc7e49d8e75a464",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexSlantPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RobotoFlexSlantPreview-73a88f6f.png",
+    "sha256": "ccc64a28698560cdd2c2a96f7c7758e45c5af9278d6f0d9cc3c33bb367ea2e1d",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantWidthExpressionAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexSlantWidthExpressionAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RobotoFlexSlantWidthExpressionAnimatedPreview-08efc93a.gif",
+    "sha256": "136d2ba3abf71b8adc5bedea516b06bc99f812f0d76e6f4088ba2ff6bc7aadf9",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexWeightAndSlantSelfAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexWeightAndSlantSelfAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
+    "sha256": "32d9340758259635d7211ae6858209488a299dbbfdd3c68d17f02bd2df56073d",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  }
+}
