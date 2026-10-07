@@ -212,6 +212,20 @@ package ee.schimke.flexpress {
     method public void quadTo(T x1, T y1, T x2, T y2);
   }
 
+  @ee.schimke.flexpress.InternalFlexpressApi public final class ShapedGlyph {
+    ctor public ShapedGlyph(int id, int base, float dx, float dy, boolean rtl);
+    method @InaccessibleFromKotlin public int getBase();
+    method @InaccessibleFromKotlin public float getDx();
+    method @InaccessibleFromKotlin public float getDy();
+    method @InaccessibleFromKotlin public int getId();
+    method @InaccessibleFromKotlin public boolean getRtl();
+    property public int base;
+    property public float dx;
+    property public float dy;
+    property public int id;
+    property public boolean rtl;
+  }
+
   @ee.schimke.flexpress.InternalFlexpressApi public final class Tent {
     ctor public Tent(int axis, float start, float peak, float end);
     method public int component1();
@@ -272,6 +286,7 @@ package ee.schimke.flexpress {
     method @ee.schimke.flexpress.InternalFlexpressApi public java.util.Set<java.lang.Float> normalizedBreakpoints(int axisIndex, java.util.Collection<java.lang.Integer> glyphIds);
     method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.GlyphOutline outline(int glyphId, float[] coords);
     method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<java.lang.Integer> shape(java.lang.String text);
+    method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<ee.schimke.flexpress.ShapedGlyph> shapePositioned(java.lang.String text, java.util.Map<java.lang.String,java.lang.Float> location);
     method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.VariedOutline variedOutline(int glyphId);
     property public int ascender;
     property public java.util.List<ee.schimke.flexpress.FontAxis> axes;

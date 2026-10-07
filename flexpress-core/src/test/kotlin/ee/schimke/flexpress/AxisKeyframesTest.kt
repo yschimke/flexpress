@@ -18,6 +18,7 @@ package ee.schimke.flexpress
 
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
+import java.io.File
 import kotlin.math.abs
 import org.junit.Test
 
@@ -125,6 +126,14 @@ class AxisKeyframesTest {
         }
       }
     }
+  }
+
+  /** With marks attached by variable anchors, the keyframes still reproduce the font exactly. */
+  @Test
+  fun tweensReproduceArabicWithMarks() {
+    val font = VariableFont.parse(File(fontsDir, "res/raw/noto_sans_arabic.ttf").readBytes())
+    val worst = worstTweenError(font, "بِسْمِ مَرْحَبًا", "wght", emptyMap(), steps = 100)
+    assertThat(worst).isLessThan(0.05f)
   }
 
   private fun worstTweenError(

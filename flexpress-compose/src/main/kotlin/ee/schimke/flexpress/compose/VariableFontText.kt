@@ -72,8 +72,9 @@ import kotlin.math.roundToInt
  *
  * The text is shaped by the font's ligatures and contextual alternates, with right-to-left runs
  * reordered and Arabic letters joined, and glyphs are placed by their advances and the font's
- * `GPOS` pair kerning at [kerningLocation]. Marks are not positioned, and there is no font fallback
- * for characters [font] lacks. The text is exposed to accessibility services as [text].
+ * `GPOS` pair kerning at [kerningLocation], with marks attached by its `GPOS` anchors there. There
+ * is no font fallback for characters [font] lacks. The text is exposed to accessibility services as
+ * [text].
  *
  * @param text The single line of text to draw.
  * @param font The variable font to take outlines from. CFF2 fonts are not supported.
