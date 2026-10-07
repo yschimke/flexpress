@@ -49,6 +49,21 @@ internal fun FontBytes.featureLookups(
   return result
 }
 
+/**
+ * In the `GSUB` or `GPOS` table at [table], the tag of [script]'s default language system's
+ * required feature, or null when it has none. The script falls back as in [featureLookups].
+ */
+internal fun FontBytes.requiredFeature(table: Int, script: String): String? {
+  val scriptList = table + u16(table + 4)
+  val langSys =
+    defaultLangSys(scriptList, script)
+      ?: defaultLangSys(scriptList, "DFLT")
+      ?: defaultLangSys(scriptList, "latn")
+      ?: return null
+  val index = u16(langSys + 2)
+  return if (index == 0xFFFF) null else tag(table + u16(table + 6) + 2 + index * 6)
+}
+
 /** The default language system of script [tag] in [scriptList], or its first one. */
 private fun FontBytes.defaultLangSys(scriptList: Int, tag: String): Int? {
   for (s in 0 until u16(scriptList)) {

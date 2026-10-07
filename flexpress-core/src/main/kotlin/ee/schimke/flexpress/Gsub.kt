@@ -52,9 +52,14 @@ internal class Gsub(
     featureMasks: Map<String, Int>,
   ): List<Int> {
     val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
-    for (stage in stages) {
+    // The language system's required feature, if any, applies once: in the stage of its tag, as
+    // HarfBuzz schedules it, or the first stage when no stage names it.
+    val requiredTag = data.requiredFeature(offset, script)
+    val requiredStage = stages.indexOfFirst { requiredTag in it }.coerceAtLeast(0)
+    for ((index, stage) in stages.withIndex()) {
       val lookupMasks = sortedMapOf<Int, Int>()
-      for ((feature, lookups) in data.featureLookups(offset, script, stage, required = true)) {
+      val required = index == requiredStage
+      for ((feature, lookups) in data.featureLookups(offset, script, stage, required)) {
         val mask = featureMasks[feature] ?: 0
         for (lookup in lookups) {
           // A lookup shared by several features applies wherever any of them does.
@@ -229,8 +234,10 @@ internal class Gsub(
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
-          val set = sub + data.u16(sub + 6 + c * 2)
-          firstRule(set) { rule ->
+          // A null rule set: the glyph is covered but no rule starts with it.
+          val setOffset = data.u16(sub + 6 + c * 2)
+          if (setOffset == 0) return null
+          firstRule(sub + setOffset) { rule ->
             val inputCount = data.u16(rule)
             val input = IntArray(inputCount - 1) { data.u16(rule + 4 + it * 2) }
             val records = rule + 4 + (inputCount - 1) * 2
@@ -290,8 +297,10 @@ internal class Gsub(
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
-          val set = sub + data.u16(sub + 6 + c * 2)
-          firstRule(set) { rule ->
+          // A null rule set: the glyph is covered but no rule starts with it.
+          val setOffset = data.u16(sub + 6 + c * 2)
+          if (setOffset == 0) return null
+          firstRule(sub + setOffset) { rule ->
             val (backtrack, input, lookahead, records, count) = chainRule(rule)
             tryRule(buffer, i, backtrack, input, lookahead, { _, g, v -> g == v }, records, count)
           }
