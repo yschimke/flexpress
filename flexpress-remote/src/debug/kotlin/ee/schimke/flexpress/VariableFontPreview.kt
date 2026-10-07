@@ -57,6 +57,7 @@ import java.time.ZoneOffset
  * time, so every render of a clock-driven preview draws the same frames, where [RemoteClock.SYSTEM]
  * would draw whatever time the render ran at and show as changed on every preview diff.
  */
+@SuppressLint("RestrictedApi")
 @Composable
 fun rememberPreviewClock(): RemoteClock {
   val clock = remember { PreviewClock() }
@@ -73,6 +74,7 @@ fun rememberPreviewClock(): RemoteClock {
 }
 
 /** 10:10:00 UTC on 2026-01-01, plus [nanos]. */
+@SuppressLint("RestrictedApi")
 class PreviewClock : RemoteClock {
   @Volatile var nanos = 0L
 
