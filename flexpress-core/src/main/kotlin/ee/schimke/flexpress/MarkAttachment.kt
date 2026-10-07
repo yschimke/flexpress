@@ -21,13 +21,15 @@ internal data class Attachment(val base: Int, val dx: Float, val dy: Float)
 
 /**
  * Mark positioning from a font's `GPOS` table: the `mark` and `mkmk` features' mark-to-base (4),
- * mark-to-ligature (5) and mark-to-mark (6) lookups, directly or through extension lookups, with
- * anchor variation deltas from the `GDEF` item variation store.
+ * mark-to-ligature (5) and mark-to-mark (6) lookups for a run's script, directly or through
+ * extension lookups, with anchor variation deltas from the `GDEF` item variation store. Lookup
+ * flags, mark filtering sets and mark attachment types limit which marks a lookup positions.
  *
  * A mark attaches to the nearest glyph before it, in logical order, that is not a mark (for
- * mark-to-base and mark-to-ligature) or to the mark just before it (for mark-to-mark). A mark on a
- * ligature takes the ligature's last component's anchor, since the shaper does not track which
- * component each mark followed. Cursive attachment (3) is not applied.
+ * mark-to-base and mark-to-ligature) or to the nearest mark before it that the lookup's filter
+ * admits (for mark-to-mark). A mark on a ligature takes the ligature's last component's anchor,
+ * since the shaper does not track which component each mark followed. Cursive attachment (3) is not
+ * applied.
  */
 internal class MarkAttachment(
   private val data: FontBytes,
@@ -35,44 +37,57 @@ internal class MarkAttachment(
   private val variations: ItemVariationStore?,
   /** `GDEF`'s glyph class of a glyph: 1 base, 2 ligature, 3 mark, 4 component, 0 none. */
   private val glyphClassOf: (Int) -> Int,
+  /** `GDEF`'s mark attachment class of a glyph, or 0. */
+  private val markAttachClassOf: (Int) -> Int = { 0 },
+  /** Whether a glyph is in one of `GDEF`'s mark glyph sets, by set index then glyph. */
+  private val inMarkSet: (Int, Int) -> Boolean = { _, _ -> true },
 ) {
-  /** Each mark lookup's type and subtables, in lookup order. */
-  private val lookups: List<Pair<Int, List<Int>>> = run {
-    val featureList = offset + data.u16(offset + 6)
-    val lookupList = offset + data.u16(offset + 8)
-    val indices = sortedSetOf<Int>()
-    for (f in 0 until data.u16(featureList)) {
-      val record = featureList + 2 + f * 6
-      if (data.tag(record) != "mark" && data.tag(record) != "mkmk") continue
-      val feature = featureList + data.u16(record + 4)
-      for (l in 0 until data.u16(feature + 2)) indices += data.u16(feature + 4 + l * 2)
-    }
-    indices.mapNotNull { index ->
-      val lookup = lookupList + data.u16(lookupList + 2 + index * 2)
-      var type = data.u16(lookup)
-      var subtables = List(data.u16(lookup + 4)) { s -> lookup + data.u16(lookup + 6 + s * 2) }
-      if (type == EXTENSION && subtables.isNotEmpty()) {
-        type = data.u16(subtables[0] + 2)
-        subtables = subtables.map { it + data.u32(it + 4).toInt() }
+  /** A mark lookup: its type, flag, mark filtering set (or -1) and subtables. */
+  private class Lookup(val type: Int, val flag: Int, val filterSet: Int, val subtables: List<Int>)
+
+  private val lookupsByScript = mutableMapOf<String, List<Lookup>>()
+
+  /** The mark lookups of [script]'s default language system's `mark` and `mkmk`, in order. */
+  private fun lookups(script: String): List<Lookup> =
+    lookupsByScript.getOrPut(script) {
+      val lookupList = offset + data.u16(offset + 8)
+      val indices = sortedSetOf<Int>()
+      data.featureLookups(offset, script, MARK_FEATURES, required = false).values.forEach {
+        indices += it
       }
-      if (type in MARK_TO_BASE..MARK_TO_MARK) type to subtables else null
+      indices.mapNotNull { index ->
+        val lookup = lookupList + data.u16(lookupList + 2 + index * 2)
+        var type = data.u16(lookup)
+        val flag = data.u16(lookup + 2)
+        val count = data.u16(lookup + 4)
+        var subtables = List(count) { s -> lookup + data.u16(lookup + 6 + s * 2) }
+        val filterSet =
+          if (flag and USE_MARK_FILTERING_SET != 0) data.u16(lookup + 6 + count * 2) else -1
+        if (type == EXTENSION && subtables.isNotEmpty()) {
+          type = data.u16(subtables[0] + 2)
+          subtables = subtables.map { it + data.u32(it + 4).toInt() }
+        }
+        if (type in MARK_TO_BASE..MARK_TO_MARK) Lookup(type, flag, filterSet, subtables) else null
+      }
     }
-  }
 
   /**
-   * The attachment of each of [glyphs], a run in logical order, at normalized [coords]; null for a
-   * glyph that does not attach. Later lookups override earlier ones, as a shaper applies them.
+   * The attachment of each of [glyphs], a run of [script] in logical order, at normalized [coords];
+   * null for a glyph that does not attach. Later lookups override earlier ones, as a shaper applies
+   * them.
    */
-  fun attach(glyphs: List<Int>, coords: FloatArray): List<Attachment?> {
+  fun attach(glyphs: List<Int>, script: String, coords: FloatArray): List<Attachment?> {
     val result = arrayOfNulls<Attachment>(glyphs.size)
-    for ((type, subtables) in lookups) {
+    for (lookup in lookups(script)) {
       for (i in glyphs.indices) {
-        for (sub in subtables) {
+        // The lookup applies only to the marks its flag and filtering set admit.
+        if (skips(lookup, glyphs[i])) continue
+        for (sub in lookup.subtables) {
           val attachment =
-            when (type) {
+            when (lookup.type) {
               MARK_TO_BASE,
-              MARK_TO_LIGATURE -> toBase(sub, type, glyphs, i, coords)
-              else -> toMark(sub, glyphs, i, coords)
+              MARK_TO_LIGATURE -> toBase(sub, lookup.type, glyphs, i, coords)
+              else -> toMark(sub, lookup, glyphs, i, coords)
             } ?: continue
           result[i] = attachment
           break
@@ -80,6 +95,28 @@ internal class MarkAttachment(
       }
     }
     return result.toList()
+  }
+
+  /**
+   * Whether [lookup] passes over [glyph]: by its class for the ignore flags, and, for a mark, by
+   * the lookup's mark filtering set or mark attachment type.
+   */
+  private fun skips(lookup: Lookup, glyph: Int, ignoreFlags: Boolean = true): Boolean {
+    val glyphClass = glyphClassOf(glyph)
+    if (ignoreFlags) {
+      val ignored =
+        when (glyphClass) {
+          BASE -> IGNORE_BASE
+          LIGATURE -> IGNORE_LIGATURES
+          MARK -> IGNORE_MARKS
+          else -> 0
+        }
+      if (lookup.flag and ignored != 0) return true
+    }
+    if (glyphClass != MARK) return false
+    if (lookup.filterSet >= 0) return !inMarkSet(lookup.filterSet, glyph)
+    val attachType = lookup.flag ushr 8
+    return attachType != 0 && markAttachClassOf(glyph) != attachType
   }
 
   private fun isMark(glyph: Int) = glyphClassOf(glyph) == MARK
@@ -121,11 +158,18 @@ internal class MarkAttachment(
     return Attachment(b, bx - mx, by - my)
   }
 
-  private fun toMark(sub: Int, glyphs: List<Int>, i: Int, coords: FloatArray): Attachment? {
-    if (i == 0) return null
+  private fun toMark(
+    sub: Int,
+    lookup: Lookup,
+    glyphs: List<Int>,
+    i: Int,
+    coords: FloatArray,
+  ): Attachment? {
     val markIndex = data.coverageIndex(sub + data.u16(sub + 2), glyphs[i]) ?: return null
-    val m = i - 1
-    if (!isMark(glyphs[m])) return null
+    // The mark before it, passing over marks the lookup's filter excludes, as HarfBuzz does.
+    var m = i - 1
+    while (m >= 0 && isMark(glyphs[m]) && skips(lookup, glyphs[m], ignoreFlags = false)) m--
+    if (m < 0 || !isMark(glyphs[m])) return null
     val mark2Index = data.coverageIndex(sub + data.u16(sub + 4), glyphs[m]) ?: return null
     val classCount = data.u16(sub + 6)
     val mark1Array = sub + data.u16(sub + 8)
@@ -161,7 +205,14 @@ internal class MarkAttachment(
     const val MARK_TO_LIGATURE = 5
     const val MARK_TO_MARK = 6
     const val EXTENSION = 9
+    const val BASE = 1
+    const val LIGATURE = 2
     const val MARK = 3
+    const val IGNORE_BASE = 2
+    const val IGNORE_LIGATURES = 4
+    const val IGNORE_MARKS = 8
+    const val USE_MARK_FILTERING_SET = 0x10
+    val MARK_FEATURES = setOf("mark", "mkmk")
     const val VARIATION_INDEX = 0x8000
   }
 }

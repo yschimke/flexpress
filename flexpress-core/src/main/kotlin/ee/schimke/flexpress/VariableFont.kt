@@ -61,18 +61,14 @@ public class VariableFont private constructor(private val data: FontBytes) {
   private val gvar: Gvar? = tables["gvar"]?.let { Gvar(data, it, axes.size) }
   private val hvar: Hvar? = tables["HVAR"]?.let { Hvar(data, it) }
   private val cmap: Map<Int, Int> = readCmap()
-  private val gpos: Gpos? =
-    tables["GPOS"]?.let { Gpos(data, it, tables["GDEF"]?.let { gdef -> gdefVariations(gdef) }) }
+  /** `GDEF` 1.3's item variation store, which `GPOS` device tables index into. */
+  private val gdefStore: ItemVariationStore? = tables["GDEF"]?.let { gdefVariations(it) }
+  private val gpos: Gpos? = tables["GPOS"]?.let { Gpos(data, it, gdefStore) }
   private val gsub: Gsub? = tables["GSUB"]?.let { Gsub(data, it, ::gdefGlyphClass) }
 
   private val marks: MarkAttachment? =
     tables["GPOS"]?.let {
-      MarkAttachment(
-        data,
-        it,
-        tables["GDEF"]?.let { gdef -> gdefVariations(gdef) },
-        ::gdefGlyphClass,
-      )
+      MarkAttachment(data, it, gdefStore, ::gdefGlyphClass, ::gdefMarkAttachClass, ::inMarkSet)
     }
 
   /**
@@ -97,6 +93,35 @@ public class VariableFont private constructor(private val data: FontBytes) {
     return if (classDef == 0) 0 else data.glyphClass(gdef + classDef, glyph)
   }
 
+  /** `GDEF`'s mark attachment class of [glyph], or 0. */
+  private fun gdefMarkAttachClass(glyph: Int): Int {
+    val gdef = tables["GDEF"] ?: return 0
+    val classDef = data.u16(gdef + 10)
+    return if (classDef == 0) 0 else data.glyphClass(gdef + classDef, glyph)
+  }
+
+  /** Whether [glyph] is in `GDEF` 1.2's mark glyph set [set]. */
+  private fun inMarkSet(set: Int, glyph: Int): Boolean {
+    val gdef = tables["GDEF"] ?: return false
+    if (data.u16(gdef + 2) < 2) return false
+    val sets = data.u16(gdef + 12)
+    if (sets == 0 || set >= data.u16(gdef + sets + 2)) return false
+    val coverage = gdef + sets + data.u32(gdef + sets + 4 + set * 4).toInt()
+    return data.coverageIndex(coverage, glyph) != null
+  }
+
+  /**
+   * The user-space values of axis [axisIndex] where a mark anchor's variation changes slope: the
+   * corners of every `GDEF` variation region on the axis.
+   */
+  internal fun anchorBreakpoints(axisIndex: Int): List<Float> =
+    gdefStore
+      ?.regions
+      .orEmpty()
+      .filter { it.peak[axisIndex] != 0f }
+      .flatMap { listOf(it.start[axisIndex], it.peak[axisIndex], it.end[axisIndex]) }
+      .map { denormalize(axisIndex, it) }
+
   /**
    * The `GPOS` pair kerning between glyphs [first] and [second] at user-space [location], in font
    * units; 0 for a font without `GPOS` kerning.
@@ -105,7 +130,7 @@ public class VariableFont private constructor(private val data: FontBytes) {
   fun kerning(first: Int, second: Int, location: Map<String, Float>): Float =
     gpos?.kerning(first, second, normalize(location)) ?: 0f
 
-  /** `GDEF` 1.3's item variation store, which `GPOS` device tables index into. */
+  /** The item variation store of the `GDEF` table at [gdef], from version 1.3. */
   private fun gdefVariations(gdef: Int): ItemVariationStore? {
     if (data.u16(gdef) != 1 || data.u16(gdef + 2) < 3) return null
     val store = data.u32(gdef + 14).toInt()

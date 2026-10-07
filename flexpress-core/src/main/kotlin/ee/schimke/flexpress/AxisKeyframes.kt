@@ -137,8 +137,9 @@ internal fun <T : Any> VariableFont.placeGlyphs(
  *
  * Variable-font deltas are piecewise linear in normalized coordinates, with corners only where a
  * variation region starts, peaks or ends (and where `avar` bends the mapping). Sampling at those
- * corners — only the ones that affect the glyphs in [text] — gives an exact keyframe set, usually
- * far smaller than sampling at a fixed step: two for Google Sans Flex `ROND`.
+ * corners — only the ones that affect the glyphs in [text], and every corner of the mark anchors'
+ * variations when [text] has marks — gives an exact keyframe set, usually far smaller than sampling
+ * at a fixed step: two for Google Sans Flex `ROND`.
  *
  * @param range restricts the keyframes to the part of the axis that will actually be animated.
  */
@@ -152,9 +153,13 @@ public fun VariableFont.axisKeyframes(
   val fontAxis = axes[index]
   val lo = (range?.start ?: fontAxis.minValue).coerceIn(fontAxis.minValue, fontAxis.maxValue)
   val hi = (range?.endInclusive ?: fontAxis.maxValue).coerceIn(fontAxis.minValue, fontAxis.maxValue)
+  val glyphs = shapePositioned(text, emptyMap())
+  // Marks follow their anchors, whose variations have regions of their own.
+  val anchors = if (glyphs.any { it.base >= 0 }) anchorBreakpoints(index) else emptyList()
   val values =
-    (normalizedBreakpoints(index, glyphIds(text).toSet()).map { denormalize(index, it) } +
-        avarBreakpoints(index))
+    (normalizedBreakpoints(index, glyphs.map { it.id }.toSet()).map { denormalize(index, it) } +
+        avarBreakpoints(index) +
+        anchors)
       .filter { it > lo && it < hi }
   return (listOf(lo) + values + listOf(hi)).distinct().sorted()
 }

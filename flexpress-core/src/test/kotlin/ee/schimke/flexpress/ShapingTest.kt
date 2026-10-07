@@ -162,6 +162,26 @@ class ShapingTest {
           ),
         // A mark on the lam-alef ligature.
         "لَا" to Expected(listOf(6, 244, 63), listOf(0 to 0, 249 to 256, 363 to 0), 582),
+        // Stacked marks whose mark-to-mark lookups use mark filtering sets: each attaches to the
+        // nearest earlier mark in its lookup's set, passing over the others.
+        "\u062C\u0651\u0656\u0628" to
+          Expected(
+            listOf(221, 11, 275, 241, 221, 21),
+            listOf(387 to -23, 0 to 0, 1303 to -186, 1088 to -106, 1296 to 2, 1093 to 0),
+            1682,
+          ),
+        "\u0646\u0653\u0656\u0628" to
+          Expected(
+            listOf(221, 11, 214, 275, 200, 14),
+            listOf(387 to -23, 0 to 0, 1041 to 88, 1131 to -5, 1145 to -59, 1093 to 0),
+            1362,
+          ),
+        "\u0646\u0654\u0655\u0628" to
+          Expected(
+            listOf(221, 11, 210, 226, 200, 14),
+            listOf(387 to -23, 0 to 0, 1082 to 88, 1094 to -5, 1145 to -59, 1093 to 0),
+            1362,
+          ),
       )
     val coords = font.normalize(emptyMap())
     for ((text, want) in expected) {

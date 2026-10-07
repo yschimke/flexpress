@@ -69,7 +69,7 @@ internal fun shapeText(
       }
     val drawn = shaped.filter { it != IGNORED }
     // Marks attach in logical order; the run is then placed in visual order.
-    val attachments = marks?.attach(drawn, coords)
+    val attachments = marks?.attach(drawn, script, coords)
     val start = glyphs.size
     fun visual(k: Int) = start + if (rtl) drawn.size - 1 - k else k
     val placed = arrayOfNulls<ShapedGlyph>(drawn.size)
