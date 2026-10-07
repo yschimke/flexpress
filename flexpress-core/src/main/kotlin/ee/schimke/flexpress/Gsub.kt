@@ -54,9 +54,10 @@ internal class Gsub(
     featureMasks: Map<String, Int>,
   ): List<Int> {
     val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
-    for (stage in stages) {
+    for ((index, stage) in stages.withIndex()) {
       val lookupMasks = sortedMapOf<Int, Int>()
-      for ((feature, lookups) in lookups(script, stage)) {
+      // The language system's required feature, if any, applies once, with the first stage.
+      for ((feature, lookups) in lookups(script, stage, required = index == 0)) {
         val mask = featureMasks[feature] ?: 0
         for (lookup in lookups) {
           // A lookup shared by several features applies wherever any of them does.
@@ -102,19 +103,26 @@ internal class Gsub(
     }
   }
 
-  /** Each of [features] that [script]'s default language system has, with its lookup indices. */
-  private fun lookups(script: String, features: Set<String>): Map<String, List<Int>> {
+  /**
+   * Each of [features] that [script]'s default language system has, with its lookup indices, and
+   * its required feature when [required] is set.
+   */
+  private fun lookups(
+    script: String,
+    features: Set<String>,
+    required: Boolean,
+  ): Map<String, List<Int>> {
     val langSys = defaultLangSys(script) ?: defaultLangSys("DFLT") ?: defaultLangSys("latn")
     langSys ?: return emptyMap()
     val result = mutableMapOf<String, List<Int>>()
-    val required = data.u16(langSys + 2)
+    val requiredIndex = data.u16(langSys + 2)
     val featureIndices =
       List(data.u16(langSys + 4)) { data.u16(langSys + 6 + it * 2) } +
-        if (required != 0xFFFF) listOf(required) else emptyList()
+        if (required && requiredIndex != 0xFFFF) listOf(requiredIndex) else emptyList()
     for (f in featureIndices) {
       val record = featureList + 2 + f * 6
       val tag = data.tag(record)
-      if (tag !in features && f != required) continue
+      if (tag !in features && !(required && f == requiredIndex)) continue
       val feature = featureList + data.u16(record + 4)
       result[tag] =
         (result[tag].orEmpty() + List(data.u16(feature + 2)) { data.u16(feature + 4 + it * 2) })
@@ -266,8 +274,10 @@ internal class Gsub(
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
-          val set = sub + data.u16(sub + 6 + c * 2)
-          firstRule(set) { rule ->
+          // A null rule set: the glyph is covered but no rule starts with it.
+          val setOffset = data.u16(sub + 6 + c * 2)
+          if (setOffset == 0) return null
+          firstRule(sub + setOffset) { rule ->
             val inputCount = data.u16(rule)
             val input = IntArray(inputCount - 1) { data.u16(rule + 4 + it * 2) }
             val records = rule + 4 + (inputCount - 1) * 2
@@ -327,8 +337,10 @@ internal class Gsub(
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
-          val set = sub + data.u16(sub + 6 + c * 2)
-          firstRule(set) { rule ->
+          // A null rule set: the glyph is covered but no rule starts with it.
+          val setOffset = data.u16(sub + 6 + c * 2)
+          if (setOffset == 0) return null
+          firstRule(sub + setOffset) { rule ->
             val (backtrack, input, lookahead, records, count) = chainRule(rule)
             tryRule(buffer, i, backtrack, input, lookahead, { _, g, v -> g == v }, records, count)
           }
