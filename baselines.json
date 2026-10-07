@@ -76,7 +76,7 @@
     "functionName": "RemoteStringClockPreview",
     "module": "flexpress-remote",
     "renderBasename": "RemoteStringClockPreview-0298239f.gif",
-    "sha256": "831d8196f71a4a9545d89c0d5df443f5f282acd546a6e2d1bbc7e49d8e75a464",
+    "sha256": "4f370f4074b9bac301ecd4ca83b41bf61412de0ca86a58892a2c336d5c549854",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantPreview": {
@@ -100,7 +100,7 @@
     "functionName": "RobotoFlexWeightAndSlantSelfAnimatedPreview",
     "module": "flexpress-remote",
     "renderBasename": "RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
-    "sha256": "32d9340758259635d7211ae6858209488a299dbbfdd3c68d17f02bd2df56073d",
+    "sha256": "c7d281541c518b648c0fb8016f3e3e48a2e38b36bbda4ff4ffc89736546d9302",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   }
 }
