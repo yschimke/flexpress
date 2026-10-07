@@ -1,0 +1,201 @@
+{
+    "formatVersion": "compose-preview-history/v1",
+    "generatedFrom": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+    "previews": {
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
+            "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
+            "versions": [
+                {
+                    "blob": "75f78a913983d32667d99b5c83c93d24c494f61f",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWeightAnimatedPreview": {
+            "path": "renders/flexpress-compose/RobotoFlexWeightAnimatedPreview-68862367.gif",
+            "versions": [
+                {
+                    "blob": "f261f371f3247a60b14441248ca419b46835d76a",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWeightsPreview": {
+            "path": "renders/flexpress-compose/RobotoFlexWeightsPreview-33f3a283.png",
+            "versions": [
+                {
+                    "blob": "824a76f269c3cb4aecc85162aba18e1d8cde96b6",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWidthAndSlantPreview": {
+            "path": "renders/flexpress-compose/RobotoFlexWidthAndSlantPreview-91251a7f.png",
+            "versions": [
+                {
+                    "blob": "ef27bc20783b27929e79c98c3d1f2480068450e4",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
+            "path": "renders/flexpress-remote/HelloRoundness0Preview-b38da3bf.png",
+            "versions": [
+                {
+                    "blob": "4937c143216e761e801198238a3d409dcbc9dc65",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness100Preview": {
+            "path": "renders/flexpress-remote/HelloRoundness100Preview-f0616a07.png",
+            "versions": [
+                {
+                    "blob": "c4b950e95802ac3db723cbe69492da6ed789c64a",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundnessAnimatedPreview": {
+            "path": "renders/flexpress-remote/HelloRoundnessAnimatedPreview-3885a1ae.gif",
+            "versions": [
+                {
+                    "blob": "a89c92fc6125aee60b2adeb696714a0c6459b721",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAndRoundnessExpressionAnimatedPreview": {
+            "path": "renders/flexpress-remote/HelloWeightAndRoundnessExpressionAnimatedPreview-fed1ecd1.gif",
+            "versions": [
+                {
+                    "blob": "8eaaeb69c2333bc10ac20b6833d7c4c80e8028c3",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAnimatedPreview": {
+            "path": "renders/flexpress-remote/HelloWeightAnimatedPreview-e7c9afce.gif",
+            "versions": [
+                {
+                    "blob": "ee87600c399259571a9ae6f90ffb2bc043e5d6ea",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RemoteStringClockPreview": {
+            "path": "renders/flexpress-remote/RemoteStringClockPreview-0298239f.gif",
+            "versions": [
+                {
+                    "blob": "939d0669789bc8027a0da10ac8f0489006f44249",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantPreview": {
+            "path": "renders/flexpress-remote/RobotoFlexSlantPreview-73a88f6f.png",
+            "versions": [
+                {
+                    "blob": "fcbdbbc31ed0bd9a2a6047b0b58b5e677f159c20",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantWidthExpressionAnimatedPreview": {
+            "path": "renders/flexpress-remote/RobotoFlexSlantWidthExpressionAnimatedPreview-08efc93a.gif",
+            "versions": [
+                {
+                    "blob": "d7bd019cfab677283ad4d05ed34104355374b764",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexWeightAndSlantSelfAnimatedPreview": {
+            "path": "renders/flexpress-remote/RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
+            "versions": [
+                {
+                    "blob": "2b35f9f9e2e28b76bf3137b27ecdf1b92db4cb33",
+                    "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
+                    "date": "2026-10-07T19:24:12Z",
+                    "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        }
+    }
+}
