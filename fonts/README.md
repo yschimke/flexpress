@@ -10,6 +10,7 @@ characters listed, then `varLib.instancer` to pin every axis not listed to its d
 | `res/raw/roboto_flex.ttf` | Roboto Flex | U+0020–007E | `wght`, `wdth`, `slnt`, `opsz`, `GRAD`, `XTRA` | [`ofl/robotoflex`](https://github.com/google/fonts/tree/main/ofl/robotoflex) |
 | `res/raw/recursive.ttf` | Recursive | U+0020–007E | `wght`, `slnt`, `CASL`, `MONO` | [`ofl/recursive`](https://github.com/google/fonts/tree/main/ofl/recursive) |
 | `res/raw/fraunces.ttf` | Fraunces | U+0020–007E | `wght`, `opsz`, `SOFT` | [`ofl/fraunces`](https://github.com/google/fonts/tree/main/ofl/fraunces) |
+| `res/raw/fraunces_liga.ttf` | Fraunces, keeping its `liga` ligatures (`ff`, `fi`, `fl`, `ffi`, `ffl`) for the limitation previews | U+0020–007E | `wght` | [`ofl/fraunces`](https://github.com/google/fonts/tree/main/ofl/fraunces) |
 | `res/raw/noto_sans.ttf` | Noto Sans | U+0020–007E | `wght`, `wdth` | [`ofl/notosans`](https://github.com/google/fonts/tree/main/ofl/notosans) |
 | `res/raw/inter.ttf` | Inter | U+0020–007E | `wght`, `opsz` | [`ofl/inter`](https://github.com/google/fonts/tree/main/ofl/inter) |
 
