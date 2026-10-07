@@ -271,8 +271,11 @@ with `ffmpeg`.
 
 ## Limits
 
-- One line, placed by advances and pair kerning: no ligatures, contextual alternates or
+The [repository README](../README.md#limitations) shows each of these against Compose `Text`.
+
+- One line, placed by advances and pair kerning: no wrapping, ligatures, contextual alternates or
   complex-script shaping.
+- `RemoteString` text: characters in the Basic Multilingual Plane only.
 - No font fallback: characters the font lacks draw as `.notdef`.
 - TrueType (`glyf`) outlines only, not CFF2. Composite glyphs must place their components by
   offset; a composite that anchors a component by point matching throws when it is drawn.

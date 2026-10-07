@@ -10,6 +10,8 @@ characters listed, then `varLib.instancer` to pin every axis not listed to its d
 | `res/raw/roboto_flex.ttf` | Roboto Flex | U+0020–007E | `wght`, `wdth`, `slnt`, `opsz`, `GRAD`, `XTRA` | [`ofl/robotoflex`](https://github.com/google/fonts/tree/main/ofl/robotoflex) |
 | `res/raw/recursive.ttf` | Recursive | U+0020–007E | `wght`, `slnt`, `CASL`, `MONO` | [`ofl/recursive`](https://github.com/google/fonts/tree/main/ofl/recursive) |
 | `res/raw/fraunces.ttf` | Fraunces | U+0020–007E | `wght`, `opsz`, `SOFT` | [`ofl/fraunces`](https://github.com/google/fonts/tree/main/ofl/fraunces) |
+| `res/raw/fira_code.ttf` | Fira Code, keeping its `calt` programming ligatures (`=>`, `!=`, `->`) for the ligature limitation preview | U+0020–007E | `wght` | [`ofl/firacode`](https://github.com/google/fonts/tree/main/ofl/firacode) |
+| `res/raw/noto_sans_arabic.ttf` | Noto Sans Arabic, keeping its shaping features, for the complex-script limitation preview | U+0020–007E, U+0600–06FF | `wght` | [`ofl/notosansarabic`](https://github.com/google/fonts/tree/main/ofl/notosansarabic) |
 | `res/raw/noto_sans.ttf` | Noto Sans | U+0020–007E | `wght`, `wdth` | [`ofl/notosans`](https://github.com/google/fonts/tree/main/ofl/notosans) |
 | `res/raw/inter.ttf` | Inter | U+0020–007E | `wght`, `opsz` | [`ofl/inter`](https://github.com/google/fonts/tree/main/ofl/inter) |
 
