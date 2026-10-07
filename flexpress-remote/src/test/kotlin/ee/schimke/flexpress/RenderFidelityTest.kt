@@ -174,6 +174,8 @@ class RenderFidelityTest {
       fontSize = SIZE.dp,
       documentWidth = width,
       documentHeight = HEIGHT,
+      // The font's exact outline, against the platform's.
+      tolerancePixels = 0f,
     )
   }
 

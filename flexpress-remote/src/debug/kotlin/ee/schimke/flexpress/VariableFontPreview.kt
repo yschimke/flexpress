@@ -119,6 +119,7 @@ fun VariableFontTextPreview(
   documentWidth: Int = 400,
   documentHeight: Int = 100,
   clock: RemoteClock = RemoteClock.SYSTEM,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
 ) {
   val context = LocalContext.current
   val font = remember(fontResId) { context.variableFont(fontResId) }
@@ -134,6 +135,7 @@ fun VariableFontTextPreview(
         color = color.rc,
         location = location,
         kerningLocation = kerningLocation,
+        tolerancePixels = tolerancePixels,
       )
     }
   doc.value?.let { document ->

@@ -97,6 +97,8 @@ class LiveUpdateTest {
             mapOf(axis to v),
             SIZE.dp.asRdp(),
             color = Color.White.rc,
+            // Exact, like the tween's key outlines.
+            tolerancePixels = 0f,
           )
         }
       }

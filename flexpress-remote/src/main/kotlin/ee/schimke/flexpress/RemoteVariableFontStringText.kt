@@ -252,6 +252,7 @@ public fun RemoteVariableFontText(
   val em = 1f / font.unitsPerEm
   val width = fontSize * ((maxLength * glyphs.widest + (maxLength - 1) * fonts.widestKern) * em)
   val height = fontSize * ((font.ascender - font.descender) * em)
+  val pixelSize = constantPixelSize(fontSize)
 
   RemoteCanvas(modifier = modifier.width(width).height(height)) {
     val state = remoteComposeCreationState
@@ -266,7 +267,7 @@ public fun RemoteVariableFontText(
     else paint.setColorId(color.getIdForCreationState(state))
     paint.commit()
     val written = glyphs.write(state)
-    val scale = fontSize.toPx() * em
+    val scale = fontScale(fontSize, pixelSize, font.unitsPerEm)
     writer.save()
     writer.translate(0f, id(scale * font.ascender.toFloat()))
     writer.scale(id(scale), id(scale * -1f))

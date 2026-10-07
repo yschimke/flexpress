@@ -213,6 +213,16 @@ have few flat curves or collinear points, so it mostly prunes small terms, and s
 No tolerance leaves every pixel the same: antialiasing quantizes coverage, so any moved edge can
 change a few dozen pixels by up to a quarter. At a sixteenth of a pixel the change is invisible.
 
+### Constant and player density
+
+`RemoteVariableFontText` takes its pixel size from the document when it can. When the font size is
+a constant and the document is made for a constant density, as it usually is, the size in pixels is
+known as the document is made: the scale from font units is written as a literal rather than an
+expression, and the text's outline is simplified for that size at a sixteenth of a pixel. When the
+document takes the player's density (`RemoteDensity.Host`), or the size is an expression, the scale
+stays an expression the player evaluates and the outline stays exact, correct at any size the
+player picks. `DensityTest` checks that the two draw the same.
+
 ## Players
 
 Checked in the View player (`RemoteDocumentPlayer`), the embedded Compose player (`RcPlayer`,

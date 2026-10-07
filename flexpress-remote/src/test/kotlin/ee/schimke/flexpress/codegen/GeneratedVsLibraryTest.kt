@@ -44,8 +44,9 @@ import org.robolectric.annotation.Config
 
 /**
  * A generated composable writes exactly the document [RemoteVariableFontText] writes from the font,
- * byte for byte; it just gets there without the font. With `CODEGEN_BENCH=1`, also how long each
- * takes to make.
+ * byte for byte; it just gets there without the font. These were generated exact, so the library is
+ * asked for the exact outline too (`tolerancePixels = 0f`). With `CODEGEN_BENCH=1`, also how long
+ * each takes to make.
  */
 @Config(sdk = [35])
 @RunWith(AndroidJUnit4::class)
@@ -59,12 +60,14 @@ class GeneratedVsLibraryTest {
     listOf(
       Triple(
         "Hamburg wght",
-        { RemoteVariableFontText("Hamburg", font, axes("wght"), size) },
+        { RemoteVariableFontText("Hamburg", font, axes("wght"), size, tolerancePixels = 0f) },
         { HamburgWght(axes("wght").getValue("wght"), size) },
       ),
       Triple(
         "Hamburg wght+slnt",
-        { RemoteVariableFontText("Hamburg", font, axes("wght", "slnt"), size) },
+        {
+          RemoteVariableFontText("Hamburg", font, axes("wght", "slnt"), size, tolerancePixels = 0f)
+        },
         {
           val a = axes("wght", "slnt")
           HamburgWghtSlnt(a.getValue("wght"), a.getValue("slnt"), size)
@@ -72,7 +75,15 @@ class GeneratedVsLibraryTest {
       ),
       Triple(
         "Hello Wear wght",
-        { RemoteVariableFontText("Hello, Wear OS 12:45!", font, axes("wght"), size) },
+        {
+          RemoteVariableFontText(
+            "Hello, Wear OS 12:45!",
+            font,
+            axes("wght"),
+            size,
+            tolerancePixels = 0f,
+          )
+        },
         { HelloWearWght(axes("wght").getValue("wght"), size) },
       ),
     )

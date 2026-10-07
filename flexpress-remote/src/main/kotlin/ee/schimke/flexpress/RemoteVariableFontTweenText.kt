@@ -82,10 +82,11 @@ internal fun RemoteVariableFontTweenText(
   val em = 1f / font.unitsPerEm
   val width = fontSize * (frames.maxOf { it.advance } * em)
   val height = fontSize * ((font.ascender - font.descender) * em)
+  val pixelSize = constantPixelSize(fontSize)
 
   RemoteCanvas(modifier = modifier.width(width).height(height)) {
     val paint = RemotePaint { this.color = color }
-    val scale = fontSize.toPx() * em
+    val scale = fontScale(fontSize, pixelSize, font.unitsPerEm)
     remoteCanvas.save()
     remoteCanvas.translate(0f.rf, scale * font.ascender.toFloat())
     remoteCanvas.scale(scale, -scale)

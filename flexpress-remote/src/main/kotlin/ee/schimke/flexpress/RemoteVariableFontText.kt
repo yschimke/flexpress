@@ -75,6 +75,10 @@ import androidx.compose.ui.graphics.Color
  * @param location Values for the axes not in [axes], held fixed; missing axes take their defaults.
  * @param kerningLocation Where in the design space the font's `GPOS` pair kerning is taken. Kerning
  *   is a constant per pair: it does not follow the animated axes.
+ * @param tolerancePixels When [fontSize] is known in pixels as the document is made (a constant
+ *   size and a constant density, as is usual), how far simplifying the outline for that size may
+ *   move an edge. `0f` keeps the outline exact. When the size is not known the outline is always
+ *   exact.
  */
 @Composable
 @RemoteComposable
@@ -87,8 +91,19 @@ public fun RemoteVariableFontText(
   color: RemoteColor = Color.Black.rc,
   location: Map<String, Float> = emptyMap(),
   kerningLocation: Map<String, Float> = location,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
 ) {
-  VariableFontText(text, font, axes, fontSize, modifier, color, location, kerningLocation)
+  VariableFontText(
+    text,
+    font,
+    axes,
+    fontSize,
+    modifier,
+    color,
+    location,
+    kerningLocation,
+    tolerancePixels = tolerancePixels,
+  )
 }
 
 /** [RemoteVariableFontText], with the key outlines allowed or not. */
@@ -104,12 +119,19 @@ internal fun VariableFontText(
   location: Map<String, Float> = emptyMap(),
   kerningLocation: Map<String, Float> = location,
   allowKeys: Boolean = true,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
 ) {
   val tags = axes.keys.toList()
+  // At a pixel size known now, the outline is simplified wherever that moves no edge by more than
+  // tolerancePixels; otherwise it is exact, to be drawn at whatever size the player picks.
+  val pixelSize = constantPixelSize(fontSize)?.takeIf { tolerancePixels > 0f }
+  val tolerance = if (pixelSize != null) tolerancePixels else 0f
   val outline =
-    remember(text, font, tags, location, kerningLocation, allowKeys) {
-      OutlineCache.get(OutlineKey(font, text, tags, location, kerningLocation, allowKeys)) {
-        font.outline(text, tags, location, kerningLocation, null, 0f, allowKeys)
+    remember(text, font, tags, location, kerningLocation, allowKeys, pixelSize, tolerance) {
+      val key =
+        OutlineKey(font, text, tags, location, kerningLocation, allowKeys, pixelSize, tolerance)
+      OutlineCache.get(key) {
+        font.outline(text, tags, location, kerningLocation, pixelSize, tolerance, allowKeys)
       }
     }
   RemoteVariableFontText(outline, axes, fontSize, modifier, color)
@@ -122,6 +144,8 @@ private data class OutlineKey(
   val location: Map<String, Float>,
   val kerningLocation: Map<String, Float>,
   val allowKeys: Boolean,
+  val pixelSize: Float?,
+  val tolerancePixels: Float,
 )
 
 /**
@@ -168,12 +192,13 @@ public fun RemoteVariableFontText(
   val em = 1f / outline.unitsPerEm
   val width = fontSize * (outline.width * em)
   val height = fontSize * ((outline.ascender - outline.descender) * em)
+  val pixelSize = constantPixelSize(fontSize)
 
   RemoteCanvas(modifier = modifier.width(width).height(height)) {
     val values = outline.axes.map { axes.getValue(it) }
     val tents = outline.tents.map { it.remote(values[it.axis]).createReference() }
     val paint = RemotePaint { this.color = color }
-    val scale = fontSize.toPx() * em
+    val scale = fontScale(fontSize, pixelSize, outline.unitsPerEm)
     remoteCanvas.save()
     remoteCanvas.translate(0f.rf, scale * outline.ascender.toFloat())
     remoteCanvas.scale(scale, -scale)
