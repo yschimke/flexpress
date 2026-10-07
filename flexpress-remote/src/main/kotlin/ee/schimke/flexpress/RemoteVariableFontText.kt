@@ -62,9 +62,9 @@ import androidx.compose.ui.graphics.Color
  *
  * The trade-off is that the text is fixed at creation time and drawn as a path. It is shaped with
  * the font's ligatures and contextual alternates, right-to-left runs are reordered and Arabic
- * letters joined, but marks are not positioned; glyphs are placed by their advances and the font's
- * pair kerning; there is no font fallback for characters [font] lacks; and there is no accessible
- * text unless the caller adds a content description.
+ * letters joined; glyphs are placed by their advances and the font's pair kerning, with marks
+ * attached by its anchors at [kerningLocation]; there is no font fallback for characters [font]
+ * lacks; and there is no accessible text unless the caller adds a content description.
  *
  * @param text The single line of text to draw.
  * @param font The variable font to take outlines from.

@@ -274,8 +274,8 @@ with `ffmpeg`.
 The [repository README](../README.md#limitations) shows each of these against Compose `Text`.
 
 - One line, placed by advances and pair kerning: no wrapping. Ligatures, contextual alternates,
-  right-to-left reordering and Arabic joining are applied for `String` text, but marks are not
-  positioned, and none of this applies to `RemoteString` text.
+  right-to-left reordering, Arabic joining and mark attachment are applied for `String` text, with
+  mark anchors fixed at `kerningLocation`, and none of this applies to `RemoteString` text.
 - `RemoteString` text: characters in the Basic Multilingual Plane only.
 - No font fallback: characters the font lacks draw as `.notdef`.
 - TrueType (`glyf`) outlines only, not CFF2. Composite glyphs must place their components by

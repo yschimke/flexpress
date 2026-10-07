@@ -90,6 +90,105 @@ class ShapingTest {
   }
 
   @Test
+  fun markPositionsMatchHarfBuzz() {
+    val font = font("noto_sans_arabic")
+    // HarfBuzz's full shaping with kerning and mark positioning, at the default location: each
+    // glyph's id and absolute (x, y) in font units, in visual order, and the line's advance.
+    class Expected(val glyphs: List<Int>, val positions: List<Pair<Int, Int>>, val advance: Int)
+    val expected =
+      mapOf(
+        "مرحبا" to
+          Expected(
+            listOf(5, 221, 12, 21, 25, 69),
+            listOf(0 to 0, 385 to -3, 291 to 0, 634 to 0, 1183 to 0, 1579 to 0),
+            2104,
+          ),
+        "بِسْمِ" to
+          Expected(
+            listOf(270, 67, 250, 28, 270, 221, 14),
+            listOf(139 to 0, 0 to 0, 863 to -126, 562 to 0, 1377 to -191, 1443 to -3, 1412 to 0),
+            1681,
+          ),
+        "مَرْحَبًا" to
+          Expected(
+            listOf(5, 248, 221, 12, 244, 21, 250, 25, 244, 69),
+            listOf(
+              0 to 0,
+              284 to -174,
+              385 to -3,
+              291 to 0,
+              638 to -106,
+              634 to 0,
+              1218 to -107,
+              1183 to 0,
+              1721 to -100,
+              1579 to 0,
+            ),
+            2104,
+          ),
+        // Shadda with a vowel on it: mark to mark.
+        "السَّلَامُ" to
+          Expected(
+            listOf(245, 64, 7, 244, 61, 244, 241, 28, 62, 4),
+            listOf(
+              89 to -76,
+              0 to 0,
+              484 to 0,
+              744 to 256,
+              863 to 0,
+              1332 to 74,
+              1340 to -126,
+              1083 to 0,
+              1933 to 0,
+              2193 to 0,
+            ),
+            2431,
+          ),
+        "كِتَابٌ" to
+          Expected(
+            listOf(249, 221, 10, 5, 244, 201, 13, 270, 51),
+            listOf(
+              302 to -160,
+              410 to -23,
+              0 to 0,
+              993 to 0,
+              1313 to 27,
+              1338 to -180,
+              1284 to 0,
+              1678 to 0,
+              1657 to 0,
+            ),
+            2069,
+          ),
+        // A mark on the lam-alef ligature.
+        "لَا" to Expected(listOf(6, 244, 63), listOf(0 to 0, 249 to 256, 363 to 0), 582),
+      )
+    val coords = font.normalize(emptyMap())
+    for ((text, want) in expected) {
+      val glyphs = font.shapePositioned(text, emptyMap())
+      assertWithMessage(text).that(glyphs.map { it.id }).isEqualTo(want.glyphs)
+      val placement =
+        font.placeGlyphs(
+          glyphs,
+          emptyMap(),
+          0f,
+          { font.outline(glyphs[it].id, coords).advance },
+          { it },
+          Float::plus,
+        )
+      glyphs.indices.forEach { i ->
+        val (x, y) = want.positions[i]
+        assertWithMessage("$text glyph $i x").that(placement.x[i]).isWithin(1f).of(x.toFloat())
+        assertWithMessage("$text glyph $i y").that(glyphs[i].dy).isWithin(1f).of(y.toFloat())
+      }
+      assertWithMessage("$text advance")
+        .that(placement.advance)
+        .isWithin(1f)
+        .of(want.advance.toFloat())
+    }
+  }
+
+  @Test
   fun joiningFormsFollowTheUnicodeAlgorithm() {
     // beh (dual), alef (right), fatha (transparent), tatweel (join causing), zwnj (non joining).
     fun forms(text: String) = joiningForms(text.codePoints().toArray()).toList()
@@ -134,6 +233,24 @@ class ShapingTest {
     // Visually the run is reversed, so its closing parenthesis is drawn first, as "(" mirrored.
     assertThat(shaped.first()).isEqualTo(font.shape("(").single())
     assertThat(shaped.last()).isEqualTo(font.shape(")").single())
+  }
+
+  @Test
+  fun marksTakeHarfBuzzOrder() {
+    fun order(text: String) = canonicalMarkOrder(text.codePoints().toArray()).toList()
+    val shaddaFirst = listOf(0x0633, 0x0651, 0x064E)
+    // Shadda before fatha whichever was typed first, as HarfBuzz orders them.
+    assertThat(order("\u0633\u0651\u064E")).isEqualTo(shaddaFirst)
+    assertThat(order("\u0633\u064E\u0651")).isEqualTo(shaddaFirst)
+    // Hamza above moves ahead of the kasra that canonical order (32 before 230) puts first.
+    assertThat(order("\u0628\u0654\u0650")).isEqualTo(listOf(0x0628, 0x0654, 0x0650))
+    // Below modifier marks first, then above ones: hamza below, hamza above, kasra.
+    assertThat(order("\u0628\u0650\u0654\u0655")).isEqualTo(listOf(0x0628, 0x0655, 0x0654, 0x0650))
+    // Other marks keep canonical order: kasra (32) before small high meem (230).
+    assertThat(order("\u0628\u06E2\u0650")).isEqualTo(listOf(0x0628, 0x0650, 0x06E2))
+    // Text without adjacent marks is not copied.
+    val plain = "café ب\u0650".codePoints().toArray()
+    assertThat(canonicalMarkOrder(plain)).isSameInstanceAs(plain)
   }
 
   @Test

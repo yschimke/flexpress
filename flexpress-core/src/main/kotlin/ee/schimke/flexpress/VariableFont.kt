@@ -65,11 +65,30 @@ public class VariableFont private constructor(private val data: FontBytes) {
     tables["GPOS"]?.let { Gpos(data, it, tables["GDEF"]?.let { gdef -> gdefVariations(gdef) }) }
   private val gsub: Gsub? = tables["GSUB"]?.let { Gsub(data, it, ::gdefGlyphClass) }
 
+  private val marks: MarkAttachment? =
+    tables["GPOS"]?.let {
+      MarkAttachment(
+        data,
+        it,
+        tables["GDEF"]?.let { gdef -> gdefVariations(gdef) },
+        ::gdefGlyphClass,
+      )
+    }
+
   /**
-   * [text] as glyphs in visual order, with bidirectional reordering and the font's ligatures and
-   * contextual alternates applied; see [shapeText].
+   * [text] as glyph ids in visual order, with bidirectional reordering, the font's ligatures and
+   * contextual alternates, and joining forms; see [shapeText].
    */
-  @InternalFlexpressApi fun shape(text: String): List<Int> = shapeText(text, ::glyphId, gsub)
+  @InternalFlexpressApi
+  fun shape(text: String): List<Int> = shapeText(text, ::glyphId, gsub).map { it.id }
+
+  /**
+   * [text] shaped as [shape] does, with each mark attached by the font's `GPOS` anchors at
+   * user-space [location].
+   */
+  @InternalFlexpressApi
+  fun shapePositioned(text: String, location: Map<String, Float>): List<ShapedGlyph> =
+    shapeText(text, ::glyphId, gsub, marks, normalize(location))
 
   /** `GDEF`'s glyph class of [glyph]: 1 base, 2 ligature, 3 mark, 4 component, 0 none. */
   private fun gdefGlyphClass(glyph: Int): Int {
