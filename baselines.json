@@ -36,7 +36,7 @@
     "functionName": "LimitationComplexScriptPreview",
     "module": "flexpress-remote",
     "renderBasename": "LimitationComplexScriptPreview-8905ba86.gif",
-    "sha256": "3573698be97f8c257e719426b7f05fbd05bc4eb5e25b33cedf98a75778f14e40",
+    "sha256": "2dd2541f7ed901583b9a6649ad5348b6a3e49d3ffd3785860f869e083b1bb35c",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationFontFallbackPreview": {
