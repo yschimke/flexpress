@@ -89,8 +89,8 @@ fun LimitationFontFallbackPreview() {
 }
 
 /**
- * Complex scripts: both draw from the same Arabic-capable font, right to left, but Compose joins
- * the letters with their positional forms while flexpress draws each letter's isolated form.
+ * Complex scripts: both draw the same Arabic-capable font right to left with joined letters; marks
+ * are positioned by Compose only.
  */
 @Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 300, heightDp = 220)
 @AnimatedPreview(durationMs = 2000, frameIntervalMs = 200, showCurves = false)

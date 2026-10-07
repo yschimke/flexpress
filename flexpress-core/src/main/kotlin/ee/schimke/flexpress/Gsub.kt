@@ -22,9 +22,9 @@ package ee.schimke.flexpress
  *
  * It handles single (1), multiple (2), ligature (4), contextual (5) and chaining contextual (6)
  * substitutions in every format, directly or through extension lookups (7), with the lookup flags
- * that skip base glyphs, ligatures and marks by their `GDEF` class. It does not apply alternate (3)
- * or reverse chaining (8) substitutions, feature variations, or per-glyph feature masks, so the
- * positional forms of joining scripts are not chosen.
+ * that skip base glyphs, ligatures and marks by their `GDEF` class. Features can be limited to some
+ * glyphs by a mask, as joining scripts' positional forms are, and applied in stages. It does not
+ * apply alternate (3) or reverse chaining (8) substitutions or feature variations.
  */
 internal class Gsub(
   private val data: FontBytes,
@@ -37,28 +37,89 @@ internal class Gsub(
   private val lookupList = offset + data.u16(offset + 8)
 
   /** [glyphs], with the lookups of [features] for [script] (an OpenType script tag) applied. */
-  fun substitute(glyphs: List<Int>, script: String, features: Set<String>): List<Int> {
-    val buffer = glyphs.toMutableList()
-    for (lookup in lookups(script, features)) applyLookup(buffer, lookup)
-    return buffer
+  fun substitute(glyphs: List<Int>, script: String, features: Set<String>): List<Int> =
+    substitute(glyphs, List(glyphs.size) { 0 }, script, listOf(features), emptyMap())
+
+  /**
+   * [glyphs], with the lookups of each stage's features for [script] applied, stage by stage. A
+   * feature with a bit in [featureMasks] applies only to the glyphs whose entry in [masks] has that
+   * bit; the others apply to every glyph. Glyphs a substitution produces keep the mask of the glyph
+   * they replace.
+   */
+  fun substitute(
+    glyphs: List<Int>,
+    masks: List<Int>,
+    script: String,
+    stages: List<Set<String>>,
+    featureMasks: Map<String, Int>,
+  ): List<Int> {
+    val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
+    for (stage in stages) {
+      val lookupMasks = sortedMapOf<Int, Int>()
+      for ((feature, lookups) in lookups(script, stage)) {
+        val mask = featureMasks[feature] ?: 0
+        for (lookup in lookups) {
+          // A lookup shared by several features applies wherever any of them does.
+          val existing = lookupMasks[lookup]
+          lookupMasks[lookup] =
+            when {
+              existing == null -> mask
+              existing == 0 || mask == 0 -> 0
+              else -> existing or mask
+            }
+        }
+      }
+      for ((lookup, mask) in lookupMasks) applyLookup(buffer, lookup, mask)
+    }
+    return buffer.ids
   }
 
-  /** The lookup indices of [features] in [script]'s default language system, in list order. */
-  private fun lookups(script: String, features: Set<String>): List<Int> {
+  /** A run of glyphs, each with the mask of the features that apply to it. */
+  private class Buffer(val ids: MutableList<Int>, val masks: MutableList<Int>) {
+    val size: Int
+      get() = ids.size
+
+    operator fun get(i: Int): Int = ids[i]
+
+    /** Replaces glyph [i], keeping its mask. */
+    operator fun set(i: Int, glyph: Int) {
+      ids[i] = glyph
+    }
+
+    fun mask(i: Int): Int = masks[i]
+
+    fun removeAt(i: Int) {
+      ids.removeAt(i)
+      masks.removeAt(i)
+    }
+
+    /** Replaces glyph [i] with [glyphs], each with [i]'s mask. */
+    fun replace(i: Int, glyphs: List<Int>) {
+      val mask = masks[i]
+      removeAt(i)
+      ids.addAll(i, glyphs)
+      masks.addAll(i, List(glyphs.size) { mask })
+    }
+  }
+
+  /** Each of [features] that [script]'s default language system has, with its lookup indices. */
+  private fun lookups(script: String, features: Set<String>): Map<String, List<Int>> {
     val langSys = defaultLangSys(script) ?: defaultLangSys("DFLT") ?: defaultLangSys("latn")
-    langSys ?: return emptyList()
-    val indices = sortedSetOf<Int>()
+    langSys ?: return emptyMap()
+    val result = mutableMapOf<String, List<Int>>()
     val required = data.u16(langSys + 2)
     val featureIndices =
       List(data.u16(langSys + 4)) { data.u16(langSys + 6 + it * 2) } +
         if (required != 0xFFFF) listOf(required) else emptyList()
     for (f in featureIndices) {
       val record = featureList + 2 + f * 6
-      if (data.tag(record) !in features && f != required) continue
+      val tag = data.tag(record)
+      if (tag !in features && f != required) continue
       val feature = featureList + data.u16(record + 4)
-      for (l in 0 until data.u16(feature + 2)) indices += data.u16(feature + 4 + l * 2)
+      result[tag] =
+        (result[tag].orEmpty() + List(data.u16(feature + 2)) { data.u16(feature + 4 + it * 2) })
     }
-    return indices.toList()
+    return result
   }
 
   private fun defaultLangSys(tag: String): Int? {
@@ -76,12 +137,12 @@ internal class Gsub(
     return null
   }
 
-  /** Applies lookup [index] across the whole [buffer]. */
-  private fun applyLookup(buffer: MutableList<Int>, index: Int) {
+  /** Applies lookup [index] across [buffer], at the glyphs that have [mask] (all, for 0). */
+  private fun applyLookup(buffer: Buffer, index: Int, mask: Int) {
     val lookup = Lookup(index)
     var i = 0
     while (i < buffer.size) {
-      if (lookup.skips(buffer[i])) {
+      if (lookup.skips(buffer[i]) || (mask != 0 && buffer.mask(i) and mask == 0)) {
         i++
         continue
       }
@@ -120,14 +181,14 @@ internal class Gsub(
     }
 
     /** The next unskipped position after [i], or -1. */
-    fun next(buffer: List<Int>, i: Int): Int {
+    fun next(buffer: Buffer, i: Int): Int {
       var j = i + 1
       while (j < buffer.size && skips(buffer[j])) j++
       return if (j < buffer.size) j else -1
     }
 
     /** The previous unskipped position before [i], or -1. */
-    fun previous(buffer: List<Int>, i: Int): Int {
+    fun previous(buffer: Buffer, i: Int): Int {
       var j = i - 1
       while (j >= 0 && skips(buffer[j])) j--
       return j
@@ -137,7 +198,7 @@ internal class Gsub(
      * Applies the first subtable that matches at [i]; returns where to continue, or null when none
      * matched.
      */
-    fun applyAt(buffer: MutableList<Int>, i: Int): Int? {
+    fun applyAt(buffer: Buffer, i: Int): Int? {
       for (sub in subtables) {
         val result =
           when (type) {
@@ -153,7 +214,7 @@ internal class Gsub(
       return null
     }
 
-    private fun single(sub: Int, buffer: MutableList<Int>, i: Int): Int? {
+    private fun single(sub: Int, buffer: Buffer, i: Int): Int? {
       val glyph = buffer[i]
       val c = data.coverageIndex(sub + data.u16(sub + 2), glyph) ?: return null
       buffer[i] =
@@ -165,17 +226,16 @@ internal class Gsub(
       return i + 1
     }
 
-    private fun multiple(sub: Int, buffer: MutableList<Int>, i: Int): Int? {
+    private fun multiple(sub: Int, buffer: Buffer, i: Int): Int? {
       if (data.u16(sub) != 1) return null
       val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
       val sequence = sub + data.u16(sub + 6 + c * 2)
       val replacement = List(data.u16(sequence)) { data.u16(sequence + 2 + it * 2) }
-      buffer.removeAt(i)
-      buffer.addAll(i, replacement)
+      buffer.replace(i, replacement)
       return i + replacement.size
     }
 
-    private fun ligature(sub: Int, buffer: MutableList<Int>, i: Int): Int? {
+    private fun ligature(sub: Int, buffer: Buffer, i: Int): Int? {
       if (data.u16(sub) != 1) return null
       val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
       val set = sub + data.u16(sub + 6 + c * 2)
@@ -202,7 +262,7 @@ internal class Gsub(
     }
 
     /** Contextual substitution: an input sequence, then lookups at positions within it. */
-    private fun context(sub: Int, buffer: MutableList<Int>, i: Int): Int? =
+    private fun context(sub: Int, buffer: Buffer, i: Int): Int? =
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
@@ -263,7 +323,7 @@ internal class Gsub(
       }
 
     /** Chaining contextual substitution: backtrack, input and lookahead sequences. */
-    private fun chaining(sub: Int, buffer: MutableList<Int>, i: Int): Int? =
+    private fun chaining(sub: Int, buffer: Buffer, i: Int): Int? =
       when (data.u16(sub)) {
         1 -> {
           val c = data.coverageIndex(sub + data.u16(sub + 2), buffer[i]) ?: return null
@@ -341,7 +401,7 @@ internal class Gsub(
      * input and 2 for lookahead. Returns where to continue.
      */
     private fun tryRule(
-      buffer: MutableList<Int>,
+      buffer: Buffer,
       i: Int,
       backtrack: IntArray,
       input: IntArray,

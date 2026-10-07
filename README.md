@@ -53,15 +53,16 @@ easy to hit: choose the font's character coverage for the text you will draw.
 
 ![Font fallback: Compose draws the arrow and the kanji from system fonts; flexpress draws boxes](docs/limitations/font-fallback.gif)
 
-### Right to left, but no joining or mark positioning
+### Right to left and Arabic joining, but no mark positioning
 
 Bidirectional text is split into runs and placed in visual order, with brackets mirrored in
-right-to-left runs, so Hebrew and mixed-direction text read correctly. Arabic and other joining
-scripts are not given their positional (initial, medial, final) forms, marks are not positioned
-(`GPOS` is read for pair kerning only), and Indic scripts are not reordered. Below, both draw Noto
-Sans Arabic right to left, but only Compose joins the letters.
+right-to-left runs. Arabic and Syriac letters take their positional (initial, medial, final,
+isolated) forms by the Unicode joining algorithm, checked against HarfBuzz. Marks, such as Arabic
+vowel marks and the dots some fonts draw as separate glyphs, are not yet positioned (`GPOS` is read
+for pair kerning only), so they sit where the font's default places them, and Indic scripts are not
+reordered. Below, both draw Noto Sans Arabic, joined, right to left.
 
-![Complex scripts: both right to left; Compose joins the Arabic letters, flexpress draws them isolated](docs/limitations/complex-script.gif)
+![Complex scripts: both draw the Arabic joined, right to left](docs/limitations/complex-script.gif)
 
 ### One line, no wrapping
 
