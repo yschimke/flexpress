@@ -16,6 +16,8 @@
 
 package ee.schimke.flexpress
 
+import java.util.concurrent.ConcurrentHashMap
+
 /** Where a mark glyph goes: at glyph [base]'s origin, offset by ([dx], [dy]) in font units. */
 internal data class Attachment(val base: Int, val dx: Float, val dy: Float)
 
@@ -41,15 +43,17 @@ internal class MarkAttachment(
   private val markAttachClassOf: (Int) -> Int = { 0 },
   /** Whether a glyph is in one of `GDEF`'s mark glyph sets, by set index then glyph. */
   private val inMarkSet: (Int, Int) -> Boolean = { _, _ -> true },
+  /** Whether the font has `GDEF` glyph classes, so [glyphClassOf] identifies every mark. */
+  private val hasGlyphClasses: Boolean = true,
 ) {
   /** A mark lookup: its type, flag, mark filtering set (or -1) and subtables. */
   private class Lookup(val type: Int, val flag: Int, val filterSet: Int, val subtables: List<Int>)
 
-  private val lookupsByScript = mutableMapOf<String, List<Lookup>>()
+  private val lookupsByScript = ConcurrentHashMap<String, List<Lookup>>()
 
   /** The mark lookups of [script]'s default language system's `mark` and `mkmk`, in order. */
   private fun lookups(script: String): List<Lookup> =
-    lookupsByScript.getOrPut(script) {
+    lookupsByScript.computeIfAbsent(script) {
       val lookupList = offset + data.u16(offset + 8)
       val indices = sortedSetOf<Int>()
       data.featureLookups(offset, script, MARK_FEATURES, required = false).values.forEach {
@@ -78,6 +82,9 @@ internal class MarkAttachment(
    */
   fun attach(glyphs: List<Int>, script: String, coords: FloatArray): List<Attachment?> {
     val result = arrayOfNulls<Attachment>(glyphs.size)
+    // Only marks attach: a run without them has nothing to look up. Without GDEF glyph classes
+    // marks are known only by the lookups' coverage, so every run is looked up.
+    if (hasGlyphClasses && glyphs.none(::isMark)) return result.toList()
     for (lookup in lookups(script)) {
       for (i in glyphs.indices) {
         // The lookup applies only to the marks its flag and filtering set admit.

@@ -16,6 +16,8 @@
 
 package ee.schimke.flexpress
 
+import java.util.BitSet
+
 /**
  * Pair kerning from a font's `GPOS` table: the x-advance adjustments of the `kern` feature's pair
  * positioning lookups (formats 1 and 2, directly or through extension lookups), with their
@@ -143,6 +145,18 @@ class Gpos(
     const val Y_PLACEMENT_DEVICE = 0x0020
     const val X_ADVANCE_DEVICE = 0x0040
     const val VARIATION_INDEX = 0x8000
+  }
+}
+
+/** Adds every glyph in the coverage table at [table] to [set]. */
+internal fun FontBytes.addCoverage(table: Int, set: BitSet) {
+  when (u16(table)) {
+    1 -> for (k in 0 until u16(table + 2)) set.set(u16(table + 4 + k * 2))
+    2 ->
+      for (k in 0 until u16(table + 2)) {
+        val r = table + 4 + k * 6
+        set.set(u16(r), u16(r + 2) + 1)
+      }
   }
 }
 

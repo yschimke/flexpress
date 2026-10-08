@@ -68,7 +68,15 @@ public class VariableFont private constructor(private val data: FontBytes) {
 
   private val marks: MarkAttachment? =
     tables["GPOS"]?.let {
-      MarkAttachment(data, it, gdefStore, ::gdefGlyphClass, ::gdefMarkAttachClass, ::inMarkSet)
+      MarkAttachment(
+        data,
+        it,
+        gdefStore,
+        ::gdefGlyphClass,
+        ::gdefMarkAttachClass,
+        ::inMarkSet,
+        hasGlyphClasses = tables["GDEF"]?.let { gdef -> data.u16(gdef + 4) != 0 } ?: false,
+      )
     }
 
   /**
