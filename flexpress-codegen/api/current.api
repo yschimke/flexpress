@@ -1,9 +1,14 @@
 // Signature format: 4.0
 package ee.schimke.flexpress.codegen {
 
+  public enum CodegenTarget {
+    enum_constant public static final ee.schimke.flexpress.codegen.CodegenTarget ComposeUi;
+    enum_constant public static final ee.schimke.flexpress.codegen.CodegenTarget RemoteCompose;
+  }
+
   public final class VariableFontCodegen {
-    method public java.lang.String generate(java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader);
-    method public boolean write(File sourceRoot, java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader, optional boolean update);
+    method public java.lang.String generate(java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader, optional ee.schimke.flexpress.codegen.CodegenTarget target, optional boolean standalone);
+    method public boolean write(File sourceRoot, java.lang.String packageName, java.lang.String functionName, ee.schimke.flexpress.VariableFont font, java.lang.String fontName, java.lang.String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.lang.Float? pixelSize, optional float tolerancePixels, optional java.lang.String? fileHeader, optional boolean update, optional ee.schimke.flexpress.codegen.CodegenTarget target, optional boolean standalone);
     field public static final ee.schimke.flexpress.codegen.VariableFontCodegen INSTANCE;
   }
 

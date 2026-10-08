@@ -53,6 +53,7 @@ dependencies {
   debugImplementation(libs.compose.preview.annotations)
 
   testImplementation(testFixtures(projects.flexpressCore))
+  testImplementation(projects.flexpressCodegen)
   testImplementation(libs.junit)
   testImplementation(libs.truth)
   testImplementation(libs.robolectric)

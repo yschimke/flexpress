@@ -1,0 +1,120 @@
+
+  /**
+   * Draws the text at the axis values [axes] give, read while drawing, so animating them redraws
+   * without recomposing or relaying out. The box is as wide as the widest advance and as tall as
+   * the ascender to descender; the baseline, at the ascender, is reported as both alignment lines.
+   */
+  @Composable
+  fun Draw(axes: Array<() -> Float>, fontSize: TextUnit, modifier: Modifier, color: Color) {
+    val renderer = remember { Renderer() }
+    val fill = if (color.isSpecified) color else Color.Black
+    Layout(
+      modifier =
+        modifier
+          .semantics { text = AnnotatedString(TEXT) }
+          .drawBehind { renderer.draw(this, fontSize.toPx() / unitsPerEm, axes, fill) },
+      measurePolicy = { _, constraints ->
+        val scale = fontSize.toPx() / unitsPerEm
+        val boxWidth = ceil(width * scale).toInt()
+        val boxHeight = ceil((ascender - descender) * scale).toInt()
+        val baseline = (ascender * scale).roundToInt()
+        layout(
+          constraints.constrainWidth(boxWidth),
+          constraints.constrainHeight(boxHeight),
+          mapOf(FirstBaseline to baseline, LastBaseline to baseline),
+        ) {}
+      },
+    )
+  }
+
+  /** Evaluates the outline into one reused path, only when the axis values or scale change. */
+  private class Renderer {
+    private val coordinates = FloatArray(base?.size ?: slots.size)
+    private val deltas = keys?.let { k -> Array(k.size) { t -> delta(k[t]) } }
+    private val values = FloatArray(AXIS_COUNT)
+    private val lastValues = FloatArray(AXIS_COUNT)
+    private val tentValues = FloatArray(tentAxis.size)
+    private val regionScalars = FloatArray(regions.size)
+    private val formValues = FloatArray(constants.size)
+    private val path = Path()
+    private var lastScale = Float.NaN
+
+    private fun delta(key: FloatArray) = FloatArray(key.size) { i -> key[i] - base!![i] }
+
+    fun draw(scope: DrawScope, scale: Float, axes: Array<() -> Float>, color: Color) {
+      for (i in values.indices) values[i] = axes[i]()
+      if (scale != lastScale || !values.contentEquals(lastValues)) {
+        values.copyInto(lastValues)
+        lastScale = scale
+        evaluate()
+        build(scale)
+      }
+      scope.drawPath(path, color)
+    }
+
+    private fun evaluate() {
+      for (t in tentValues.indices) {
+        val v = values[tentAxis[t]]
+        var s = tentY0[t]
+        for (j in tentKnots[t].indices) {
+          s += tentSlopes[t][j] * (v - tentKnots[t][j]).coerceIn(0f, tentWidths[t][j])
+        }
+        tentValues[t] = s
+      }
+      val base = base
+      val deltas = deltas
+      if (base != null && deltas != null) {
+        base.copyInto(coordinates)
+        for (t in deltas.indices) {
+          val s = tentValues[t]
+          if (s == 0f) continue
+          val delta = deltas[t]
+          for (i in coordinates.indices) coordinates[i] += s * delta[i]
+        }
+        return
+      }
+      for (r in regions.indices) {
+        var p = 1f
+        for (t in regions[r]) p *= tentValues[t]
+        regionScalars[r] = p
+      }
+      for (f in formValues.indices) {
+        var v = constants[f]
+        for (j in termStart[f] until termStart[f + 1]) v +=
+          coefficients[j] * regionScalars[regionOf[j]]
+        formValues[f] = v
+      }
+      for (i in coordinates.indices) {
+        val slot = slots[i]
+        coordinates[i] = if (slot < 0) literals[i] else formValues[slot]
+      }
+    }
+
+    private fun build(scale: Float) {
+      val top = ascender.toFloat()
+      val c = coordinates
+      var p = 0
+      path.rewind()
+      for (verb in verbs) {
+        when (verb.toInt()) {
+          0 -> path.moveTo(c[p] * scale, (top - c[p + 1]) * scale)
+          1 -> path.lineTo(c[p] * scale, (top - c[p + 1]) * scale)
+          2 ->
+            path.quadraticTo(
+              c[p] * scale,
+              (top - c[p + 1]) * scale,
+              c[p + 2] * scale,
+              (top - c[p + 3]) * scale,
+            )
+          else -> path.close()
+        }
+        p +=
+          when (verb.toInt()) {
+            0,
+            1 -> 2
+            2 -> 4
+            else -> 0
+          }
+      }
+    }
+  }

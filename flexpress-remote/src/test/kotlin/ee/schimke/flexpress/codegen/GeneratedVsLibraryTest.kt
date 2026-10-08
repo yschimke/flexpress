@@ -32,6 +32,8 @@ import ee.schimke.flexpress.VariableTextOutline
 import ee.schimke.flexpress.fontsDir
 import ee.schimke.flexpress.generated.HamburgWght
 import ee.schimke.flexpress.generated.HamburgWghtSlnt
+import ee.schimke.flexpress.generated.HamburgWghtSlntStandalone
+import ee.schimke.flexpress.generated.HamburgWghtStandalone
 import ee.schimke.flexpress.generated.HelloWearWght
 import ee.schimke.flexpress.outline
 import ee.schimke.flexpress.testFonts
@@ -85,6 +87,22 @@ class GeneratedVsLibraryTest {
           )
         },
         { HelloWearWght(axes("wght").getValue("wght"), size) },
+      ),
+      // Standalone: drawn by the file's own copy of the code, with no flexpress at run time.
+      Triple(
+        "Hamburg wght standalone",
+        { RemoteVariableFontText("Hamburg", font, axes("wght"), size, tolerancePixels = 0f) },
+        { HamburgWghtStandalone(axes("wght").getValue("wght"), size) },
+      ),
+      Triple(
+        "Hamburg wght+slnt standalone",
+        {
+          RemoteVariableFontText("Hamburg", font, axes("wght", "slnt"), size, tolerancePixels = 0f)
+        },
+        {
+          val a = axes("wght", "slnt")
+          HamburgWghtSlntStandalone(a.getValue("wght"), a.getValue("slnt"), size)
+        },
       ),
     )
 

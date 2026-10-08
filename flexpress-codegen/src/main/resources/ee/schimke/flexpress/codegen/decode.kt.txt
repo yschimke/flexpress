@@ -1,0 +1,121 @@
+  private val unitsPerEm: Int
+  private val ascender: Int
+  private val descender: Int
+
+  /** The widest advance anywhere the axes move, in font units: the box never reflows. */
+  private val width: Float
+
+  /** Path commands: 0 move, 1 line, 2 quad, 3 close. */
+  private val verbs: ByteArray
+
+  // Tents: per-axis factors of the variation regions, as clamped ramps of the axis' value.
+  private val tentAxis: IntArray
+  private val tentY0: FloatArray
+  private val tentKnots: Array<FloatArray>
+  private val tentWidths: Array<FloatArray>
+  private val tentSlopes: Array<FloatArray>
+
+  // Key outlines, or null: the default outline and, per tent, the outline with it at its peak.
+  private val base: FloatArray?
+  private val keys: Array<FloatArray>?
+
+  // Forms, or empty: regions as products of tents, each form a constant plus coefficient-weighted
+  // regions, and per coordinate the form it takes or, at slot -1, a literal.
+  private val regions: Array<IntArray>
+  private val constants: FloatArray
+  private val termStart: IntArray
+  private val regionOf: IntArray
+  private val coefficients: FloatArray
+  private val slots: IntArray
+  private val literals: FloatArray
+
+  init {
+    val r = Reader(packed.joinToString(""))
+    check(r.int() == 1) { "unknown outline format" }
+    repeat(r.int() * 4) { r.int() }
+    unitsPerEm = r.int()
+    ascender = r.int()
+    descender = r.int()
+    width = r.float()
+    val tents = r.int()
+    tentAxis = IntArray(tents)
+    tentY0 = FloatArray(tents)
+    val knots = ArrayList<FloatArray>()
+    val widths = ArrayList<FloatArray>()
+    val slopes = ArrayList<FloatArray>()
+    for (t in 0 until tents) {
+      tentAxis[t] = r.int()
+      tentY0[t] = r.float()
+      val n = r.int()
+      knots += r.floats(n)
+      widths += r.floats(n)
+      slopes += r.floats(n)
+    }
+    tentKnots = knots.toTypedArray()
+    tentWidths = widths.toTypedArray()
+    tentSlopes = slopes.toTypedArray()
+    verbs = ByteArray(r.int()) { r.int().toByte() }
+    if (r.int() == 0) {
+      val size = r.int()
+      val b = r.path(size, null)
+      base = b
+      keys = Array(tents) { r.path(size, b) }
+      regions = emptyArray()
+      constants = FloatArray(0)
+      termStart = IntArray(1)
+      regionOf = IntArray(0)
+      coefficients = FloatArray(0)
+      slots = IntArray(0)
+      literals = FloatArray(0)
+    } else {
+      base = null
+      keys = null
+      regions = Array(r.int()) { IntArray(r.int()) { r.int() } }
+      val forms = r.int()
+      constants = r.floats(forms)
+      termStart = IntArray(forms + 1) { r.int() }
+      regionOf = IntArray(termStart[forms]) { r.int() }
+      coefficients = r.floats(termStart[forms])
+      val n = r.int()
+      val values = FloatArray(n)
+      slots = IntArray(n) { i -> (r.int() - 1).also { if (it < 0) values[i] = r.float() } }
+      literals = values
+    }
+  }
+
+  /** Reads flexpress' outline encoding: one character per small whole number, three per float. */
+  private class Reader(private val s: String) {
+    private var i = 0
+
+    fun int(): Int {
+      val c = s[i++].code
+      val z =
+        if (c == 0x20) {
+          var z = 0
+          repeat(3) { z = (z shl 15) or (s[i++].code - 0x100) }
+          z
+        } else {
+          c - 0x22
+        }
+      return (z ushr 1) xor -(z and 1)
+    }
+
+    fun float(): Float = if (s[i].code == 0x21) bits() else int().toFloat()
+
+    private fun bits(): Float {
+      i++
+      var bits = 0
+      repeat(3) { bits = (bits shl 11) or (s[i++].code - 0x100) }
+      return Float.fromBits(bits)
+    }
+
+    fun floats(n: Int) = FloatArray(n) { float() }
+
+    fun path(n: Int, base: FloatArray?): FloatArray {
+      val last = FloatArray(2)
+      return FloatArray(n) { k ->
+        val v = if (s[i].code == 0x21) bits() else int() + (base?.get(k) ?: last[k % 2])
+        v.also { last[k % 2] = it }
+      }
+    }
+  }

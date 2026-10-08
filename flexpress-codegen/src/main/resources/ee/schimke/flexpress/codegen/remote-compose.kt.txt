@@ -1,0 +1,108 @@
+
+  /**
+   * Draws the text with its axes at [values], expressions the player evaluates, so the document
+   * animates them itself. The canvas is as wide as the widest advance and as tall as the ascender
+   * to descender.
+   */
+  @SuppressLint("RestrictedApi")
+  @Composable
+  @RemoteComposable
+  fun Draw(
+    values: Array<RemoteFloat>,
+    fontSize: RemoteDp,
+    modifier: RemoteModifier,
+    color: RemoteColor,
+  ) {
+    val em = 1f / unitsPerEm
+    val boxWidth = fontSize * (width * em)
+    val boxHeight = fontSize * ((ascender - descender) * em)
+    // Known as the document is made when the size and density are both constants: the scale is
+    // then a literal rather than an expression.
+    val density = LocalRemoteComposeCreationState.current.remoteDensity.density.constantValueOrNull
+    val dp = fontSize.value.constantValueOrNull
+    val pixelSize = if (dp != null && density != null) dp * density else null
+
+    RemoteCanvas(modifier = modifier.width(boxWidth).height(boxHeight)) {
+      val tents = tentAxis.indices.map { t -> tent(t, values[tentAxis[t]]).createReference() }
+      val paint = RemotePaint { this.color = color }
+      val scale =
+        if (pixelSize != null) (pixelSize / unitsPerEm).rf else fontSize.toPx() * (1f / unitsPerEm)
+      remoteCanvas.save()
+      remoteCanvas.translate(0f.rf, scale * ascender.toFloat())
+      remoteCanvas.scale(scale, -scale)
+      val base = base
+      val keys = keys
+      if (base != null && keys != null) {
+        // At most one tent is above zero: tween from the default outline towards its key. The
+        // first tent's tween also draws the default outline, when none is.
+        val basePath = path(base)
+        val keyPaths = keys.map { path(it) }
+        tents.forEachIndexed { i, scalar ->
+          val draw = { drawTweenPath(basePath, keyPaths[i], scalar, 0f.rf, 1f.rf, paint) }
+          val others = tents.filterIndexed { j, _ -> j != i }
+          when {
+            i > 0 -> remoteCanvas.drawConditionally(scalar.isGreaterThan(0f.rf), draw)
+            others.isEmpty() -> draw()
+            else ->
+              remoteCanvas.drawConditionally(
+                others.reduce { a, b -> a + b }.isLessThanOrEqualTo(0f.rf),
+                draw,
+              )
+          }
+        }
+      } else {
+        val state = remoteComposeCreationState
+        val scalars = regions.map { r ->
+          if (r.size == 1) tents[r[0]]
+          else r.map { tents[it] }.reduce { a, b -> a * b }.createReference()
+        }
+        val forms =
+          constants.indices.map { f ->
+            val terms = termStart[f] until termStart[f + 1]
+            // Each multiply-add holds two more values on the stack until the chain unwinds, so a
+            // long chain is written in parts that fit an expression's 32 tokens.
+            terms.chunked(10).fold(constants[f].rf) { sum, part ->
+              part
+                .fold(sum) { s, t -> mad(scalars[regionOf[t]], coefficients[t].rf, s) }
+                .createReference()
+            }
+          }
+        val ids = forms.map { it.getFloatIdForCreationState(state) }
+        val coordinates =
+          FloatArray(slots.size) { if (slots[it] < 0) literals[it] else ids[slots[it]] }
+        drawPath(path(coordinates), paint)
+      }
+      remoteCanvas.restore()
+    }
+  }
+
+  /** Tent [t] on the player, as clamped ramps of its axis' [value]. */
+  @SuppressLint("RestrictedApi")
+  private fun tent(t: Int, value: RemoteFloat): RemoteFloat =
+    tentKnots[t].indices.fold(tentY0[t].rf) { sum, i ->
+      sum + clamp(value - tentKnots[t][i], 0f, tentWidths[t][i]) * tentSlopes[t][i]
+    }
+
+  /** The path of [verbs] through [coordinates]. */
+  @SuppressLint("RestrictedApi")
+  private fun path(coordinates: FloatArray): RemotePath {
+    val path = RemotePath()
+    val c = coordinates
+    var i = 0
+    for (verb in verbs) {
+      when (verb.toInt()) {
+        0 -> path.moveTo(c[i], c[i + 1])
+        1 -> path.lineTo(c[i], c[i + 1])
+        2 -> path.quadTo(c[i], c[i + 1], c[i + 2], c[i + 3])
+        else -> path.close()
+      }
+      i +=
+        when (verb.toInt()) {
+          0,
+          1 -> 2
+          2 -> 4
+          else -> 0
+        }
+    }
+    return path
+  }
