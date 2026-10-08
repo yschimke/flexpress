@@ -1,7 +1,37 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "d2cd59e2d2505a3999b20c4902d2405b6b53bbcb",
+    "generatedFrom": "fd9b987d812aa899e2a941dadcac5ae8112d549c",
     "previews": {
+        "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
+            "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
+            "versions": [
+                {
+                    "blob": "10fce336b3d538502342a6e14fef18cf758ac27f",
+                    "commit": "fd9b987d812aa899e2a941dadcac5ae8112d549c",
+                    "date": "2026-10-08T07:46:17Z",
+                    "sourceSha": "ba0fd7b8",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightsPreview": {
+            "path": "renders/flexpress-compose/GeneratedTextWeightsPreview-fd69e0cc.png",
+            "versions": [
+                {
+                    "blob": "7190376dc36eb828eb6db89095dabd72b6df860b",
+                    "commit": "fd9b987d812aa899e2a941dadcac5ae8112d549c",
+                    "date": "2026-10-08T07:46:17Z",
+                    "sourceSha": "ba0fd7b8",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
             "versions": [
