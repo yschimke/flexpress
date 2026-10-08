@@ -56,8 +56,9 @@ easy to hit: choose the font's character coverage for the text you will draw.
 ### Right to left, Arabic joining and marks, but not every script
 
 Bidirectional text is split into runs and placed in visual order, with brackets mirrored in
-right-to-left runs. Arabic and Syriac letters take their positional (initial, medial, final,
-isolated) forms by the Unicode joining algorithm. Marks, such as Arabic vowel marks and the dots
+right-to-left runs, and text mixing scripts is shaped with each script's own features. Arabic and
+Syriac letters take their positional (initial, medial, final, isolated, and Syriac's Alaph) forms
+by the Unicode joining algorithm. Marks, such as Arabic vowel marks and the dots
 some fonts draw as separate glyphs, are ordered as HarfBuzz orders them and attached by the font's
 `GPOS` mark-to-base, mark-to-ligature and mark-to-mark anchors. Each of these is checked against
 HarfBuzz. What is left: the anchors, like kerning, are read at one design-space location rather

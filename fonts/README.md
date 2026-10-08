@@ -12,6 +12,7 @@ characters listed, then `varLib.instancer` to pin every axis not listed to its d
 | `res/raw/fraunces.ttf` | Fraunces | U+0020–007E | `wght`, `opsz`, `SOFT` | [`ofl/fraunces`](https://github.com/google/fonts/tree/main/ofl/fraunces) |
 | `res/raw/fira_code.ttf` | Fira Code, keeping its `calt` programming ligatures (`=>`, `!=`, `->`) for the ligature limitation preview | U+0020–007E | `wght` | [`ofl/firacode`](https://github.com/google/fonts/tree/main/ofl/firacode) |
 | `res/raw/noto_sans_arabic.ttf` | Noto Sans Arabic, keeping its shaping features, for the complex-script limitation preview | U+0020–007E, U+0600–06FF | `wght` | [`ofl/notosansarabic`](https://github.com/google/fonts/tree/main/ofl/notosansarabic) |
+| `res/raw/noto_sans_syriac.ttf` | Noto Sans Syriac, keeping its shaping features, for the Syriac joining tests | U+0020, U+0640, U+0700–074F, U+200C–200D | `wght` | [`ofl/notosanssyriac`](https://github.com/google/fonts/tree/main/ofl/notosanssyriac) |
 | `res/raw/noto_sans.ttf` | Noto Sans | U+0020–007E | `wght`, `wdth` | [`ofl/notosans`](https://github.com/google/fonts/tree/main/ofl/notosans) |
 | `res/raw/inter.ttf` | Inter | U+0020–007E | `wght`, `opsz` | [`ofl/inter`](https://github.com/google/fonts/tree/main/ofl/inter) |
 
@@ -25,7 +26,7 @@ reader against them.
 
 ## License & Copyright
 
-All six fonts are licensed under the SIL Open Font License, Version 1.1; each license, with its
+All of these fonts are licensed under the SIL Open Font License, Version 1.1; each license, with its
 copyright notice, is in [`licenses/`](licenses). The reduced fonts are Modified Versions under
 that license and keep the original name tables, as the license permits for fonts without a
 Reserved Font Name.
