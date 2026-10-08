@@ -176,6 +176,27 @@ class ShapingTest {
             listOf(387 to -23, 0 to 0, 1041 to 88, 1131 to -5, 1145 to -59, 1093 to 0),
             1362,
           ),
+        // Alef with hamza above or madda, which HarfBuzz composes with the alef: past a fatha,
+        // inside
+        // lam-alef, and past a noon ghunna that HarfBuzz moved ahead.
+        "\u0627\u064E\u0654\u0628" to
+          Expected(
+            listOf(221, 10, 244, 210, 8),
+            listOf(410 to -23, 0 to 0, 933 to 402, 977 to 126, 993 to 0),
+            1228,
+          ),
+        "\u0644\u0627\u0653\u064E\u0628" to
+          Expected(
+            listOf(221, 10, 244, 214, 6, 63),
+            listOf(410 to -23, 0 to 0, 931 to 285, 921 to 34, 993 to 0, 1356 to 0),
+            1575,
+          ),
+        "\u0627\u0658\u0653\u0628" to
+          Expected(
+            listOf(221, 10, 255, 214, 8),
+            listOf(410 to -23, 0 to 0, 1000 to 377, 936 to 126, 993 to 0),
+            1228,
+          ),
         "\u0646\u0654\u0655\u0628" to
           Expected(
             listOf(221, 11, 210, 226, 200, 14),
@@ -232,6 +253,41 @@ class ShapingTest {
     for ((text, glyphs) in expected) {
       assertWithMessage(text).that(font.shape(text)).isEqualTo(glyphs)
     }
+  }
+
+  @Test
+  fun combiningMarksComposeWhenTheFontHasTheComposite() {
+    // Google Sans Flex has é but no combining acute: HarfBuzz composes e + U+0301 into é.
+    val font = font("google_sans_flex_wght_rond")
+    assertThat(font.shape("Cafe\u0301")).isEqualTo(listOf(10, 57, 75, 71))
+    assertThat(font.shape("Caf\u00E9")).isEqualTo(listOf(10, 57, 75, 71))
+    // A singleton decomposition: the Kelvin sign, which the font lacks, is drawn as K.
+    assertThat(font.shape("\u212A")).isEqualTo(font.shape("K"))
+  }
+
+  @Test
+  fun normalizationFollowsTheFontsGlyphs() {
+    val e = 'e'.code
+    val acute = 0x0301
+    val eAcute = 0x00E9
+    // A character the font lacks splits into parts it has; one it has stays whole.
+    assertThat(decompose(intArrayOf(eAcute), hasGlyph = { it != eAcute }).toList())
+      .containsExactly(e, acute)
+      .inOrder()
+    assertThat(decompose(intArrayOf(eAcute), hasGlyph = { true }).toList()).containsExactly(eAcute)
+    // A mark composes onto its base only when the font has the composite.
+    assertThat(compose(intArrayOf(e, acute), hasGlyph = { true }).toList()).containsExactly(eAcute)
+    assertThat(compose(intArrayOf(e, acute), hasGlyph = { it != eAcute }).toList())
+      .containsExactly(e, acute)
+      .inOrder()
+    // A mark of the same class between them blocks it: with no è, the grave stays, and the acute
+    // after it does not compose into é. A lower-class mark does not block: dot below (220).
+    assertThat(compose(intArrayOf(e, 0x0300, acute), hasGlyph = { it != 0x00E8 }).toList())
+      .containsExactly(e, 0x0300, acute)
+      .inOrder()
+    assertThat(compose(intArrayOf(e, 0x0323, acute), hasGlyph = { it == eAcute }).toList())
+      .containsExactly(eAcute, 0x0323)
+      .inOrder()
   }
 
   @Test
