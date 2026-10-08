@@ -6,6 +6,8 @@ Auto-generated from `main`. Browse inline or compare against PR branches.
 
 | Preview | Image |
 |---------|-------|
+| `GeneratedTextWeightAnimatedPreview` | <img src="https://raw.githubusercontent.com/yschimke/flexpress/compose-preview/main/renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif" width="150" /> |
+| `GeneratedTextWeightsPreview` | <img src="https://raw.githubusercontent.com/yschimke/flexpress/compose-preview/main/renders/flexpress-compose/GeneratedTextWeightsPreview-fd69e0cc.png" width="150" /> |
 | `GoogleSansFlexWeightAndRoundnessAnimatedPreview` | <img src="https://raw.githubusercontent.com/yschimke/flexpress/compose-preview/main/renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif" width="150" /> |
 | `RobotoFlexWeightAnimatedPreview` | <img src="https://raw.githubusercontent.com/yschimke/flexpress/compose-preview/main/renders/flexpress-compose/RobotoFlexWeightAnimatedPreview-68862367.gif" width="150" /> |
 | `RobotoFlexWeightsPreview` | <img src="https://raw.githubusercontent.com/yschimke/flexpress/compose-preview/main/renders/flexpress-compose/RobotoFlexWeightsPreview-33f3a283.png" width="150" /> |

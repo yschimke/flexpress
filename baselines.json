@@ -1,4 +1,20 @@
 {
+  "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "GeneratedTextWeightAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
+    "sha256": "1fbd3f948bf6002c539175a86a17983c3af497bf137ba12ed9d0149ee39f744e",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/GeneratedTextPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightsPreview": {
+    "captureLabel": "",
+    "functionName": "GeneratedTextWeightsPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "GeneratedTextWeightsPreview-fd69e0cc.png",
+    "sha256": "a8176cabaf81b7d1fa3386b46fdfb9479b04c9d86608dfe789fe507569c87c74",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/GeneratedTextPreviews.kt"
+  },
   "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
     "captureLabel": "",
     "functionName": "GoogleSansFlexWeightAndRoundnessAnimatedPreview",
