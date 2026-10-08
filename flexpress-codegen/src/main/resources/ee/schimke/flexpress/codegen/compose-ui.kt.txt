@@ -11,7 +11,7 @@
     Layout(
       modifier =
         modifier
-          .semantics { text = AnnotatedString(TEXT) }
+          .semantics { contentDescription = TEXT }
           .drawBehind { renderer.draw(this, fontSize.toPx() / unitsPerEm, axes, fill) },
       measurePolicy = { _, constraints ->
         val scale = fontSize.toPx() / unitsPerEm

@@ -30,7 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.sp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -83,6 +86,9 @@ class GeneratedVsLibraryTest {
         cases.forEach { (name, content) -> Box(Modifier.testTag(name)) { content() } }
       }
     }
+    // Library or standalone, a generated file reads out its text as a content description.
+    composeRule.onAllNodesWithContentDescription("Hamburg").assertCountEquals(3)
+    composeRule.onAllNodesWithText("Hamburg").assertCountEquals(0)
     for ((w, s) in listOf(100f to 0f, 400f to -5f, 1000f to -10f)) {
       wght = w
       slnt = s

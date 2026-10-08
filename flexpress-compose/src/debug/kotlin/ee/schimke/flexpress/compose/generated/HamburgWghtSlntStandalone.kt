@@ -31,9 +31,8 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.text
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
@@ -196,7 +195,7 @@ private object HamburgWghtSlntStandaloneOutline {
     Layout(
       modifier =
         modifier
-          .semantics { text = AnnotatedString(TEXT) }
+          .semantics { contentDescription = TEXT }
           .drawBehind { renderer.draw(this, fontSize.toPx() / unitsPerEm, axes, fill) },
       measurePolicy = { _, constraints ->
         val scale = fontSize.toPx() / unitsPerEm

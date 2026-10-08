@@ -208,6 +208,72 @@ public object VariableFontCodegen {
     }
   }
 
+  /**
+   * [write] as it was before [CodegenTarget] and standalone files, for code compiled against it.
+   */
+  @Deprecated("Kept for binary compatibility", level = DeprecationLevel.HIDDEN)
+  public fun write(
+    sourceRoot: File,
+    packageName: String,
+    functionName: String,
+    font: VariableFont,
+    fontName: String,
+    text: String,
+    axes: List<String>,
+    location: Map<String, Float> = emptyMap(),
+    pixelSize: Float? = null,
+    tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
+    fileHeader: String? = null,
+    update: Boolean = true,
+  ): Boolean =
+    write(
+      sourceRoot,
+      packageName,
+      functionName,
+      font,
+      fontName,
+      text,
+      axes,
+      location,
+      pixelSize,
+      tolerancePixels,
+      fileHeader,
+      update,
+      CodegenTarget.RemoteCompose,
+      false,
+    )
+
+  /**
+   * [generate] as it was before [CodegenTarget] and standalone files, for code compiled against it.
+   */
+  @Deprecated("Kept for binary compatibility", level = DeprecationLevel.HIDDEN)
+  public fun generate(
+    packageName: String,
+    functionName: String,
+    font: VariableFont,
+    fontName: String,
+    text: String,
+    axes: List<String>,
+    location: Map<String, Float> = emptyMap(),
+    pixelSize: Float? = null,
+    tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
+    fileHeader: String? = null,
+  ): String =
+    generate(
+      packageName,
+      functionName,
+      font,
+      fontName,
+      text,
+      axes,
+      location,
+      pixelSize,
+      tolerancePixels,
+      fileHeader,
+      CodegenTarget.RemoteCompose,
+      false,
+    )
+
   /** [chunks] as string literals, one per line; as ktfmt writes them, a comma only between. */
   private fun StringBuilder.strings(chunks: List<String>, indent: String) {
     chunks.forEach { appendLine("$indent\"${escape(it)}\"" + if (chunks.size > 1) "," else "") }
@@ -282,9 +348,8 @@ public object VariableFontCodegen {
           "androidx.compose.ui.layout.FirstBaseline",
           "androidx.compose.ui.layout.LastBaseline",
           "androidx.compose.ui.layout.Layout",
+          "androidx.compose.ui.semantics.contentDescription",
           "androidx.compose.ui.semantics.semantics",
-          "androidx.compose.ui.semantics.text",
-          "androidx.compose.ui.text.AnnotatedString",
           "androidx.compose.ui.unit.TextUnit",
           "androidx.compose.ui.unit.constrainHeight",
           "androidx.compose.ui.unit.constrainWidth",
