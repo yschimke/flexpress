@@ -41,6 +41,7 @@ class VariableFontCodegenTest {
     val axes: List<String>,
     val pixelSize: Float? = null,
     val tolerancePixels: Float = 1f / 16,
+    val standalone: Boolean = false,
   ) {
     val font = testFonts[1]
 
@@ -57,6 +58,7 @@ class VariableFontCodegenTest {
         tolerancePixels = tolerancePixels,
         fileHeader = LICENSE,
         update = update,
+        standalone = standalone,
       )
   }
 
@@ -90,6 +92,9 @@ class VariableFontCodegenTest {
         Spec("HamburgWghtSlnt", "Hamburg", listOf("wght", "slnt")),
         Spec("HamburgWghtSlntAt44Px", "Hamburg", listOf("wght", "slnt"), pixelSize = 44f),
         Spec("HelloWearWght", "Hello, Wear OS 12:45!", listOf("wght")),
+        // Drawing it themselves, with no flexpress: key outlines, then forms.
+        Spec("HamburgWghtStandalone", "Hamburg", listOf("wght"), standalone = true),
+        Spec("HamburgWghtSlntStandalone", "Hamburg", listOf("wght", "slnt"), standalone = true),
       )
   }
 }

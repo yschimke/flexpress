@@ -1,9 +1,10 @@
 # flexpress-codegen
 
 Works a fixed text's outline out at build time and writes it as Kotlin source: an encoded
-`VariableTextOutline` constant and a `@RemoteComposable` that draws it. At run time the app decodes
-a string. It never parses the font, lays the text out or ships the font file. The document it makes
-is byte for byte the one `RemoteVariableFontText` makes from the font.
+`VariableTextOutline` constant and a composable that draws it, a `@RemoteComposable` for Remote
+Compose or a Compose UI `@Composable`. At run time the app decodes a string. It never parses the
+font, lays the text out or ships the font file. What it draws is exactly what the library draws from
+the font: byte for byte the same Remote Compose document, pixel for pixel the same Compose UI text.
 
 Use it for text known at build time: a label, a brand word, a title. Text that changes at run time
 (a clock, a name) needs the font when the document is made, through `rememberVariableFontGlyphs`
@@ -65,4 +66,35 @@ BrandTitle(wght = weight, fontSize = 32.rdp, color = Color.White.rc)
   an outline that is exact at any size.
 - `fileHeader`: a comment to start the file with, such as your license header.
 
+- `target`: `CodegenTarget.RemoteCompose` (the default) or `CodegenTarget.ComposeUi`. For Compose
+  UI each axis is a `() -> Float`, read while drawing, and the composable draws through
+  `flexpress-compose`'s `VariableFontText`.
+- `standalone`: see below.
+
 `generate` returns the same source as a string, for build steps of your own.
+
+## Standalone: one file, no flexpress
+
+By default the generated file draws through the library, so the app depends on `flexpress-remote`
+or `flexpress-compose`. With `standalone = true` it carries its own decoder and drawing instead and
+depends only on Remote Compose or Compose UI: one file to drop into any project, such as code a
+design tool exports.
+
+```kotlin
+VariableFontCodegen.write(
+  sourceRoot = File("src/main/kotlin"),
+  packageName = "com.example.generated",
+  functionName = "BrandTitle",
+  font = font,
+  fontName = "Roboto Flex",
+  text = "Hamburg",
+  axes = listOf("wght"),
+  target = CodegenTarget.ComposeUi,
+  standalone = true,
+)
+```
+
+The composable has the same signature either way. Everything else in the file is private to it,
+so several generated files can share a package. A standalone file is about 9 KB of code larger than
+one that uses the library. Its drawing is the library's, copied: the tests check it writes the same
+Remote Compose document byte for byte and draws the same Compose UI pixels.
