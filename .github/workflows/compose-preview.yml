@@ -52,6 +52,6 @@ jobs:
           distribution: zulu
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-      - uses: yschimke/compose-ai-tools/.github/actions/apply@8c94209230c5cc060a4c01cf311736627cce90a5 # v2.64.0
+      - uses: yschimke/compose-ai-tools/.github/actions/apply@2002c881c0232288b64e71aaba90a32f5bd2d1c2 # v2.64.2
         with:
           only: compose
