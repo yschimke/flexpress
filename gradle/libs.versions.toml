@@ -1,8 +1,8 @@
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.21"
-composeBom = "2026.04.01"
-composeAnimation = "1.11.4"
+composeBom = "2026.09.00"
+composeAnimation = "1.12.1"
 composeRemote = "1.0.0-alpha21"
 composeAiTools = "2.66.0"
 # The preview annotations come from compose-preview-daemon, on its own release line, and resolve
