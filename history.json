@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "fd9b987d812aa899e2a941dadcac5ae8112d549c",
+    "generatedFrom": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -21,6 +21,13 @@
             "path": "renders/flexpress-compose/GeneratedTextWeightsPreview-fd69e0cc.png",
             "versions": [
                 {
+                    "blob": "878be11d1f4be4d3d627fe24399e7bce1b78f8bc",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
+                {
                     "blob": "7190376dc36eb828eb6db89095dabd72b6df860b",
                     "commit": "fd9b987d812aa899e2a941dadcac5ae8112d549c",
                     "date": "2026-10-08T07:46:17Z",
@@ -28,7 +35,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -66,6 +73,13 @@
             "path": "renders/flexpress-compose/RobotoFlexWeightsPreview-33f3a283.png",
             "versions": [
                 {
+                    "blob": "137799ee146d4a73e98d95428121280e93a14f7b",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
+                {
                     "blob": "824a76f269c3cb4aecc85162aba18e1d8cde96b6",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
                     "date": "2026-10-07T19:24:12Z",
@@ -73,13 +87,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWidthAndSlantPreview": {
             "path": "renders/flexpress-compose/RobotoFlexWidthAndSlantPreview-91251a7f.png",
             "versions": [
+                {
+                    "blob": "a4b960e7617053208aa53ec0cf7152ce216afb0a",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "ef27bc20783b27929e79c98c3d1f2480068450e4",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -88,7 +109,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -169,6 +190,13 @@
             "path": "renders/flexpress-remote/LimitationSingleLinePreview-4c4803df.gif",
             "versions": [
                 {
+                    "blob": "1b6bb230d6c18c7c9dc9ae142d3a9255134c0036",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
+                {
                     "blob": "eca0d36d3a36d7d39e57bacc9b634683f5c91163",
                     "commit": "a8bc6166139fdcbb7b91302366bcbe8f353d491d",
                     "date": "2026-10-07T21:54:25Z",
@@ -176,13 +204,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
             "path": "renders/flexpress-remote/HelloRoundness0Preview-b38da3bf.png",
             "versions": [
+                {
+                    "blob": "34ad39c115fbfd3411ed53aa328e031f39e719e9",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "4937c143216e761e801198238a3d409dcbc9dc65",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -191,13 +226,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness100Preview": {
             "path": "renders/flexpress-remote/HelloRoundness100Preview-f0616a07.png",
             "versions": [
+                {
+                    "blob": "34ad39c115fbfd3411ed53aa328e031f39e719e9",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "c4b950e95802ac3db723cbe69492da6ed789c64a",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -206,13 +248,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundnessAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloRoundnessAnimatedPreview-3885a1ae.gif",
             "versions": [
+                {
+                    "blob": "05565a476abd95e339bc96c58964a58d399420cd",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "a89c92fc6125aee60b2adeb696714a0c6459b721",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -221,13 +270,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAndRoundnessExpressionAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloWeightAndRoundnessExpressionAnimatedPreview-fed1ecd1.gif",
             "versions": [
+                {
+                    "blob": "fd48c86c552ed1dc9c11f7973ee5873eef11514d",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "8eaaeb69c2333bc10ac20b6833d7c4c80e8028c3",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -236,13 +292,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloWeightAnimatedPreview-e7c9afce.gif",
             "versions": [
+                {
+                    "blob": "00dea213624c7c131317fce4797ab6282439a237",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "ee87600c399259571a9ae6f90ffb2bc043e5d6ea",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -251,13 +314,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RemoteStringClockPreview": {
             "path": "renders/flexpress-remote/RemoteStringClockPreview-0298239f.gif",
             "versions": [
+                {
+                    "blob": "a87bf2c36675c7328ee027b65fec0a5d684c9e9f",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "c92cda3e0a8ddc49374e46a3b59567ea18023626",
                     "commit": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
@@ -273,13 +343,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 2,
+            "observations": 3,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantPreview": {
             "path": "renders/flexpress-remote/RobotoFlexSlantPreview-73a88f6f.png",
             "versions": [
+                {
+                    "blob": "34ad39c115fbfd3411ed53aa328e031f39e719e9",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "fcbdbbc31ed0bd9a2a6047b0b58b5e677f159c20",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -288,13 +365,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantWidthExpressionAnimatedPreview": {
             "path": "renders/flexpress-remote/RobotoFlexSlantWidthExpressionAnimatedPreview-08efc93a.gif",
             "versions": [
+                {
+                    "blob": "a24d03b6b2eaab85aea65951417d93c6f0a56085",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "d7bd019cfab677283ad4d05ed34104355374b764",
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
@@ -303,13 +387,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexWeightAndSlantSelfAnimatedPreview": {
             "path": "renders/flexpress-remote/RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
             "versions": [
+                {
+                    "blob": "a9bc6a0829b79d3cea07b1d98cfc72f82797075a",
+                    "commit": "45da8f1f7e4358dd23efe5f17d6ee1daa84a5a0a",
+                    "date": "2026-10-17T11:40:58Z",
+                    "sourceSha": "28974f40",
+                    "commits": 1
+                },
                 {
                     "blob": "d567bb3e655959e724d2b5c5bf7a213e7abf3d33",
                     "commit": "654fde57bd731c9cf4ad82cfd91a54b0f9e1cd4e",
@@ -325,7 +416,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 2,
+            "observations": 3,
             "unstable": false,
             "flapCount": 0
         }
