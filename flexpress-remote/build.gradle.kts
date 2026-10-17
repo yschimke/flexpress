@@ -11,7 +11,7 @@ description =
 
 android {
   namespace = "ee.schimke.flexpress.remote"
-  compileSdk = 36
+  compileSdk = 37
 
   // remote-creation-compose and remote-player-compose require 29.
   defaultConfig { minSdk = 29 }
