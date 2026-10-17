@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.1](https://github.com/yschimke/flexpress/compare/v0.2.0...v0.2.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* **deps:** update androidx-compose ([#29](https://github.com/yschimke/flexpress/issues/29)) ([28974f4](https://github.com/yschimke/flexpress/commit/28974f40dc8087fe9d422220a11e8ecad4754eb0))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.16.1 ([#30](https://github.com/yschimke/flexpress/issues/30)) ([322826a](https://github.com/yschimke/flexpress/commit/322826a9bb4adbf2947b37d9891e479cf22e726b))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.16.2 ([#32](https://github.com/yschimke/flexpress/issues/32)) ([75a9a18](https://github.com/yschimke/flexpress/commit/75a9a187bd2f2faae416ca7bf00fa7241bea0abc))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.17.1 ([#37](https://github.com/yschimke/flexpress/issues/37)) ([235ae2f](https://github.com/yschimke/flexpress/commit/235ae2f1a09ab9bdc12ebfa883399a610499a2cc))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.18.0 ([#40](https://github.com/yschimke/flexpress/issues/40)) ([b40fd98](https://github.com/yschimke/flexpress/commit/b40fd98ca54ea76e2ea1f0fd3f0ebae8c650d695))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.18.1 ([#42](https://github.com/yschimke/flexpress/issues/42)) ([506f02c](https://github.com/yschimke/flexpress/commit/506f02ca181df4acd989fd1fecb35aa9c145ce8c))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.18.4 ([#45](https://github.com/yschimke/flexpress/issues/45)) ([4d2c6f3](https://github.com/yschimke/flexpress/commit/4d2c6f3321aca98f9b2dc0021ff0f1402bc334b8))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.18.5 ([#47](https://github.com/yschimke/flexpress/issues/47)) ([01802e6](https://github.com/yschimke/flexpress/commit/01802e6b2b3ffae78403a9b62e66342e88eb05e3))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.18.6 ([#51](https://github.com/yschimke/flexpress/issues/51)) ([e9d50e4](https://github.com/yschimke/flexpress/commit/e9d50e4a9cc1fc6faf52072a0abcac0b3e0f4aa1))
+* **deps:** update dependency org.robolectric:robolectric to v4.17 ([#33](https://github.com/yschimke/flexpress/issues/33)) ([b441fd4](https://github.com/yschimke/flexpress/commit/b441fd473cfc77b500f0f9cf01d78645cfb8dcab))
+
 ## [0.2.0](https://github.com/yschimke/flexpress/compare/v0.1.0...v0.2.0) (2026-10-08)
 
 
