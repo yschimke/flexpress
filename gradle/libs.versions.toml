@@ -10,7 +10,7 @@ composeAiTools = "2.68.6"
 # per-module pin 404s the first time a release skips one. The BOM may lead the plugin (its renderer
 # resolves in the consumer runtime graph) but must not predate the daemon the plugin bakes in
 # (2.35.0 bakes 3.13.2).
-composeAiPreviewDaemon = "3.18.8"
+composeAiPreviewDaemon = "3.19.0"
 androidxActivity = "1.13.0"
 androidxTestExt = "1.3.0"
 junit = "4.13.2"
