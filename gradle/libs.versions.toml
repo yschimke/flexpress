@@ -4,7 +4,7 @@ kotlin = "2.4.21"
 composeBom = "2026.09.00"
 composeAnimation = "1.12.1"
 composeRemote = "1.0.0-alpha21"
-composeAiTools = "2.73.0"
+composeAiTools = "2.74.0"
 # The preview annotations come from compose-preview-daemon, on its own release line, and resolve
 # through compose-preview-daemon-bom: the daemon publishes only the modules a release changed, so a
 # per-module pin 404s the first time a release skips one. The BOM may lead the plugin (its renderer
