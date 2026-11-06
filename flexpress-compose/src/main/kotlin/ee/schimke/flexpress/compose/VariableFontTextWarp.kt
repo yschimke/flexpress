@@ -247,6 +247,8 @@ private fun WarpedText(
       modifier
         .semantics { this.text = AnnotatedString(text) }
         .drawBehind {
+          // An empty line has no glyphs, and no axis scratch to evaluate them into.
+          if (runRenderer.size == 0) return@drawBehind
           val scale = pixelSize / runRenderer.unitsPerEm
           val warp = prepare(this, pixelSize)
           for (a in sources.indices) runRenderer.axisScratch[a] = sources[a]()

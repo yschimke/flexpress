@@ -214,10 +214,10 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
   ) {
     if (elevationPx <= 0f) return
     fill.maskFilter = ambientBlur
-    fill.color = shadowColor.copy(alpha = (0.32f * intensity).coerceIn(0f, 1f)).toArgb()
+    fill.color = shadowColor.scaledAlpha(0.32f * intensity).toArgb()
     drawShifted(nc, path, -lx * elevationPx, -ly * elevationPx * 1.2f, fill)
     fill.maskFilter = contactBlur
-    fill.color = shadowColor.copy(alpha = (0.5f * intensity).coerceIn(0f, 1f)).toArgb()
+    fill.color = shadowColor.scaledAlpha(0.5f * intensity).toArgb()
     drawShifted(nc, path, -lx * elevationPx * 0.3f, -ly * elevationPx * 0.35f, fill)
     fill.maskFilter = null
   }
@@ -236,7 +236,7 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     val rim = max(0.75f, depthPx * 0.45f)
     val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
     fill.maskFilter = rimBlur
-    fill.color = highlightColor.copy(alpha = (0.7f * intensity).coerceIn(0f, 1f)).toArgb()
+    fill.color = highlightColor.scaledAlpha(0.7f * intensity).toArgb()
     drawShifted(nc, path, -lx * rim, -ly * rim, fill)
     fill.maskFilter = null
     erase.maskFilter = null
@@ -334,9 +334,9 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     val farAlpha = if (style == EmbossStyle.Raised) 0.2f else 0.04f
     val brush =
       Brush.linearGradient(
-        0f to near.copy(alpha = (nearAlpha * intensity).coerceIn(0f, 1f)),
+        0f to near.scaledAlpha(nearAlpha * intensity),
         0.5f to Color.Transparent,
-        1f to far.copy(alpha = (farAlpha * intensity).coerceIn(0f, 1f)),
+        1f to far.scaledAlpha(farAlpha * intensity),
         start = start,
         end = end,
       )
@@ -371,7 +371,7 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     if (alpha <= 0f) return
     val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
     fill.maskFilter = null
-    fill.color = color.copy(alpha = alpha.coerceIn(0f, 1f)).toArgb()
+    fill.color = color.scaledAlpha(alpha).toArgb()
     nc.drawPath(path, fill)
     erase.maskFilter = softness
     if (stepped) {
@@ -408,3 +408,9 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
       if (radius >= 0.1f) BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL) else null
   }
 }
+
+/**
+ * This color with its own alpha scaled by [factor], so a translucent or transparent color stays so.
+ */
+private fun Color.scaledAlpha(factor: Float): Color =
+  copy(alpha = (alpha * factor).coerceIn(0f, 1f))

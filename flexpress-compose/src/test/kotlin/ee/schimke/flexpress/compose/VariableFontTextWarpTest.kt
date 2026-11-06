@@ -198,8 +198,59 @@ class VariableFontTextWarpTest {
     assertThat(bounds.width).isGreaterThan(2f * 40f * 2f)
   }
 
+  @Test
+  fun emptyTextDrawsNothingWithoutThrowing() {
+    val font = robotoFlex.font
+    val path =
+      Path().apply {
+        moveTo(0f, 0f)
+        lineTo(100f, 0f)
+      }
+    composeRule.setContent {
+      Column {
+        VariableFontCurvedText("", font, mapOf("wght" to { 700f }), 18.sp, radius = 40.dp)
+        VariableFontPathWarpText("", font, mapOf("wght" to { 700f }), 18.sp, path = path)
+      }
+    }
+    composeRule.waitForIdle()
+    capture(composeRule.activity.window.decorView)
+  }
+
+  @Test
+  fun transparentHighlightAndShadowColorsAddNothing() {
+    val font = robotoFlex.font
+    composeRule.setContent {
+      Column(Modifier.background(Color.Black)) {
+        for ((tag, style) in
+          listOf("raised" to EmbossStyle.Raised, "pressed" to EmbossStyle.Pressed)) {
+          VariableFontEmbossText(
+            text = "FLAT",
+            font = font,
+            axes = mapOf("wght" to { 800f }),
+            fontSize = 22.sp,
+            style = style,
+            color = Color.Black,
+            highlightColor = Color.White.copy(alpha = 0f),
+            shadowColor = Color.White.copy(alpha = 0f),
+            modifier = Modifier.testTag(tag),
+          )
+        }
+      }
+    }
+    composeRule.waitForIdle()
+    // A black face on black with no highlight or shadow leaves nothing to see.
+    assertThat(ink(capture("raised"))).isLessThan(1f)
+    assertThat(ink(capture("pressed"))).isLessThan(1f)
+  }
+
   private fun assertNear(x: Float, y: Float, ex: Float, ey: Float) {
     assertThat(hypot(x - ex, y - ey)).isLessThan(0.05f)
+  }
+
+  private fun capture(root: android.view.View): Bitmap {
+    val whole = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
+    composeRule.runOnUiThread { root.draw(Canvas(whole)) }
+    return whole
   }
 
   private fun capture(tag: String): Bitmap {
