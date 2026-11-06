@@ -16,6 +16,7 @@
 
 package ee.schimke.flexpress.compose
 
+import android.os.Build
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -130,7 +131,13 @@ private fun WearCurveToEdgeText(text: String, color: Color, modifier: Modifier =
   Box(modifier.fillMaxSize(), Alignment.TopCenter) {
     BasicText(
       text,
-      modifier = Modifier.wearCurveToEdge(maxSweepAngle = 180f, screenHeightPx = screenHeightPx),
+      // The shader needs API 33; below that the text stays flat.
+      modifier =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          Modifier.wearCurveToEdge(maxSweepAngle = 180f, screenHeightPx = screenHeightPx)
+        } else {
+          Modifier
+        },
       style =
         TextStyle(
           fontSize = CompareFontSize,
