@@ -287,6 +287,110 @@
     "sha256": "8782288b5aa2cdf3ec6c17d8f39ab2ea554fced3bea80b8647b3c06fe2c7978f",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/LimitationPreviews.kt"
   },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteCurvedClockAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteCurvedClockAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteCurvedClockAnimatedPreview-795b3193.gif",
+    "sha256": "f45b59f34c6d799cfb68f0f9c052028136c16e4a1c23840d849fead7868f18f0",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectBaselineWaveAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectBaselineWaveAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectBaselineWaveAnimatedPreview-70609f07.gif",
+    "sha256": "569318cb6618d2acdf2ceb4b03e7b2d1b1c2cff71dbea4a963355443974c3584",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectEchoAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectEchoAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectEchoAnimatedPreview-a15adeb8.gif",
+    "sha256": "52ec858ed7c5bbe285e357c55dbe5689b3254ec8500133dfc8851d300860cdb5",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectEmbossAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectEmbossAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectEmbossAnimatedPreview-209c2e70.gif",
+    "sha256": "94cc14e0d8ae91961ca6279e314bb2998bf4803e7916786121bbc40eda5c4b0e",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectGlitchAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectGlitchAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectGlitchAnimatedPreview-a97d6eb4.gif",
+    "sha256": "823273e32e420fd5dd1579a6641cb11072055c3884c5bdf8c0ef2fa87d9424f4",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectKineticCascadeAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectKineticCascadeAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectKineticCascadeAnimatedPreview-a131e483.gif",
+    "sha256": "e7bcf0bc824815a28a8475d0fc8c95ea3e38ea304f237c353b345a8708f32507",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectNeonAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectNeonAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectNeonAnimatedPreview-1a9b4bd5.gif",
+    "sha256": "35a2a3186bc60e22715eed4277af139747234f489a303ee3663496d9482b65bc",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectPathWarpAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectPathWarpAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectPathWarpAnimatedPreview-0b1d46d1.gif",
+    "sha256": "2d836d9194fbbfb7df9629308a1923778c0bcfb77255c7a2a65389d05ae8e895",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectRangeWaveAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectRangeWaveAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectRangeWaveAnimatedPreview-85242ff8.gif",
+    "sha256": "9172a9fc7a6cd59df90f075988d5614cc8e70225455d4a72ba09472587c1ab18",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectShimmerAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectShimmerAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectShimmerAnimatedPreview-4e1a18e8.gif",
+    "sha256": "1526f442f1ba076e4ee65e8a79d4b22961c65e46e65d42e99c57960adb10f04d",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectTrimPathAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectTrimPathAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectTrimPathAnimatedPreview-c966e6de.gif",
+    "sha256": "ffb068695c96c98a532edc0802dfdfaaca395e6e0a59937c499971689280f37c",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectWaveWarpAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectWaveWarpAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectWaveWarpAnimatedPreview-c56df3a7.gif",
+    "sha256": "b7944be933099c577c24021bd9745f3e7dfc548f1f7aa37de72211c519314d47",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectWigglyAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RemoteEffectWigglyAnimatedPreview",
+    "module": "flexpress-remote",
+    "renderBasename": "RemoteEffectWigglyAnimatedPreview-762720bc.gif",
+    "sha256": "a8ad3c3a98632e2e6710316127fe837584c9a7e3fb3b59eb2452e36df10c8549",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/RemoteCurvedTextPreviews.kt"
+  },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
     "captureLabel": "",
     "functionName": "HelloRoundness0Preview",
