@@ -107,8 +107,9 @@ along its end tangent; a closed path wraps.
 `VariableFontEmbossText` is fills of the evaluated outline too: each lit or shaded bevel is the
 glyph minus copies of itself shifted along the light direction (`DST_OUT` in a layer) with a
 rounded-chamfer falloff, plus a specular rim and blurred cast and contact shadows
-(`EmbossStyle.Pressed`: a shadowed near wall, a lit far wall and lip). Blurs use `BlurMaskFilter`,
-which hardware-accelerated canvases honour from API 28.
+(`EmbossStyle.Pressed`: a shadowed near wall, a lit far wall and lip). The bevels need no filter;
+the shadows are blurred with `Paint.setShadowLayer`, which hardware-accelerated canvases draw from
+API 28 (they never draw mask filters), and are drawn unblurred below that.
 
 ## How
 

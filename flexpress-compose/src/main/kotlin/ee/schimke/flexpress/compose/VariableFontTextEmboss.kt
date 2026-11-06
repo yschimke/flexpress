@@ -16,12 +16,12 @@
 
 package ee.schimke.flexpress.compose
 
-import android.graphics.BlurMaskFilter
 import android.graphics.Canvas as AndroidCanvas
 import android.graphics.Paint as AndroidPaint
 import android.graphics.Path as AndroidPath
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -46,6 +46,7 @@ import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
@@ -68,8 +69,9 @@ public enum class EmbossStyle {
  * [lightAngleDegrees] to swing the light around the letters, and the axes to watch the bevel follow
  * the weight.
  *
- * Blurs use `BlurMaskFilter`, which hardware-accelerated canvases honour from API 28; below that
- * the shadows and bevels are drawn unblurred.
+ * The bevels are stepped erasures, which need no filter. The shadows are blurred with
+ * `Paint.setShadowLayer`, which hardware-accelerated canvases draw from API 28 (mask filters they
+ * never draw); below that, on a hardware canvas, the shadows are drawn unblurred.
  *
  * @param lightAngleDegrees The direction toward the light, in degrees clockwise from 3 o'clock
  *   (`-135f` is the top left). Read while drawing.
@@ -172,7 +174,7 @@ public fun VariableFontEmbossText(
 }
 
 /**
- * The paints, blurs and falloff of one [VariableFontEmbossText], reused across frames. Every pass
+ * The paints, shadows and falloff of one [VariableFontEmbossText], reused across frames. Every pass
  * is a fill of the glyph path, so the relief follows the live outline exactly.
  */
 internal class EmbossPainter(private val depthPx: Float, private val elevationPx: Float) {
@@ -181,11 +183,9 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG).apply {
       xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
     }
-  private val ambientBlur = blur(elevationPx * 1.1f + 0.5f)
-  private val contactBlur = blur(elevationPx * 0.35f + 0.35f)
-  private val bevelBlur = blur(depthPx / BEVEL_STEPS)
-  private val wideBevelBlur = blur(depthPx * 0.6f)
-  private val rimBlur = blur(0.35f)
+  private val shadow = AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG)
+  private val ambientRadius = elevationPx * 1.1f + 0.5f
+  private val contactRadius = elevationPx * 0.35f + 0.35f
 
   // The bevel's falloff: after k of the BEVEL_STEPS shifted erasures, (1 - k/n)^γ of the light is
   // left, so the band is brightest at the very edge and rolls off like a rounded chamfer.
@@ -213,13 +213,47 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     intensity: Float,
   ) {
     if (elevationPx <= 0f) return
-    fill.maskFilter = ambientBlur
-    fill.color = shadowColor.scaledAlpha(0.32f * intensity).toArgb()
-    drawShifted(nc, path, -lx * elevationPx, -ly * elevationPx * 1.2f, fill)
-    fill.maskFilter = contactBlur
-    fill.color = shadowColor.scaledAlpha(0.5f * intensity).toArgb()
-    drawShifted(nc, path, -lx * elevationPx * 0.3f, -ly * elevationPx * 0.35f, fill)
-    fill.maskFilter = null
+    val ambient = shadowColor.scaledAlpha(0.32f * intensity)
+    val contact = shadowColor.scaledAlpha(0.5f * intensity)
+    castShadow(nc, path, -lx * elevationPx, -ly * elevationPx * 1.2f, ambientRadius, ambient)
+    castShadow(
+      nc,
+      path,
+      -lx * elevationPx * 0.3f,
+      -ly * elevationPx * 0.35f,
+      contactRadius,
+      contact,
+    )
+  }
+
+  /**
+   * A blurred copy of [path] at ([dx], [dy]) in [color]. The shape itself is drawn far off the
+   * canvas and only its shadow layer, offset back by as much, lands here: shadow layers are the
+   * blur hardware canvases draw (from API 28), and mask filters are not.
+   */
+  private fun castShadow(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    dx: Float,
+    dy: Float,
+    radius: Float,
+    color: Color,
+  ) {
+    if (color.alpha <= 0f) return
+    if (Build.VERSION.SDK_INT < 28 && nc.isHardwareAccelerated) {
+      fill.color = color.toArgb()
+      drawShifted(nc, path, dx, dy, fill)
+      return
+    }
+    shadow.color = android.graphics.Color.BLACK
+    // A translucent shadow color sets the shadow's own alpha, whatever the paint's.
+    shadow.setShadowLayer(
+      radius,
+      OFFSTAGE + dx,
+      dy,
+      color.copy(alpha = min(color.alpha, 0.996f)).toArgb(),
+    )
+    drawShifted(nc, path, -OFFSTAGE, 0f, shadow)
   }
 
   /** The lit lip of the surface just outside the far edge of a pressed letter. */
@@ -235,11 +269,8 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
   ) {
     val rim = max(0.75f, depthPx * 0.45f)
     val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
-    fill.maskFilter = rimBlur
     fill.color = highlightColor.scaledAlpha(0.7f * intensity).toArgb()
     drawShifted(nc, path, -lx * rim, -ly * rim, fill)
-    fill.maskFilter = null
-    erase.maskFilter = null
     erase.alpha = 255
     nc.drawPath(path, erase)
     nc.restoreToCount(layer)
@@ -267,15 +298,14 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
       h,
       highlightColor,
       0.8f * intensity,
-      bevelBlur,
       stepped = true,
     )
     // Faces turned away.
-    band(nc, path, lx, ly, depthPx, w, h, shadowColor, 0.55f * intensity, bevelBlur, stepped = true)
+    band(nc, path, lx, ly, depthPx, w, h, shadowColor, 0.55f * intensity, stepped = true)
     // The specular glint where the face meets the lit bevel, and a dark line on the far edge.
     val rim = max(0.6f, depthPx * 0.2f)
-    band(nc, path, -lx, -ly, rim, w, h, highlightColor, 0.95f * intensity, rimBlur, stepped = false)
-    band(nc, path, lx, ly, rim, w, h, shadowColor, 0.45f * intensity, rimBlur, stepped = false)
+    band(nc, path, -lx, -ly, rim, w, h, highlightColor, 0.95f * intensity, stepped = false)
+    band(nc, path, lx, ly, rim, w, h, shadowColor, 0.45f * intensity, stepped = false)
   }
 
   fun drawPressedBevel(
@@ -300,14 +330,13 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
       h,
       shadowColor,
       0.6f * intensity,
-      wideBevelBlur,
       true,
     )
-    band(nc, path, -lx, -ly, depthPx, w, h, shadowColor, 0.55f * intensity, bevelBlur, true)
+    band(nc, path, -lx, -ly, depthPx, w, h, shadowColor, 0.55f * intensity, true)
     // The far wall faces the light.
-    band(nc, path, lx, ly, depthPx, w, h, highlightColor, 0.55f * intensity, bevelBlur, true)
+    band(nc, path, lx, ly, depthPx, w, h, highlightColor, 0.55f * intensity, true)
     val rim = max(0.6f, depthPx * 0.2f)
-    band(nc, path, -lx, -ly, rim, w, h, shadowColor, 0.7f * intensity, rimBlur, stepped = false)
+    band(nc, path, -lx, -ly, rim, w, h, shadowColor, 0.7f * intensity, stepped = false)
   }
 
   fun faceShading(
@@ -365,15 +394,12 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
     h: Float,
     color: Color,
     alpha: Float,
-    softness: BlurMaskFilter?,
     stepped: Boolean,
   ) {
     if (alpha <= 0f) return
     val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
-    fill.maskFilter = null
     fill.color = color.scaledAlpha(alpha).toArgb()
     nc.drawPath(path, fill)
-    erase.maskFilter = softness
     if (stepped) {
       for (k in 0 until BEVEL_STEPS) {
         val d = width * (k + 1) / BEVEL_STEPS
@@ -401,11 +427,11 @@ internal class EmbossPainter(private val depthPx: Float, private val elevationPx
   }
 
   private companion object {
-    const val BEVEL_STEPS = 6
-    const val BEVEL_GAMMA = 1.6f
+    const val BEVEL_STEPS = 8
 
-    fun blur(radius: Float): BlurMaskFilter? =
-      if (radius >= 0.1f) BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL) else null
+    /** How far off the canvas a shadow's own shape is drawn. */
+    const val OFFSTAGE = 32768f
+    const val BEVEL_GAMMA = 1.6f
   }
 }
 
