@@ -78,6 +78,46 @@ class VariableTextOutlineTest {
     assertThat(simplified.encode().length).isLessThan(exact.encode().length)
   }
 
+  @Test
+  fun stepTentsMatchExactTentEvaluation() {
+    val font = testFonts[1].font
+    val wghtIndex = font.axes.indexOfFirst { it.tag == "wght" }
+    val wghtAxis = font.axes[wghtIndex]
+    val stepRight = Tent(wghtIndex, start = 0.5f, peak = 0.5f, end = 1f)
+    val stepLeft = Tent(wghtIndex, start = -1f, peak = -0.5f, end = -0.5f)
+    for (tent in listOf(stepRight, stepLeft)) {
+      val (y0, triples) = font.tentRamps(tent)
+      val ramps =
+        VariableTextOutline.TentRamps(
+          0,
+          y0,
+          triples.map { it.first }.toFloatArray(),
+          triples.map { it.second }.toFloatArray(),
+          triples.map { it.third }.toFloatArray(),
+        )
+      for (step in 0..80) {
+        val user = wghtAxis.minValue + (wghtAxis.maxValue - wghtAxis.minValue) * (step / 80f)
+        val norm = font.normalize(wghtIndex, user)
+        assertWithMessage("tent $tent at user=$user (norm=$norm)")
+          .that(ramps.evaluate(user))
+          .isWithin(1e-4f)
+          .of(tent.evaluate(norm))
+      }
+    }
+  }
+
+  @Test
+  fun unvariedOutlineUsesKeysWithNoTents() {
+    val font = testFonts[1].font
+    // A space has no contours or moving coordinates, and empty animated axes produce 0 tents.
+    val outline = font.outline("Hamburg", emptyList())
+    assertThat(outline.tents).isEmpty()
+    assertThat(outline.body).isInstanceOf(VariableTextOutline.Keys::class.java)
+    val decoded = VariableTextOutline.decode(outline.encode())
+    assertThat(decoded.evaluate(FloatArray(0)).toList())
+      .isEqualTo(coordinates(font.layout("Hamburg", emptyMap(), emptyMap())).toList())
+  }
+
   private fun coordinates(outline: TextOutline): FloatArray {
     val out = mutableListOf<Float>()
     outline.emit(

@@ -119,5 +119,5 @@ Published to Maven Central as `ee.schimke.flexpress:flexpress-remote`, `flexpres
 ./gradlew composePreviewRender   # the debug previews, as PNGs and GIFs
 ```
 
-Remote Compose is `androidx.compose.remote` 1.0.0-alpha21. Contributor and agent rules are in
+Remote Compose is `androidx.compose.remote` 1.0.0-alpha23. Contributor and agent rules are in
 [`AGENTS.md`](AGENTS.md).

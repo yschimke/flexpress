@@ -16,6 +16,9 @@
 
 package ee.schimke.flexpress
 
+import kotlin.math.nextDown
+import kotlin.math.nextUp
+
 /**
  * One axis' factor of a region scalar: rises from 0 at [start] to 1 at [peak] and falls back to 0
  * at [end], in normalized coordinates.
@@ -96,11 +99,25 @@ class AxisSpecialization(private val animated: Set<Int>, private val fixed: Floa
 @InternalFlexpressApi
 fun VariableFont.tentRamps(tent: Tent): Pair<Float, List<Triple<Float, Float, Float>>> {
   val info = axes[tent.axis]
-  val f = { v: Float -> tent.evaluate(normalize(mapOf(info.tag to v))[tent.axis]) }
+  val startUser = denormalize(tent.axis, tent.start)
+  val peakUser = denormalize(tent.axis, tent.peak)
+  val endUser = denormalize(tent.axis, tent.end)
+  val leftStep = if (tent.start == tent.peak && tent.start > -1f) peakUser.nextDown() else null
+  val rightStep = if (tent.peak == tent.end && tent.end < 1f) peakUser.nextUp() else null
+  val f = { v: Float ->
+    when (v) {
+      peakUser -> 1f
+      leftStep,
+      rightStep -> 0f
+      startUser -> tent.evaluate(tent.start)
+      endUser -> tent.evaluate(tent.end)
+      else -> tent.evaluate(normalize(tent.axis, v))
+    }
+  }
   val knots =
-    (listOf(info.minValue, info.maxValue) +
+    (listOfNotNull(info.minValue, info.maxValue, leftStep, rightStep) +
         avarBreakpoints(tent.axis) +
-        listOf(tent.start, tent.peak, tent.end).map { denormalize(tent.axis, it) })
+        listOf(startUser, peakUser, endUser))
       .filter { it in info.minValue..info.maxValue }
       .distinct()
       .sorted()

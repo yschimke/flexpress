@@ -62,17 +62,39 @@ internal fun shapeText(
       val ids = part.map {
         if (isDefaultIgnorable(it)) IGNORED else glyphId(if (rtl) mirror(it) else it)
       }
-      val shaped =
+      val (shaped, rawComponents) =
         when {
-          gsub == null -> ids
+          gsub == null -> ids to List(ids.size) { -1 }
           script in JOINING_SCRIPTS ->
-            gsub.substitute(ids, joiningForms(part).toList(), script, JOINING_STAGES, FORMS)
-          else -> gsub.substitute(ids, script, DEFAULT_FEATURES)
+            gsub.substituteWithComponents(
+              ids,
+              joiningForms(part).toList(),
+              script,
+              JOINING_STAGES,
+              FORMS,
+              coords,
+            )
+          else ->
+            gsub.substituteWithComponents(
+              ids,
+              List(ids.size) { 0 },
+              script,
+              listOf(DEFAULT_FEATURES),
+              emptyMap(),
+              coords,
+            )
         }
-      val partDrawn = shaped.filter { it != IGNORED }
+      val partDrawn = ArrayList<Int>(shaped.size)
+      val partComponents = ArrayList<Int>(shaped.size)
+      for (k in shaped.indices) {
+        if (shaped[k] != IGNORED) {
+          partDrawn += shaped[k]
+          partComponents += rawComponents[k]
+        }
+      }
       // Marks attach within their own script's glyphs.
       val offset = drawn.size
-      val partAttachments = marks?.attach(partDrawn, script, coords)
+      val partAttachments = marks?.attach(partDrawn, script, coords, partComponents)
       drawn += partDrawn
       partDrawn.indices.mapTo(attachments) { k ->
         partAttachments?.get(k)?.let { it.copy(base = it.base + offset) }
@@ -398,7 +420,7 @@ private val FORMS =
 /** The `GSUB` stages of HarfBuzz's Arabic shaper: each feature group applied in turn. */
 private val JOINING_STAGES =
   listOf(
-    setOf("ccmp", "locl"),
+    setOf("rvrn", "ccmp", "locl"),
     setOf("isol"),
     setOf("fina"),
     setOf("fin2"),
@@ -407,7 +429,7 @@ private val JOINING_STAGES =
     setOf("med2"),
     setOf("init"),
     setOf("rlig"),
-    setOf("calt", "liga", "clig", "mset"),
+    setOf("rclt", "calt", "liga", "clig", "mset"),
   )
 
 /**

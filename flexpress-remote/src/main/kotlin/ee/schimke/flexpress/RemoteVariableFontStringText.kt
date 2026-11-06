@@ -41,7 +41,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toArgb
 import kotlin.math.roundToInt
 
 /**
@@ -271,7 +270,7 @@ public fun RemoteVariableFontText(
     // records its own operations to write later, so nothing here goes through it.
     val paint = writer.rcPaint.setAntiAlias(true)
     val constant = color.constantValueOrNull
-    if (constant != null) paint.setColor(constant.toArgb())
+    if (constant != null) paint.setColor(constant)
     else paint.setColorId(color.getIdForCreationState(state))
     paint.commit()
     val written = glyphs.write(state)
