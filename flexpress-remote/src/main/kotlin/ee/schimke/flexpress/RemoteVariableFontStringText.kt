@@ -60,7 +60,7 @@ public class VariableFontGlyphs
 internal constructor(
   internal val font: VariableFont,
   internal val set: List<String>,
-  private val outlines: List<VariedOutline>,
+  internal val outlines: List<VariedOutline>,
   private val specialization: AxisSpecialization,
   private val axes: Map<Int, RemoteFloat>,
   internal val fonts: LookupFonts,
@@ -70,7 +70,13 @@ internal constructor(
    * What the first text wrote into a document, for the others to refer to. [firstPath] is set when
    * the paths' ids are consecutive, so a character's path id is [firstPath] + its index.
    */
-  internal class Written(val paths: List<Int>, val advances: List<RemoteFloat>, val firstPath: Int?)
+  internal class Written(
+    val paths: List<Int>,
+    val advances: List<RemoteFloat>,
+    val firstPath: Int?,
+    /** The value on the player of a coordinate of the outlines, a literal when it is constant. */
+    val form: (LinearForm) -> RemoteFloat,
+  )
 
   private var writtenTo: Any? = null
   private var written: Written? = null
@@ -100,7 +106,11 @@ internal constructor(
     val paths = remotePaths.map { writer.addPathData(it) }
     val advances = outlines.map { model.float(specialization.specialize(it.advance)) }
     val consecutive = paths.withIndex().all { (i, id) -> id == paths[0] + i }
-    return Written(paths, advances, paths.firstOrNull()?.takeIf { consecutive }).also {
+    val form = { f: LinearForm ->
+      val value = specialization.specialize(f)
+      if (value.isConstant) value.constant.rf else model.float(value)
+    }
+    return Written(paths, advances, paths.firstOrNull()?.takeIf { consecutive }, form).also {
       written = it
       writtenTo = writer
     }

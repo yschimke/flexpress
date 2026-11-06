@@ -22,6 +22,9 @@ import android.graphics.Canvas
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.remote.core.operations.ConditionalOperations
+import androidx.compose.remote.core.operations.Utils
+import androidx.compose.remote.core.operations.utilities.AnimatedFloatExpression as E
 import androidx.compose.remote.creation.compose.capture.rememberRemoteDocument
 import androidx.compose.remote.creation.compose.layout.RemoteCanvas
 import androidx.compose.remote.creation.compose.layout.RemoteOffset
@@ -29,6 +32,7 @@ import androidx.compose.remote.creation.compose.layout.RemoteSize
 import androidx.compose.remote.creation.compose.modifier.RemoteModifier
 import androidx.compose.remote.creation.compose.modifier.size
 import androidx.compose.remote.creation.compose.state.RemoteBitmapFont
+import androidx.compose.remote.creation.compose.state.RemoteFloat
 import androidx.compose.remote.creation.compose.state.RemotePaint
 import androidx.compose.remote.creation.compose.state.RemoteString
 import androidx.compose.remote.creation.compose.state.min
@@ -126,6 +130,208 @@ class PlayerLoopProbeTest {
       assertThat(heights.take(expected.size)).isEqualTo(expected.map { it * 40 })
       assertThat(heights.drop(expected.size).all { it == 0 }).isTrue()
     }
+  }
+
+  /**
+   * The pen positions every RemoteString effect needs, without a running sum (a loop cannot carry
+   * one): a first loop writes each slot's advance into a dynamic float array, and a second reads
+   * the advances before it with `A_SUM_TILL`.
+   */
+  @SuppressLint("RestrictedApi")
+  @Test
+  fun aDynamicArrayGivesEachSlotItsPen() {
+    val pixel = ImageBitmap(1, 1)
+    val font =
+      RemoteBitmapFont(
+        "abc"
+          .mapIndexed { i, c ->
+            RemoteBitmapFont.Glyph(c.toString(), pixel, 0, 0, i.toShort(), 0, 1, 1)
+          },
+        emptyMap(),
+      )
+    composeRule.setContent {
+      val doc = rememberRemoteDocument {
+        RemoteCanvas(RemoteModifier.size(400.rdp)) {
+          // Everything is written straight to the document, in order: RemoteCanvas records its own
+          // operations to write later, which would put these array writes outside their loop.
+          val state = remoteComposeCreationState
+          val writer = state.document
+          val text = RemoteString.createNamedRemoteString("text", "")
+          val id = { v: RemoteFloat -> v.getFloatIdForCreationState(state) }
+          writer.rcPaint.setColor(android.graphics.Color.BLACK).commit()
+          writer.drawRect(0f, 0f, 400f, 400f)
+          val advances = writer.addDynamicFloatArray(8f)
+          val arrayId = Utils.idFromNan(advances)
+          val first = RemoteFloat(writer.startLoop(8f))
+          run {
+            val n = text.length
+            val ch = text.substring(min(n, first.toRemoteInt()), min(n, (first + 1f).toRemoteInt()))
+            // Each character is as many 20 px cells wide as its glyph in the font.
+            val w = font.measureWidth(ch, 0f.rf) * 20f
+            writer.buffer.setArrayValue(arrayId, id(first), id(w))
+          }
+          writer.endLoop()
+          writer.rcPaint.setColor(android.graphics.Color.WHITE).commit()
+          val i = writer.startLoop(8f)
+          val pen = writer.floatExpression(advances, i, 1f, E.SUB, E.A_SUM_TILL)
+          val w = writer.floatExpression(advances, i, E.A_DEREF)
+          // Each slot's box, inset a pixel so neighbours stay apart.
+          writer.drawRect(
+            writer.floatExpression(pen, 1f, E.ADD),
+            100f,
+            writer.floatExpression(pen, w, E.ADD, 1f, E.SUB),
+            140f,
+          )
+          writer.endLoop()
+        }
+      }
+      Box(Modifier.size(400.dp, 400.dp).testTag("p")) {
+        doc.value?.let {
+          RemoteDocumentPlayer(
+            it,
+            400,
+            400,
+            Modifier.size(400.dp, 400.dp),
+            update = { p -> p.setUserLocalString("text", text) },
+          )
+        }
+      }
+    }
+    // a=20, b=40, c=60 px: "cab" starts its boxes at 0, 60 and 80, and ends at 120.
+    for ((t, edges) in listOf("cab" to listOf(0, 60, 80, 120), "abc" to listOf(0, 20, 60, 120))) {
+      text = t
+      val b = settled()
+      val row = (0 until 400).map { x -> (b.getPixel(x, 120) and 0xff) > 128 }
+      val starts = (0 until 400).filter { x -> row[x] && (x == 0 || !row[x - 1]) }
+      assertThat(starts).isEqualTo(edges.dropLast(1).map { it + 1 })
+      // Nothing past the line (an empty slot's zero-width box sits at its end).
+      assertThat(row.subList(edges.last() + 2, 400).none { it }).isTrue()
+    }
+  }
+
+  /** A path built in a loop body from chained expressions of the index is rebuilt every time. */
+  @SuppressLint("RestrictedApi")
+  @Test
+  fun aPathBuiltInALoopFollowsTheIndex() {
+    composeRule.setContent {
+      val doc = rememberRemoteDocument {
+        RemoteCanvas(RemoteModifier.size(400.rdp)) {
+          val state = remoteComposeCreationState
+          val writer = state.document
+          writer.rcPaint.setColor(android.graphics.Color.BLACK).commit()
+          writer.drawRect(0f, 0f, 400f, 400f)
+          writer.rcPaint.setColor(android.graphics.Color.WHITE).commit()
+          val i = writer.startLoop(3f)
+          // x = (i * 50) * 2 + 20, through two expressions.
+          val a = writer.floatExpression(i, 50f, E.MUL)
+          val x = writer.floatExpression(a, 2f, E.MUL, 20f, E.ADD)
+          val right = writer.floatExpression(x, 40f, E.ADD)
+          val path = writer.pathCreate(x, 100f)
+          writer.pathAppendLineTo(path, right, 100f)
+          writer.pathAppendLineTo(path, right, 140f)
+          writer.pathAppendLineTo(path, x, 140f)
+          writer.pathAppendClose(path)
+          writer.drawPath(path)
+          writer.endLoop()
+        }
+      }
+      Box(Modifier.size(400.dp, 400.dp).testTag("p")) {
+        doc.value?.let { RemoteDocumentPlayer(it, 400, 400, Modifier.size(400.dp, 400.dp)) }
+      }
+    }
+    val b = settled()
+    val row = (0 until 400).map { x -> (b.getPixel(x, 120) and 0xff) > 128 }
+    val starts = (0 until 400).filter { x -> row[x] && (x == 0 || !row[x - 1]) }
+    val lit = row.count { it }
+    assertThat(starts).isEqualTo(listOf(20, 120, 220))
+    assertThat(lit).isEqualTo(120)
+  }
+
+  /**
+   * The same path built inside a conditional block in the loop body is not rebuilt: the player
+   * refreshes the variables of a loop's own operations, not of those nested in a conditional. So
+   * the RemoteString effects build everything at the loop's top level and use conditionals only to
+   * choose what to draw.
+   */
+  @SuppressLint("RestrictedApi")
+  @Test
+  fun aPathBuiltInAConditionalInALoopIsNotRebuilt() {
+    composeRule.setContent {
+      val doc = rememberRemoteDocument {
+        RemoteCanvas(RemoteModifier.size(400.rdp)) {
+          val state = remoteComposeCreationState
+          val writer = state.document
+          writer.rcPaint.setColor(android.graphics.Color.BLACK).commit()
+          writer.drawRect(0f, 0f, 400f, 400f)
+          writer.rcPaint.setColor(android.graphics.Color.WHITE).commit()
+          val i = writer.startLoop(3f)
+          writer.conditionalOperations(ConditionalOperations.TYPE_GTE, i, 0f)
+          val a = writer.floatExpression(i, 50f, E.MUL)
+          val x = writer.floatExpression(a, 2f, E.MUL, 20f, E.ADD)
+          val right = writer.floatExpression(x, 40f, E.ADD)
+          val path = writer.pathCreate(x, 100f)
+          writer.pathAppendLineTo(path, right, 100f)
+          writer.pathAppendLineTo(path, right, 140f)
+          writer.pathAppendLineTo(path, x, 140f)
+          writer.pathAppendClose(path)
+          writer.drawPath(path)
+          writer.endConditionalOperations()
+          writer.endLoop()
+        }
+      }
+      Box(Modifier.size(400.dp, 400.dp).testTag("p")) {
+        doc.value?.let { RemoteDocumentPlayer(it, 400, 400, Modifier.size(400.dp, 400.dp)) }
+      }
+    }
+    val b = settled()
+    val row = (0 until 400).map { x -> (b.getPixel(x, 120) and 0xff) > 128 }
+    val starts = (0 until 400).filter { x -> row[x] && (x == 0 || !row[x - 1]) }
+    // Only the first iteration's box: had this changed, the effects could build paths in branches.
+    assertThat(starts).isEqualTo(listOf(20))
+  }
+
+  /**
+   * A loop that runs once or not at all is the conditional the effects use: unlike a conditional
+   * block, a nested loop refreshes its body's variables, so a path built in it follows the outer
+   * loop's index, and nothing in it runs when it does not.
+   */
+  @SuppressLint("RestrictedApi")
+  @Test
+  fun aOnceOrNeverLoopIsARefreshingConditional() {
+    composeRule.setContent {
+      val doc = rememberRemoteDocument {
+        RemoteCanvas(RemoteModifier.size(400.rdp)) {
+          val state = remoteComposeCreationState
+          val writer = state.document
+          writer.rcPaint.setColor(android.graphics.Color.BLACK).commit()
+          writer.drawRect(0f, 0f, 400f, 400f)
+          writer.rcPaint.setColor(android.graphics.Color.WHITE).commit()
+          val i = writer.startLoop(3f)
+          // Once for i >= 1, never for i = 0.
+          val once = writer.floatExpression(i, 1f, E.MIN)
+          writer.startLoopVar(0f, 1f, once)
+          val a = writer.floatExpression(i, 50f, E.MUL)
+          val x = writer.floatExpression(a, 2f, E.MUL, 20f, E.ADD)
+          val right = writer.floatExpression(x, 40f, E.ADD)
+          val path = writer.pathCreate(x, 100f)
+          writer.pathAppendLineTo(path, right, 100f)
+          writer.pathAppendLineTo(path, right, 140f)
+          writer.pathAppendLineTo(path, x, 140f)
+          writer.pathAppendClose(path)
+          writer.drawPath(path)
+          writer.endLoop()
+          writer.endLoop()
+        }
+      }
+      Box(Modifier.size(400.dp, 400.dp).testTag("p")) {
+        doc.value?.let { RemoteDocumentPlayer(it, 400, 400, Modifier.size(400.dp, 400.dp)) }
+      }
+    }
+    val b = settled()
+    val row = (0 until 400).map { x -> (b.getPixel(x, 120) and 0xff) > 128 }
+    val starts = (0 until 400).filter { x -> row[x] && (x == 0 || !row[x - 1]) }
+    println("once loop starts=$starts")
+    assertThat(starts).isEqualTo(listOf(120, 220))
   }
 
   private fun barHeight(b: Bitmap, x: Int): Int =
