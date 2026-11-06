@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
+    "generatedFrom": "fbd23cf74491625d969b741c7d615bb4bec63bed",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -54,6 +54,36 @@
                     "commit": "73b6b480e8717c986dc82a863f07bd2c726a0026",
                     "date": "2026-10-07T19:24:12Z",
                     "sourceSha": "456c2201",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.NotoSansArabicLigatureMarksPreview": {
+            "path": "renders/flexpress-compose/NotoSansArabicLigatureMarksPreview-5019162f.gif",
+            "versions": [
+                {
+                    "blob": "de76a2850e55d9a99f3204c07f00677f68aa3d49",
+                    "commit": "fbd23cf74491625d969b741c7d615bb4bec63bed",
+                    "date": "2026-11-06T09:20:16Z",
+                    "sourceSha": "378efa1b",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexBrushGradientAnimatedPreview": {
+            "path": "renders/flexpress-compose/RobotoFlexBrushGradientAnimatedPreview-847431a7.gif",
+            "versions": [
+                {
+                    "blob": "54e830a94af5a8acecfc8c8658eadbd66e1c4350",
+                    "commit": "fbd23cf74491625d969b741c7d615bb4bec63bed",
+                    "date": "2026-11-06T09:20:16Z",
+                    "sourceSha": "378efa1b",
                     "commits": 1
                 }
             ],
@@ -378,6 +408,21 @@
                 }
             ],
             "observations": 3,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.NotoSansArabicLigatureMarksRemotePreview": {
+            "path": "renders/flexpress-remote/NotoSansArabicLigatureMarksRemotePreview-5e03792a.gif",
+            "versions": [
+                {
+                    "blob": "a3e68dca23e1a8125d9e1128eec7ee2d006cab2e",
+                    "commit": "fbd23cf74491625d969b741c7d615bb4bec63bed",
+                    "date": "2026-11-06T09:20:16Z",
+                    "sourceSha": "378efa1b",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
             "unstable": false,
             "flapCount": 0
         },
