@@ -23,6 +23,22 @@
     "sha256": "bcc26d1af8e959a68de86f825b379d2e8bce07bfebf7a4968b1dcd17b3a6a94f",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
   },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.NotoSansArabicLigatureMarksPreview": {
+    "captureLabel": "",
+    "functionName": "NotoSansArabicLigatureMarksPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "NotoSansArabicLigatureMarksPreview-5019162f.gif",
+    "sha256": "a752db87d3e4a17326119b86ee28b0864030a727e0bbeb9f3a0f8988e719d7d5",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexBrushGradientAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "RobotoFlexBrushGradientAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "RobotoFlexBrushGradientAnimatedPreview-847431a7.gif",
+    "sha256": "aa1f96102c76b61986a033d0fb653b90a13a278d1a1a99750affd86d00524e61",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
+  },
   "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.RobotoFlexWeightAnimatedPreview": {
     "captureLabel": "",
     "functionName": "RobotoFlexWeightAnimatedPreview",
@@ -117,6 +133,14 @@
     "module": "flexpress-remote",
     "renderBasename": "HelloWeightAnimatedPreview-e7c9afce.gif",
     "sha256": "1c008d426fcfcb07070d167666768c2f623a6332bbc6cd9783aeaadd228e88d5",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
+  },
+  "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.NotoSansArabicLigatureMarksRemotePreview": {
+    "captureLabel": "",
+    "functionName": "NotoSansArabicLigatureMarksRemotePreview",
+    "module": "flexpress-remote",
+    "renderBasename": "NotoSansArabicLigatureMarksRemotePreview-5e03792a.gif",
+    "sha256": "9127f859a204481c01958ee357e30a1da12a84f6ef610e7e3a413325b9219b62",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RemoteStringClockPreview": {
