@@ -18,12 +18,12 @@ package ee.schimke.flexpress
 
 import android.annotation.SuppressLint
 import androidx.compose.remote.core.PaintOperation
-import androidx.compose.remote.core.operations.ConditionalOperations
 import androidx.compose.remote.core.operations.Utils
 import androidx.compose.remote.core.operations.utilities.AnimatedFloatExpression as E
 import androidx.compose.remote.creation.compose.capture.RemoteComposeCreationState
 import androidx.compose.remote.creation.compose.state.RemoteFloat
 import androidx.compose.remote.creation.compose.state.RemoteString
+import androidx.compose.remote.creation.compose.state.abs
 import androidx.compose.remote.creation.compose.state.max
 import androidx.compose.remote.creation.compose.state.min
 import androidx.compose.remote.creation.compose.state.rf
@@ -71,9 +71,10 @@ internal class GlyphSlot(
  * loops. Values that do not depend on the position (the axes, every outline coordinate) are written
  * before the loops, so nothing in a loop or a branch defines a value used elsewhere.
  *
- * Inside a loop the player refreshes the variables of the loop's own operations but not of those
- * nested in a conditional block, so every expression, path and matrix operation is written at the
- * loop's top level, and a conditional only ever wraps a draw.
+ * Inside a loop the player refreshes the variables of the loop's own operations, and of a nested
+ * loop's, but not of those nested in a conditional block. So a branch on the character is a nested
+ * loop that runs once or never ([onlyIf]), and values a branch shares with anything outside it are
+ * written before it.
  *
  * @param fontScale Pixels per font unit.
  * @param tabularFigures Each digit takes the widest digit's advance at the current axis values.
@@ -130,8 +131,29 @@ internal class RemoteGlyphLine(
   private fun read(array: Float, index: RemoteFloat): RemoteFloat =
     RemoteFloat(writer.floatExpression(array, id(index), E.A_DEREF))
 
-  /** The first pass: each position's character, scale, kerning and advance. */
-  fun layout() {
+  /**
+   * A dynamic array of one value per character of the set, such as each character's advance in
+   * another instance, written now: call before [layout].
+   */
+  fun characterArray(values: List<RemoteFloat>): Float {
+    require(values.size == set.size)
+    val array = writer.addDynamicFloatArray(set.size.toFloat())
+    values.forEachIndexed { c, v -> put(array, c.toFloat().rf, v) }
+    return array
+  }
+
+  /** [array]'s value for [character], or 0 for none. */
+  fun readCharacter(array: Float, character: RemoteFloat): RemoteFloat =
+    read(array, max(character, 0f)) * min(character + 1f, 1f)
+
+  /**
+   * The first pass: each position's character, scale, kerning and advance. [advanceOf] replaces a
+   * position's own advance (in pixels, before its scale), from its index and character.
+   */
+  fun layout(
+    advanceOf: ((index: RemoteFloat, character: RemoteFloat, own: RemoteFloat) -> RemoteFloat)? =
+      null,
+  ) {
     val fonts = glyphs.fonts
     val n = text.length
     val i = RemoteFloat(writer.startLoop(maxLength.toFloat()))
@@ -140,7 +162,8 @@ internal class RemoteGlyphLine(
     val character = fonts.index.measureWidth(text.substring(start, end), 0f.rf) - 1f
     // 1 for a character the set has, 0 for none.
     val known = min(character + 1f, 1f)
-    val own = read(characterAdvances, max(character, 0f)) * known
+    val shaped = read(characterAdvances, max(character, 0f)) * known
+    val own = advanceOf?.invoke(i, character, shaped) ?: shaped
     // The kerning font gives every glyph one unit plus the pair kerning, so the text through this
     // position less the text before it is this glyph's unit plus the kerning of the pair it ends.
     val kern =
@@ -180,29 +203,109 @@ internal class RemoteGlyphLine(
   /**
    * Draws [slot]'s glyph rigidly: [transform] moves the canvas so the glyph's origin on the
    * baseline is at (0, 0), and the glyph's own path, shared by every position that shows it, is
-   * drawn there at its scale. Nothing is drawn for a position with no character.
+   * drawn there at its scale. A position with no character is drawn at zero scale, since a
+   * conditional would not refresh the path it picks.
    */
   fun drawRigid(slot: GlyphSlot, transform: () -> Unit) {
-    val k = id(slot.unitScale)
+    val known = min(slot.character + 1f, 1f)
+    val k = id(slot.unitScale * known)
     val flipped = writer.floatExpression(k, -1f, E.MUL)
     val firstPath = written.firstPath
-    val pathId = firstPath?.let { (slot.character.toRemoteInt() + it).getIdForCreationState(state) }
+    val pathId = firstPath?.let {
+      (max(slot.character, 0f).toRemoteInt() + it).getIdForCreationState(state)
+    }
+    val matches = if (pathId == null) set.indices.map { c -> id(match(slot, c)) } else emptyList()
     writer.save()
     transform()
     writer.scale(k, flipped)
     if (pathId != null) {
-      writer.conditionalOperations(ConditionalOperations.TYPE_GTE, id(slot.character), 0f)
       writer.drawPath(pathId or PaintOperation.PTR_DEREFERENCE)
-      writer.endConditionalOperations()
     } else {
-      for (c in set.indices) {
-        writer.conditionalOperations(ConditionalOperations.TYPE_EQ, id(slot.character), c.toFloat())
-        writer.drawPath(written.paths[c])
-        writer.endConditionalOperations()
+      for (c in set.indices) onlyIf(matches[c]) { writer.drawPath(written.paths[c]) }
+    }
+    writer.restore()
+  }
+
+  /**
+   * Draws [slot]'s glyph rigidly as [drawRigid] does, but blended between its outline in this
+   * line's [glyphs] and in [other], made for the same characters at another design-space location:
+   * [tween] `0` is this one, `1` the other.
+   */
+  fun drawTween(
+    slot: GlyphSlot,
+    other: VariableFontGlyphs.Written,
+    tween: RemoteFloat,
+    transform: () -> Unit,
+  ) {
+    val k = id(slot.unitScale)
+    val flipped = writer.floatExpression(k, -1f, E.MUL)
+    val t = id(tween)
+    val matches = set.indices.map { c -> id(match(slot, c)) }
+    writer.save()
+    transform()
+    writer.scale(k, flipped)
+    for (c in set.indices) {
+      onlyIf(matches[c]) { writer.drawTweenPath(written.paths[c], other.paths[c], t, 0f, 1f) }
+    }
+    writer.restore()
+  }
+
+  /**
+   * Strokes [slot]'s glyph outline from [start] to [stop] of its length (ids of fractions in `[0,
+   * 1]`), with the current paint, placed as [drawRigid] places it.
+   */
+  fun drawTrimmed(slot: GlyphSlot, start: Float, stop: Float, transform: () -> Unit) {
+    val k = id(slot.unitScale)
+    val flipped = writer.floatExpression(k, -1f, E.MUL)
+    val matches = set.indices.map { c -> id(match(slot, c)) }
+    writer.save()
+    transform()
+    writer.scale(k, flipped)
+    for (c in set.indices) {
+      onlyIf(matches[c]) {
+        writer.drawTweenPath(written.paths[c], written.paths[c], 0f, start, stop)
       }
     }
     writer.restore()
   }
+
+  /**
+   * Draws [slot]'s glyph outline with the current paint, shifted by ([dx], [dy]) font units and
+   * clipped to the glyph itself, placed as [drawRigid] places it: with a stroke paint, a bevel line
+   * just inside the edges facing away from the shift.
+   */
+  fun drawClippedToGlyph(slot: GlyphSlot, dx: Float, dy: Float, transform: () -> Unit) {
+    val k = id(slot.unitScale)
+    val flipped = writer.floatExpression(k, -1f, E.MUL)
+    val matches = set.indices.map { c -> id(match(slot, c)) }
+    writer.save()
+    transform()
+    writer.scale(k, flipped)
+    for (c in set.indices) {
+      onlyIf(matches[c]) {
+        writer.save()
+        writer.addClipPath(written.paths[c])
+        writer.translate(dx, dy)
+        writer.drawPath(written.paths[c])
+        writer.restore()
+      }
+    }
+    writer.restore()
+  }
+
+  /**
+   * Runs [body] when [flag] (an id of 0 or 1) is 1: a nested loop that runs once or never, since a
+   * conditional block would not refresh the variables inside it.
+   */
+  fun onlyIf(flag: Float, body: () -> Unit) {
+    writer.startLoopVar(0f, 1f, flag)
+    body()
+    writer.endLoop()
+  }
+
+  /** 1 when [slot] shows character [c], otherwise 0. */
+  private fun match(slot: GlyphSlot, c: Int): RemoteFloat =
+    max(1f.rf - abs(slot.character - c.toFloat()), 0f)
 
   private var warpGeometry: List<List<WarpCommand>>? = null
 
@@ -226,10 +329,10 @@ internal class RemoteGlyphLine(
    * canvas. Each piece is the quadratic through its warped start, midpoint and end, so straight
    * stems bend with the warp. Nothing is drawn for a position with no character.
    *
-   * Every character's path is built for every position (the player does not rebuild a path inside a
-   * conditional), and only the one the position shows is drawn. [map] is called once per point of
-   * every character, so any value it uses that depends on neither `u` nor `v` should be written
-   * (with [id]) once, before this is called.
+   * Only the character the position shows has its path built, in a once-or-never loop ([onlyIf]).
+   * [map] is called for every point of every character as the document is made, so any value it
+   * uses that depends on neither `u` nor `v` must be written (with [id]) before this is called: a
+   * value first written inside one character's branch is not computed in another's.
    */
   fun drawWarped(slot: GlyphSlot, map: (u: RemoteFloat, v: RemoteFloat) -> WarpedPoint) {
     val geometry = checkNotNull(warpGeometry) { "prepareWarp before drawing warped glyphs" }
@@ -237,8 +340,10 @@ internal class RemoteGlyphLine(
     val point = { x: LinearForm, y: LinearForm ->
       map(slot.pen + written.form(x) * k, written.form(y) * k)
     }
+    val matches = set.indices.map { c -> id(match(slot, c)) }
     for (c in set.indices) {
       if (geometry[c].isEmpty()) continue
+      writer.startLoopVar(0f, 1f, matches[c])
       var path = 0
       var lastX = 0f
       var lastY = 0f
@@ -268,9 +373,8 @@ internal class RemoteGlyphLine(
           WarpCommand.Close -> writer.pathAppendClose(path)
         }
       }
-      writer.conditionalOperations(ConditionalOperations.TYPE_EQ, id(slot.character), c.toFloat())
       writer.drawPath(path)
-      writer.endConditionalOperations()
+      writer.endLoop()
     }
   }
 }

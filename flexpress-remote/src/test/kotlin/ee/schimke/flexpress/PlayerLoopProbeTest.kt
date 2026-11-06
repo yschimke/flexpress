@@ -290,6 +290,50 @@ class PlayerLoopProbeTest {
     assertThat(starts).isEqualTo(listOf(20))
   }
 
+  /**
+   * A loop that runs once or not at all is the conditional the effects use: unlike a conditional
+   * block, a nested loop refreshes its body's variables, so a path built in it follows the outer
+   * loop's index, and nothing in it runs when it does not.
+   */
+  @SuppressLint("RestrictedApi")
+  @Test
+  fun aOnceOrNeverLoopIsARefreshingConditional() {
+    composeRule.setContent {
+      val doc = rememberRemoteDocument {
+        RemoteCanvas(RemoteModifier.size(400.rdp)) {
+          val state = remoteComposeCreationState
+          val writer = state.document
+          writer.rcPaint.setColor(android.graphics.Color.BLACK).commit()
+          writer.drawRect(0f, 0f, 400f, 400f)
+          writer.rcPaint.setColor(android.graphics.Color.WHITE).commit()
+          val i = writer.startLoop(3f)
+          // Once for i >= 1, never for i = 0.
+          val once = writer.floatExpression(i, 1f, E.MIN)
+          writer.startLoopVar(0f, 1f, once)
+          val a = writer.floatExpression(i, 50f, E.MUL)
+          val x = writer.floatExpression(a, 2f, E.MUL, 20f, E.ADD)
+          val right = writer.floatExpression(x, 40f, E.ADD)
+          val path = writer.pathCreate(x, 100f)
+          writer.pathAppendLineTo(path, right, 100f)
+          writer.pathAppendLineTo(path, right, 140f)
+          writer.pathAppendLineTo(path, x, 140f)
+          writer.pathAppendClose(path)
+          writer.drawPath(path)
+          writer.endLoop()
+          writer.endLoop()
+        }
+      }
+      Box(Modifier.size(400.dp, 400.dp).testTag("p")) {
+        doc.value?.let { RemoteDocumentPlayer(it, 400, 400, Modifier.size(400.dp, 400.dp)) }
+      }
+    }
+    val b = settled()
+    val row = (0 until 400).map { x -> (b.getPixel(x, 120) and 0xff) > 128 }
+    val starts = (0 until 400).filter { x -> row[x] && (x == 0 || !row[x - 1]) }
+    println("once loop starts=$starts")
+    assertThat(starts).isEqualTo(listOf(120, 220))
+  }
+
   private fun barHeight(b: Bitmap, x: Int): Int =
     (0 until 200).count { y -> (b.getPixel(x, y) shr 16 and 0xff) > 128 }
 

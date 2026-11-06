@@ -134,6 +134,72 @@ Roboto Flex digits and `:`, per position: about 240 bytes with constant advances
 clock is 9.5 KB. Two five-character weight-animated texts are 19.6 KB with shared glyphs, 26.4 KB
 without. Repeated characters within a text always share their outline.
 
+## Text effects with a `RemoteString`
+
+The text effects of [`flexpress-compose`](../flexpress-compose) have RemoteString counterparts,
+drawn entirely by the player from text it may change (a clock it keeps, a counter, a label):
+
+| Composable | Effect |
+| --- | --- |
+| `RemoteVariableFontCurvedText` | Bent around a circle, as Wear's `curvedText`/`TimeText`; `tabularFigures`, `growLeadingGlyph` |
+| `RemoteVariableFontPathWarpText` | Bent along a path (in dp), running along it by `offset` |
+| `RemoteVariableFontWaveWarpText` | Every outline point displaced by a travelling sine field |
+| `RemoteVariableFontBaselineWaveText` | Each glyph on a sine baseline, turned to its slope |
+| `RemoteVariableFontRangeWaveText` | A window sweeping the positions, blending each glyph's weight, lift and size |
+| `RemoteVariableFontKineticCascadeText` | A staggered elastic hop: stretched in flight, squashed on impact |
+| `RemoteVariableFontWigglyText` | Stop-motion boil: per-position blend, offset and turn from a hash of the time |
+| `RemoteVariableFontTrimPathText` | Write-on strokes from a start to an end fraction of each outline |
+| `RemoteVariableFontEchoText` | Trailing copies, each with its own (delayed) axes |
+| `RemoteVariableFontGlitchText` | Red, green and blue passes split apart and sliced in bursts |
+| `RemoteVariableFontShimmerText` | A gradient fill with a bright band sweeping across |
+| `RemoteVariableFontNeonText` | Glow strokes added together around a bright core |
+| `RemoteVariableFontEmbossText` | A relief lit from an angle: cast shadow, rims, clipped bevel strokes |
+
+```kotlin
+val glyphs = rememberVariableFontGlyphs(font, "0123456789:", mapOf("wght" to weight))
+RemoteVariableFontCurvedText(
+  text = time, // a RemoteString the document builds from its own clock
+  maxLength = 8,
+  glyphs = glyphs,
+  fontSize = 20.rdp,
+  radius = 78.rdp,
+  tabularFigures = true,
+  growLeadingGlyph = true,
+)
+```
+
+All of them draw through one engine, `RemoteGlyphLine`, built on one Remote Compose `loop` over the
+text's positions. Each character's outline is in the document once, whatever `maxLength` is, as
+the earlier `RemoteString` text's are; the positions no longer repeat their operations either.
+`PlayerLoopProbeTest` pins down each player behaviour this relies on:
+
+- **A loop carries no sum, so the line is laid out in two passes.** The first loop reads each
+  position's character (a hidden bitmap font measures the one-character substring), its kerning
+  and its advance, and writes the advance into a dynamic float array. The second gives each
+  position the sum of the advances before it (`A_SUM_TILL`), and the line's width is their total.
+  Any per-position advance works this way: a blend between two instances, a glyph growing in, a
+  tabular cell.
+- **A substring past the end of the text throws** (the player shows its error screen), so every
+  substring is clamped to the text's length.
+- **A conditional block in a loop does not refresh its variables.** A path built in one, or a draw
+  whose inputs change, keeps the first iteration's values. A nested loop does refresh them, so a
+  branch on the character is a loop that runs once or never: only the character a position shows
+  has its warped outline built.
+- **The player executes at most 20,000 operations a frame.** A warped outline is rebuilt from its
+  points for each position on the player, so warps are as cheap per point as they can be: a path is
+  sampled into tables read with one `A_LERP` each, and only lines across the text are split, since
+  the warps leave lines up the text straight.
+
+The warps (curved, path, wave) rebuild each glyph's outline on the player through the warp, with no
+shader: each piece is the quadratic through its warped start, midpoint and end. The other effects
+place each glyph's shared outline with matrix operations, blend it with `drawTweenPath`, trim it,
+clip to it, or paint it with gradients and blend modes. A blend between two instances is linear
+between their outlines, where Compose UI evaluates the font at each value. The emboss has no
+layers on the player, so its shadow is stacked translucent copies rather than a blur.
+
+The `RemoteEffect*` and `RemoteCurvedClock` previews run each one on the player from its own
+clock; `RemoteTextEffectsTest` checks each draws a text set on the player and follows it.
+
 ## Kerning
 
 Both overloads kern with the font's own `GPOS` pair kerning (the `kern` feature's pair lookups,
