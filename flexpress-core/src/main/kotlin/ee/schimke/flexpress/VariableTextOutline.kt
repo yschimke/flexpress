@@ -282,14 +282,185 @@ fun VariableFont.outline(
   tolerancePixels: Float,
   allowKeys: Boolean,
 ): VariableTextOutline {
-  val indices = axes.map { tag -> this.axes.indexOfFirst { it.tag == tag } }
-  require(indices.none { it < 0 }) {
-    "${axes.filterIndexed { i, _ -> indices[i] < 0 }} not among ${this.axes.map { it.tag }}"
-  }
+  val indices = axisIndices(axes)
   val varied = variedLayout(text, location, kerningLocation)
   val fixed = normalize(location)
   val animatedSet = indices.toSet()
   val specialization = AxisSpecialization(animatedSet, fixed)
+  return compileOutline(
+    varied,
+    axes,
+    indices,
+    animatedSet,
+    fixed,
+    specialization,
+    pixelSize,
+    tolerancePixels,
+    allowKeys,
+  )
+}
+
+/**
+ * One shaped base glyph (together with any marks attached to it) from [glyphOutlines], at its own
+ * local origin `(0, 0)`, plus its variable [advance] (as a single `MOVE(advance, 0)` outline) and
+ * the constant pair [kerningBefore] from the preceding base glyph.
+ */
+@InternalFlexpressApi
+class VariableGlyphOutline(
+  val outline: VariableTextOutline,
+  val advance: VariableTextOutline,
+  val kerningBefore: Float,
+)
+
+@InternalFlexpressApi
+fun VariableFont.cachedGlyphOutlines(
+  text: String,
+  axes: List<String>,
+  location: Map<String, Float> = emptyMap(),
+  kerningLocation: Map<String, Float> = location,
+  pixelSize: Float? = null,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
+  allowKeys: Boolean = true,
+): List<VariableGlyphOutline> {
+  val simplifiedSize = pixelSize?.takeIf { tolerancePixels > 0f }
+  val tolerance = if (simplifiedSize != null) tolerancePixels else 0f
+  val key =
+    OutlineKey(this, text, axes, location, kerningLocation, allowKeys, simplifiedSize, tolerance)
+  return GlyphOutlineCache.get(key) {
+    glyphOutlines(text, axes, location, kerningLocation, simplifiedSize, tolerance, allowKeys)
+  }
+}
+
+private object GlyphOutlineCache {
+  private const val SIZE = 32
+  private val entries =
+    object : LinkedHashMap<OutlineKey, List<VariableGlyphOutline>>(SIZE, 0.75f, true) {
+      override fun removeEldestEntry(
+        eldest: MutableMap.MutableEntry<OutlineKey, List<VariableGlyphOutline>>,
+      ) = size > SIZE
+    }
+
+  fun get(key: OutlineKey, make: () -> List<VariableGlyphOutline>): List<VariableGlyphOutline> =
+    synchronized(entries) { entries[key] }
+      ?: make().also { synchronized(entries) { entries[key] = it } }
+}
+
+@InternalFlexpressApi
+fun VariableFont.glyphOutlines(
+  text: String,
+  axes: List<String>,
+  location: Map<String, Float> = emptyMap(),
+  kerningLocation: Map<String, Float> = location,
+  pixelSize: Float? = null,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
+  allowKeys: Boolean = true,
+): List<VariableGlyphOutline> {
+  val indices = axisIndices(axes)
+  val shapingLocation = location + kerningLocation
+  val glyphs = shapePositioned(text, shapingLocation)
+  val outlines = glyphs.map { variedOutline(it.id) }
+  val fixed = normalize(location)
+  val kerningCoords = normalize(kerningLocation)
+  val animatedSet = indices.toSet()
+  val specialization = AxisSpecialization(animatedSet, fixed)
+
+  fun rootBaseAndDx(index: Int): Pair<Int, Float> {
+    var curr = index
+    var dx = 0f
+    var depth = 0
+    while (curr in glyphs.indices && glyphs[curr].base >= 0 && depth < glyphs.size) {
+      dx += glyphs[curr].dx
+      curr = glyphs[curr].base
+      depth++
+    }
+    return curr to dx
+  }
+
+  val marksByBase = HashMap<Int, MutableList<Pair<Int, Float>>>()
+  for (i in glyphs.indices) {
+    if (glyphs[i].base >= 0) {
+      val (base, dx) = rootBaseAndDx(i)
+      marksByBase.getOrPut(base) { mutableListOf() }.add(i to dx)
+    }
+  }
+
+  val result = mutableListOf<VariableGlyphOutline>()
+  var previous = -1
+  for (i in glyphs.indices) {
+    if (glyphs[i].base >= 0) continue
+    val kern =
+      if (previous >= 0) {
+        val rtl = glyphs[i].rtl && glyphs[previous].rtl
+        val first = glyphs[if (rtl) i else previous].id
+        val second = glyphs[if (rtl) previous else i].id
+        kerning(first, second, kerningCoords)
+      } else {
+        0f
+      }
+    previous = i
+    val contours = mutableListOf<VariedContour>()
+    contours.addAll(outlines[i].contours)
+    for ((markIndex, markDx) in marksByBase[i].orEmpty()) {
+      val markDy = glyphs[markIndex].dy
+      outlines[markIndex].contours.mapTo(contours) {
+        it.transformed(1f, 0f, 0f, 1f, LinearForm.of(markDx), LinearForm.of(markDy))
+      }
+    }
+    val clusterVaried = VariedOutline(contours, outlines[i].advance)
+    val compiledOutline =
+      compileOutline(
+        clusterVaried,
+        axes,
+        indices,
+        animatedSet,
+        fixed,
+        specialization,
+        pixelSize,
+        tolerancePixels,
+        allowKeys,
+      )
+    val advanceContour =
+      VariedContour(
+        listOf(outlines[i].advance),
+        listOf(LinearForm.ZERO),
+        booleanArrayOf(true),
+      )
+    val compiledAdvance =
+      compileOutline(
+        VariedOutline(listOf(advanceContour), outlines[i].advance),
+        axes,
+        indices,
+        animatedSet,
+        fixed,
+        specialization,
+        pixelSize = null,
+        tolerancePixels = 0f,
+        allowKeys = allowKeys,
+      )
+    result += VariableGlyphOutline(compiledOutline, compiledAdvance, kern)
+  }
+  return result
+}
+
+private fun VariableFont.axisIndices(axes: List<String>): List<Int> {
+  val indices = axes.map { tag -> this.axes.indexOfFirst { it.tag == tag } }
+  require(indices.none { it < 0 }) {
+    "${axes.filterIndexed { i, _ -> indices[i] < 0 }} not among ${this.axes.map { it.tag }}"
+  }
+  return indices
+}
+
+private fun VariableFont.compileOutline(
+  varied: VariedOutline,
+  axes: List<String>,
+  indices: List<Int>,
+  animatedSet: Set<Int>,
+  fixed: FloatArray,
+  specialization: AxisSpecialization,
+  pixelSize: Float?,
+  tolerancePixels: Float,
+  allowKeys: Boolean,
+): VariableTextOutline {
   val verbs = mutableListOf<Int>()
   val coords = mutableListOf<AnimatedForm>()
   varied.emit(
@@ -331,7 +502,7 @@ fun VariableFont.outline(
       r.second.map { it.third }.toFloatArray(),
     )
   }
-  val width = maxAdvance(text, varied.advance, animatedSet, fixed)
+  val width = maxAdvance("", varied.advance, animatedSet, fixed)
   return VariableTextOutline(
     axes,
     unitsPerEm,

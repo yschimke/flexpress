@@ -118,6 +118,30 @@ class VariableTextOutlineTest {
       .isEqualTo(coordinates(font.layout("Hamburg", emptyMap(), emptyMap())).toList())
   }
 
+  @Test
+  fun glyphOutlinesMatchWholeLineOutlineAtUniformValues() {
+    val font = testFonts[1].font
+    val axes = listOf("wght", "wdth", "slnt")
+    val glyphs = font.glyphOutlines("AV Flex!", axes)
+    val whole = font.outline("AV Flex!", axes)
+    val values = floatArrayOf(750f, 125f, -6f)
+    val wholeCoords = whole.evaluate(values)
+    val assembled = ArrayList<Float>()
+    var penX = 0f
+    for (g in glyphs) {
+      penX += g.kerningBefore
+      val c = g.outline.evaluate(values)
+      for (i in c.indices step 2) {
+        assembled += c[i] + penX
+        assembled += c[i + 1]
+      }
+      penX += g.advance.evaluate(values)[0]
+    }
+    assertThat(assembled.size).isEqualTo(wholeCoords.size)
+    val maxDiff = assembled.indices.maxOf { abs(assembled[it] - wholeCoords[it]) }
+    assertThat(maxDiff).isLessThan(0.05f)
+  }
+
   private fun coordinates(outline: TextOutline): FloatArray {
     val out = mutableListOf<Float>()
     outline.emit(
