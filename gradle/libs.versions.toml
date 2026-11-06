@@ -20,8 +20,11 @@ mavenPublish = "0.37.0"
 metalava = "0.5.1"
 robolectric = "4.17"
 truth = "1.4.5"
+# Debug previews only: compares VariableFontCurvedText with Wear's TimeText (curvedText).
+wearCompose = "1.7.1"
 
 [libraries]
+wear-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "wearCompose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "composeAnimation" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }

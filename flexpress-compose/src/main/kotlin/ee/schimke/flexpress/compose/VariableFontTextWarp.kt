@@ -38,7 +38,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.isSpecified
+import ee.schimke.flexpress.DEFAULT_TOLERANCE_PIXELS
 import ee.schimke.flexpress.VariableFont
+import ee.schimke.flexpress.VariableGlyphOutline
 import ee.schimke.flexpress.VariableTextOutlineEvaluator
 import ee.schimke.flexpress.cachedGlyphOutlines
 import kotlin.math.PI
@@ -84,6 +86,15 @@ public enum class CurvedTextDirection {
  * @param textAnchor Which point of the line is placed at [anchorAngleDegrees], as a fraction of its
  *   live width: `0f` the start, `0.5f` the middle, `1f` the end.
  * @param direction Which way the text runs; see [CurvedTextDirection].
+ * @param glyphScale The size of each shaped glyph, by index, `1f` as shaped. A glyph's outline and
+ *   advance scale together, so a glyph scaled from `0f` grows in and pushes the rest of the line
+ *   aside, and the line stays anchored as it widens. Read while drawing.
+ * @param tabularFigures Tabular figures, so changing digits (a clock's seconds) never move the rest
+ *   of the line, adapting to the font. A font with a `tnum` feature has it applied: its own tabular
+ *   digits, as `fontFeatureSettings = "tnum"` would give. Any other font has each digit centered in
+ *   a cell as wide as its widest digit at the current axis values, with no kerning against a digit;
+ *   the cell is measured from the font's own advances every frame, so it follows `wght` or `wdth`
+ *   as they animate. A font whose default figures are already tabular is unchanged either way.
  */
 @Composable
 public fun VariableFontCurvedText(
@@ -96,6 +107,8 @@ public fun VariableFontCurvedText(
   anchorAngleDegrees: () -> Float = { -90f },
   textAnchor: Float = 0.5f,
   direction: CurvedTextDirection = CurvedTextDirection.Clockwise,
+  glyphScale: (index: Int) -> Float = { 1f },
+  tabularFigures: Boolean = false,
   color: Color = Color.Unspecified,
   brush: Brush? = null,
   location: Map<String, Float> = emptyMap(),
@@ -112,6 +125,8 @@ public fun VariableFontCurvedText(
     fontSize = fontSize,
     modifier = modifier,
     textAnchor = textAnchor,
+    glyphScale = glyphScale,
+    tabularFigures = tabularFigures,
     color = color,
     brush = brush,
     location = location,
@@ -152,6 +167,15 @@ public fun VariableFontCurvedText(
  * @param offset Where the anchor point of the text sits, as a fraction of the path's length. Read
  *   while drawing, so it can run the text along the path.
  * @param textAnchor Which point of the line is placed at [offset], as a fraction of its live width.
+ * @param glyphScale The size of each shaped glyph, by index, `1f` as shaped. A glyph's outline and
+ *   advance scale together, so a glyph scaled from `0f` grows in and pushes the rest of the line
+ *   aside, and the line stays anchored as it widens. Read while drawing.
+ * @param tabularFigures Tabular figures, so changing digits (a clock's seconds) never move the rest
+ *   of the line, adapting to the font. A font with a `tnum` feature has it applied: its own tabular
+ *   digits, as `fontFeatureSettings = "tnum"` would give. Any other font has each digit centered in
+ *   a cell as wide as its widest digit at the current axis values, with no kerning against a digit;
+ *   the cell is measured from the font's own advances every frame, so it follows `wght` or `wdth`
+ *   as they animate. A font whose default figures are already tabular is unchanged either way.
  */
 @Composable
 public fun VariableFontPathWarpText(
@@ -163,6 +187,8 @@ public fun VariableFontPathWarpText(
   modifier: Modifier = Modifier,
   offset: () -> Float = { 0f },
   textAnchor: Float = 0f,
+  glyphScale: (index: Int) -> Float = { 1f },
+  tabularFigures: Boolean = false,
   color: Color = Color.Unspecified,
   brush: Brush? = null,
   location: Map<String, Float> = emptyMap(),
@@ -177,6 +203,8 @@ public fun VariableFontPathWarpText(
     fontSize = fontSize,
     modifier = modifier,
     textAnchor = textAnchor,
+    glyphScale = glyphScale,
+    tabularFigures = tabularFigures,
     color = color,
     brush = brush,
     location = location,
@@ -214,6 +242,8 @@ private fun WarpedText(
   fontSize: TextUnit,
   modifier: Modifier,
   textAnchor: Float,
+  glyphScale: (index: Int) -> Float,
+  tabularFigures: Boolean,
   color: Color,
   brush: Brush?,
   location: Map<String, Float>,
@@ -224,13 +254,31 @@ private fun WarpedText(
   val tags = axes.keys.toList()
   val sources = remember(tags, axes) { tags.map { axes.getValue(it) } }
   val pixelSize = with(LocalDensity.current) { fontSize.toPx() }
+  // Tabular figures from the font's own `tnum` where it has one, otherwise measured cells.
+  val tnum = tabularFigures && font.hasFeature("tnum")
+  val features = if (tnum) TNUM else emptySet()
   val glyphs =
-    remember(text, font, tags, location, kerningLocation, pixelSize) {
-      font.cachedGlyphOutlines(text, tags, location, kerningLocation, pixelSize = pixelSize)
+    remember(text, font, tags, location, kerningLocation, pixelSize, features) {
+      font.cachedGlyphOutlines(
+        text,
+        tags,
+        location,
+        kerningLocation,
+        pixelSize,
+        DEFAULT_TOLERANCE_PIXELS,
+        true,
+        features,
+      )
     }
   val runRenderer =
     remember(glyphs) { GlyphRunRenderer(glyphs, font.unitsPerEm, font.ascender, font.descender) }
   val advances = remember(runRenderer) { FloatArray(runRenderer.size) }
+  val glyphScales = remember(runRenderer) { FloatArray(runRenderer.size) }
+  val shifts = remember(runRenderer) { FloatArray(runRenderer.size) }
+  val tabular =
+    remember(tabularFigures, font, tags, location, kerningLocation) {
+      if (tabularFigures && !tnum) TabularFigures(font, tags, location, kerningLocation) else null
+    }
   val builder = remember { WarpedPathBuilder() }
   val fill = if (color.isSpecified) color else Color.White
   val measurePolicy =
@@ -253,23 +301,76 @@ private fun WarpedText(
           val warp = prepare(this, pixelSize)
           for (a in sources.indices) runRenderer.axisScratch[a] = sources[a]()
           val count = runRenderer.size
+          val cell = tabular?.cellAdvance(runRenderer.axisScratch)?.times(scale) ?: 0f
           var width = 0f
           for (i in 0 until count) {
-            advances[i] = runRenderer.evaluateGlyphAdvance(i, runRenderer.axisScratch) * scale
-            width += runRenderer.kerningBefore(i) * scale + advances[i]
+            val g = glyphScale(i).coerceAtLeast(0f)
+            glyphScales[i] = g
+            val own = runRenderer.evaluateGlyphAdvance(i, runRenderer.axisScratch) * scale
+            val digit = tabular != null && tabular.isDigit(runRenderer.glyphId(i))
+            advances[i] = (if (digit) cell else own) * g
+            shifts[i] = if (digit) (cell - own) * 0.5f * g else 0f
+            width += kerning(runRenderer, tabular, i) * scale * g + advances[i]
           }
           builder.begin(warp)
           var penX = -width * textAnchor
           for (i in 0 until count) {
-            penX += runRenderer.kerningBefore(i) * scale
-            val c = runRenderer.evaluateGlyph(i, runRenderer.axisScratch)
-            builder.appendOutline(runRenderer.glyphVerbs(i), c, scale, penX)
+            val g = glyphScales[i]
+            penX += kerning(runRenderer, tabular, i) * scale * g
+            if (g > 0f) {
+              val c = runRenderer.evaluateGlyph(i, runRenderer.axisScratch)
+              builder.appendOutline(runRenderer.glyphVerbs(i), c, scale * g, penX + shifts[i])
+            }
             penX += advances[i]
           }
           if (brush != null) drawPath(builder.path, brush) else drawPath(builder.path, fill)
         },
     measurePolicy = measurePolicy,
   )
+}
+
+private val TNUM = setOf("tnum")
+
+/** The kerning before glyph [i], none against a digit when [tabular] figures are set. */
+private fun kerning(run: GlyphRunRenderer, tabular: TabularFigures?, i: Int): Float {
+  if (tabular != null) {
+    if (tabular.isDigit(run.glyphId(i))) return 0f
+    if (i > 0 && tabular.isDigit(run.glyphId(i - 1))) return 0f
+  }
+  return run.kerningBefore(i)
+}
+
+/**
+ * Tabular figures without a `tnum` feature: the glyphs `0`–`9` map to, and the widest of their
+ * advances at the current axis values, in font units.
+ */
+internal class TabularFigures(
+  font: VariableFont,
+  tags: List<String>,
+  location: Map<String, Float>,
+  kerningLocation: Map<String, Float>,
+) {
+  private val digits: List<VariableGlyphOutline> =
+    font.cachedGlyphOutlines("0123456789", tags, location, kerningLocation).filter {
+      it.glyphId > 0
+    }
+  private val ids: IntArray = IntArray(digits.size) { digits[it].glyphId }
+  private val advances = Array(digits.size) { VariableTextOutlineEvaluator(digits[it].advance) }
+  private val scratch = FloatArray(advances.maxOfOrNull { it.coordinateCount } ?: 2)
+
+  fun isDigit(glyphId: Int): Boolean {
+    for (id in ids) if (id == glyphId) return true
+    return false
+  }
+
+  fun cellAdvance(axisValues: FloatArray): Float {
+    var widest = 0f
+    for (evaluator in advances) {
+      evaluator.evaluate(axisValues, scratch)
+      widest = max(widest, scratch[0])
+    }
+    return widest
+  }
 }
 
 /**

@@ -281,12 +281,14 @@ package ee.schimke.flexpress {
     method @InaccessibleFromKotlin public int getDescender();
     method @InaccessibleFromKotlin public int getUnitsPerEm();
     method public int glyphId(int codePoint);
+    method @ee.schimke.flexpress.InternalFlexpressApi public boolean hasFeature(String tag);
     method @ee.schimke.flexpress.InternalFlexpressApi public float kerning(int first, int second, java.util.Map<java.lang.String,java.lang.Float> location);
     method @ee.schimke.flexpress.InternalFlexpressApi public float[] normalize(java.util.Map<java.lang.String,java.lang.Float> location);
     method @ee.schimke.flexpress.InternalFlexpressApi public java.util.Set<java.lang.Float> normalizedBreakpoints(int axisIndex, java.util.Collection<java.lang.Integer> glyphIds);
     method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.GlyphOutline outline(int glyphId, float[] coords);
     method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<java.lang.Integer> shape(String text);
     method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<ee.schimke.flexpress.ShapedGlyph> shapePositioned(String text, java.util.Map<java.lang.String,java.lang.Float> location);
+    method @ee.schimke.flexpress.InternalFlexpressApi public java.util.List<ee.schimke.flexpress.ShapedGlyph> shapePositioned(String text, java.util.Map<java.lang.String,java.lang.Float> location, java.util.Set<java.lang.String> features);
     method @ee.schimke.flexpress.InternalFlexpressApi public ee.schimke.flexpress.VariedOutline variedOutline(int glyphId);
     property public int ascender;
     property public java.util.List<ee.schimke.flexpress.FontAxis> axes;
@@ -301,10 +303,13 @@ package ee.schimke.flexpress {
 
   @ee.schimke.flexpress.InternalFlexpressApi public final class VariableGlyphOutline {
     ctor public VariableGlyphOutline(ee.schimke.flexpress.VariableTextOutline outline, ee.schimke.flexpress.VariableTextOutline advance, float kerningBefore);
+    ctor public VariableGlyphOutline(ee.schimke.flexpress.VariableTextOutline outline, ee.schimke.flexpress.VariableTextOutline advance, float kerningBefore, int glyphId);
     method @InaccessibleFromKotlin public ee.schimke.flexpress.VariableTextOutline getAdvance();
+    method @InaccessibleFromKotlin public int getGlyphId();
     method @InaccessibleFromKotlin public float getKerningBefore();
     method @InaccessibleFromKotlin public ee.schimke.flexpress.VariableTextOutline getOutline();
     property public ee.schimke.flexpress.VariableTextOutline advance;
+    property public int glyphId;
     property public float kerningBefore;
     property public ee.schimke.flexpress.VariableTextOutline outline;
   }
@@ -424,8 +429,10 @@ package ee.schimke.flexpress {
 
   public final class VariableTextOutlineKt {
     method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<ee.schimke.flexpress.VariableGlyphOutline> cachedGlyphOutlines(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional Float? pixelSize, optional float tolerancePixels, optional boolean allowKeys);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<ee.schimke.flexpress.VariableGlyphOutline> cachedGlyphOutlines(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, java.util.Map<java.lang.String,java.lang.Float> location, java.util.Map<java.lang.String,java.lang.Float> kerningLocation, Float? pixelSize, float tolerancePixels, boolean allowKeys, java.util.Set<java.lang.String> features);
     method @ee.schimke.flexpress.InternalFlexpressApi public static ee.schimke.flexpress.VariableTextOutline cachedOutline(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional Float? pixelSize, optional float tolerancePixels, optional boolean allowKeys);
     method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<ee.schimke.flexpress.VariableGlyphOutline> glyphOutlines(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional Float? pixelSize, optional float tolerancePixels, optional boolean allowKeys);
+    method @ee.schimke.flexpress.InternalFlexpressApi public static java.util.List<ee.schimke.flexpress.VariableGlyphOutline> glyphOutlines(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, java.util.Map<java.lang.String,java.lang.Float> location, java.util.Map<java.lang.String,java.lang.Float> kerningLocation, Float? pixelSize, float tolerancePixels, boolean allowKeys, java.util.Set<java.lang.String> features);
     method @ee.schimke.flexpress.InternalFlexpressApi public static float maxAdvance(ee.schimke.flexpress.VariableFont, String text, ee.schimke.flexpress.LinearForm advance, java.util.Set<java.lang.Integer> animated, float[] fixed);
     method public static ee.schimke.flexpress.VariableTextOutline outline(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation, optional Float? pixelSize, optional float tolerancePixels);
     method @ee.schimke.flexpress.InternalFlexpressApi public static ee.schimke.flexpress.VariableTextOutline outline(ee.schimke.flexpress.VariableFont, String text, java.util.List<java.lang.String> axes, java.util.Map<java.lang.String,java.lang.Float> location, java.util.Map<java.lang.String,java.lang.Float> kerningLocation, Float? pixelSize, float tolerancePixels, boolean allowKeys);

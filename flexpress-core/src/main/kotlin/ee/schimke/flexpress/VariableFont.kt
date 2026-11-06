@@ -92,7 +92,21 @@ public class VariableFont private constructor(private val data: FontBytes) {
    */
   @InternalFlexpressApi
   fun shapePositioned(text: String, location: Map<String, Float>): List<ShapedGlyph> =
-    shapeText(text, ::glyphId, gsub, marks, normalize(location))
+    shapePositioned(text, location, emptySet())
+
+  /**
+   * [text] shaped as [shapePositioned] does, with the `GSUB` lookups of [features] (such as `tnum`)
+   * applied alongside the default ones.
+   */
+  @InternalFlexpressApi
+  fun shapePositioned(
+    text: String,
+    location: Map<String, Float>,
+    features: Set<String>,
+  ): List<ShapedGlyph> = shapeText(text, ::glyphId, gsub, marks, normalize(location), features)
+
+  /** Whether the font's `GSUB` table has a feature tagged [tag], such as `tnum`. */
+  @InternalFlexpressApi fun hasFeature(tag: String): Boolean = gsub?.hasFeature(tag) == true
 
   /** `GDEF`'s glyph class of [glyph]: 1 base, 2 ligature, 3 mark, 4 component, 0 none. */
   private fun gdefGlyphClass(glyph: Int): Int {

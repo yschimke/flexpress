@@ -1168,6 +1168,7 @@ internal class GlyphRunRenderer(
   private val outlineEvaluators = Array(size) { VariableTextOutlineEvaluator(glyphs[it].outline) }
   private val advanceEvaluators = Array(size) { VariableTextOutlineEvaluator(glyphs[it].advance) }
   private val kernings = FloatArray(size) { glyphs[it].kerningBefore }
+  private val glyphIds = IntArray(size) { glyphs[it].glyphId }
   private val coordinates = Array(size) { FloatArray(outlineEvaluators[it].coordinateCount) }
   private val advanceScratch = FloatArray(advanceEvaluators.maxOfOrNull { it.coordinateCount } ?: 4)
   val axisScratch = FloatArray(if (size > 0) outlineEvaluators[0].axes.size else 0)
@@ -1176,6 +1177,9 @@ internal class GlyphRunRenderer(
   val combinedPath: Path = Path()
 
   fun kerningBefore(index: Int): Float = kernings[index]
+
+  /** The font's glyph id for glyph [index] after substitution, or `-1` when unknown. */
+  fun glyphId(index: Int): Int = glyphIds[index]
 
   fun evaluateGlyphAdvance(index: Int, axisValues: FloatArray): Float {
     advanceEvaluators[index].evaluate(axisValues, advanceScratch)

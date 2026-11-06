@@ -46,6 +46,9 @@ class TestFont(val name: String, val resource: String, val axes: List<String>) {
 val googleSansFlex =
   TestFont("Google Sans Flex", "google_sans_flex_wght_rond", listOf("wght", "ROND"))
 
+/** Inter keeping its `tnum` feature: proportional default figures, tabular ones by `GSUB`. */
+val interTnum = TestFont("Inter (tnum)", "inter_tnum", listOf("wght"))
+
 val testFonts: List<TestFont> =
   listOf(
     googleSansFlex,
