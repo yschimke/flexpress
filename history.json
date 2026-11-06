@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+    "generatedFrom": "f9263575b9331f8b38cb21ec600e0e420609012e",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -313,6 +313,216 @@
             "observations": 3,
             "unstable": false,
             "flapCount": 1
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.EmbossRaisedAnimatedPreview": {
+            "path": "renders/flexpress-compose/EmbossRaisedAnimatedPreview-96850398.gif",
+            "versions": [
+                {
+                    "blob": "119fb70f963cab69eb81ecc9e76bf5a54391d52a",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.EmbossStylesPreview": {
+            "path": "renders/flexpress-compose/EmbossStylesPreview-03c43639.png",
+            "versions": [
+                {
+                    "blob": "fa7be1b751313a07441ee9314f96b3adb32efc52",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpAlongPathAnimatedPreview": {
+            "path": "renders/flexpress-compose/WarpAlongPathAnimatedPreview-65aff2d9.gif",
+            "versions": [
+                {
+                    "blob": "3a21142c2d15b151b9e5ac41e8d659b61a5cd1a9",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpCurvedTextSpinAnimatedPreview": {
+            "path": "renders/flexpress-compose/WarpCurvedTextSpinAnimatedPreview-f865b0dd.gif",
+            "versions": [
+                {
+                    "blob": "8c0af323cef102c1d4ae5e160bd3d36f73aad024",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpCurvedTextWatchFaceAnimatedPreview": {
+            "path": "renders/flexpress-compose/WarpCurvedTextWatchFaceAnimatedPreview-d9f31287.gif",
+            "versions": [
+                {
+                    "blob": "010a2fafbee92c85153f3df856c0db11376c72e3",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedFlexpressPreview": {
+            "path": "renders/flexpress-compose/CompareCurvedFlexpressPreview-935baadc.png",
+            "versions": [
+                {
+                    "blob": "a5704e8c2854ea8ee857bb21b30740f6caa30dab",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayShaderPreview": {
+            "path": "renders/flexpress-compose/CompareCurvedOverlayShaderPreview-ac2e0e58.png",
+            "versions": [
+                {
+                    "blob": "ce3f31607452ffb03606ecb4f21129598fbc9300",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextBaselinePreview": {
+            "path": "renders/flexpress-compose/CompareCurvedOverlayTimeTextBaselinePreview-fd7f9e32.png",
+            "versions": [
+                {
+                    "blob": "2c549da554765211b8d13e883cb37474bebcdd77",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextPreview": {
+            "path": "renders/flexpress-compose/CompareCurvedOverlayTimeTextPreview-fcd9427c.png",
+            "versions": [
+                {
+                    "blob": "a518869ec499d2aac06f1aab2c30c1c266609d68",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearCurveToEdgeShaderPreview": {
+            "path": "renders/flexpress-compose/CompareCurvedWearCurveToEdgeShaderPreview-85788c10.png",
+            "versions": [
+                {
+                    "blob": "f0cd2d7672c9d514e4ac8c6b22c5a4eb8031fc7c",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearTimeTextPreview": {
+            "path": "renders/flexpress-compose/CompareCurvedWearTimeTextPreview-725e91a6.png",
+            "versions": [
+                {
+                    "blob": "b4aa0d3416c049bf945d4b99652910833d0339eb",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockAdaptiveTabularAnimatedPreview": {
+            "path": "renders/flexpress-compose/CurvedClockAdaptiveTabularAnimatedPreview-ffa33f07.gif",
+            "versions": [
+                {
+                    "blob": "349e28c6f43e08f7cec0c30af8a579110ca014be",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockFlexpressAnimatedPreview": {
+            "path": "renders/flexpress-compose/CurvedClockFlexpressAnimatedPreview-4e0c580b.gif",
+            "versions": [
+                {
+                    "blob": "a3a433055afdcbb86c6b046bfeef4df96455f538",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockWearTimeTextAnimatedPreview": {
+            "path": "renders/flexpress-compose/CurvedClockWearTimeTextAnimatedPreview-a806e07c.gif",
+            "versions": [
+                {
+                    "blob": "31ed78e3740537854f1c8724e3170fc88668ebde",
+                    "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
+                    "date": "2026-11-06T23:00:05Z",
+                    "sourceSha": "24978525",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationComplexScriptPreview": {
             "path": "renders/flexpress-remote/LimitationComplexScriptPreview-8905ba86.gif",
