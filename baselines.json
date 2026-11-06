@@ -143,6 +143,118 @@
     "sha256": "4b443c4db83453ad176be97168de0aacd1b7f0f55aa4b6d763efb297b8f52334",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextPreviews.kt"
   },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.EmbossRaisedAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "EmbossRaisedAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "EmbossRaisedAnimatedPreview-96850398.gif",
+    "sha256": "3175c0a206586035453200b78f5f6133c65ed6b3c55e723476d9f230273f6a40",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextWarpPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.EmbossStylesPreview": {
+    "captureLabel": "",
+    "functionName": "EmbossStylesPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "EmbossStylesPreview-03c43639.png",
+    "sha256": "e2afa6761f2dcab23ca198cdcc2e27ba99c09536b22882bc98bf9e558a9cefa3",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextWarpPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpAlongPathAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "WarpAlongPathAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "WarpAlongPathAnimatedPreview-65aff2d9.gif",
+    "sha256": "d745f97c5d5823c3e05f2c0cc00b5841397a07fce97d8296e5da7bccf6a345e8",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextWarpPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpCurvedTextSpinAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "WarpCurvedTextSpinAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "WarpCurvedTextSpinAnimatedPreview-f865b0dd.gif",
+    "sha256": "1f2da6909cbdb060d48de34b5afb8fd5b488c4ef0f952788ab9410bff606f10b",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextWarpPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextWarpPreviewsKt.WarpCurvedTextWatchFaceAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "WarpCurvedTextWatchFaceAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "WarpCurvedTextWatchFaceAnimatedPreview-d9f31287.gif",
+    "sha256": "0884db7aaaf2a50aa29d74d762b771ce4a1b3928f7e9029029ad49a0b03567f8",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextWarpPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedFlexpressPreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedFlexpressPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedFlexpressPreview-935baadc.png",
+    "sha256": "693bc29c1a9334bddd66cf14b3206469add1610e83adb6510096e5f91e16866b",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayShaderPreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedOverlayShaderPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedOverlayShaderPreview-ac2e0e58.png",
+    "sha256": "3f36bc51a663e94b9d8007cf54930fab8e84c4dcca5684a98f34f5505c30dbf7",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextBaselinePreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedOverlayTimeTextBaselinePreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedOverlayTimeTextBaselinePreview-fd7f9e32.png",
+    "sha256": "f0309c35faf566d7ac2d2db6d68f2267deda531c7f3f633be503ebb41cdd0f12",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextPreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedOverlayTimeTextPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedOverlayTimeTextPreview-fcd9427c.png",
+    "sha256": "dc0b39e3aa421752fe2e21b649bd0a2c52570f79d45ee5158ce4d2081b3a0bb8",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearCurveToEdgeShaderPreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedWearCurveToEdgeShaderPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedWearCurveToEdgeShaderPreview-85788c10.png",
+    "sha256": "dd19e97e1643a02bd660e664ae7ca543174997748d4f012c86ee9f33fbbfb451",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearTimeTextPreview": {
+    "captureLabel": "",
+    "functionName": "CompareCurvedWearTimeTextPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CompareCurvedWearTimeTextPreview-725e91a6.png",
+    "sha256": "a6274dd8d4e3f18bec04a963d99f4f82c0afc18840cc8268b7099c70c31183ee",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockAdaptiveTabularAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "CurvedClockAdaptiveTabularAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CurvedClockAdaptiveTabularAnimatedPreview-ffa33f07.gif",
+    "sha256": "ff280cf051830c4b7850826505fbe02191425457a76a4ae8f950824e5fae0b34",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockFlexpressAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "CurvedClockFlexpressAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CurvedClockFlexpressAnimatedPreview-4e0c580b.gif",
+    "sha256": "966663bb1613a7741a810ef857a617438466b7e0e90c458972db5ac19c806218",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockWearTimeTextAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "CurvedClockWearTimeTextAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "CurvedClockWearTimeTextAnimatedPreview-a806e07c.gif",
+    "sha256": "2aa937f7bbf4bb21aaff1b658fc80487f2b499c8a18cc2314d0e9a8a9039c4f7",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
+  },
   "flexpress-remote/ee.schimke.flexpress.LimitationPreviewsKt.LimitationComplexScriptPreview": {
     "captureLabel": "",
     "functionName": "LimitationComplexScriptPreview",
