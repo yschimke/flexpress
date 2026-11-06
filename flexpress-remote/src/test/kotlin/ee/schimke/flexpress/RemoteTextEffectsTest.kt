@@ -42,6 +42,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertWithMessage
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import org.junit.Rule
 import org.junit.Test
@@ -183,6 +184,53 @@ class RemoteTextEffectsTest {
         .that(first.getValue(name).sameAs(second.getValue(name)))
         .isFalse()
     }
+  }
+
+  /** A glyph at the peak of a range wave grows about its middle, not to the right of its origin. */
+  @Test
+  fun rangeWaveScalesEachGlyphAboutItsMiddle() {
+    text = "0"
+    val location = mapOf("wght" to 700f)
+    composeRule.setContent {
+      Column {
+        for ((tag, scale) in listOf("flat" to 1f, "grown" to 2f)) {
+          Player(tag) {
+            RemoteVariableFontRangeWaveText(
+              live(),
+              CHARACTERS,
+              1,
+              font,
+              location,
+              location,
+              center = 0f.rf,
+              fontSize = 24.dp.asRdp(),
+              peakOffsetY = 0.dp,
+              peakScale = scale,
+            )
+          }
+        }
+      }
+    }
+    val flat = centroidX(settled("flat"))
+    val grown = centroidX(settled("grown"))
+    assertWithMessage("ink centroid x: flat $flat, grown $grown")
+      .that(abs(grown - flat))
+      .isLessThan(1.5f)
+  }
+
+  private fun centroidX(b: Bitmap): Float {
+    val background = b.getPixel(0, 0)
+    var sum = 0.0
+    var n = 0
+    for (y in 0 until b.height) {
+      for (x in 0 until b.width) {
+        if (b.getPixel(x, y) != background) {
+          sum += x
+          n++
+        }
+      }
+    }
+    return (sum / n).toFloat()
   }
 
   @SuppressLint("RestrictedApi")

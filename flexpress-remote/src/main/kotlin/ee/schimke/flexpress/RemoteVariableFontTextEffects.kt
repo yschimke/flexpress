@@ -153,16 +153,18 @@ private fun FlatLineCanvas(
   padX: Dp,
   padY: Dp,
   tabularFigures: Boolean = false,
+  /** The glyph sets the line's advances may come from: the box fits the widest of them. */
+  instances: List<VariableFontGlyphs> = listOf(glyphs),
   prepare: (RemoteGlyphLine) -> Unit = {},
   body: FlatLineScope.() -> Unit,
 ) {
+  val widest = instances.maxOf { it.widest }
   val font = glyphs.font
   val em = 1f / font.unitsPerEm
   val padXr = padX.asRdp()
   val padYr = padY.asRdp()
   val width =
-    fontSize * ((maxLength * glyphs.widest + (maxLength - 1) * glyphs.fonts.widestKern) * em) +
-      padXr * 2f
+    fontSize * ((maxLength * widest + (maxLength - 1) * glyphs.fonts.widestKern) * em) + padXr * 2f
   val height = fontSize * ((font.ascender - font.descender) * em) + padYr * 2f
   val pixelSize = constantPixelSize(fontSize)
   RemoteCanvas(modifier = modifier.width(width).height(height)) {
@@ -317,7 +319,16 @@ public fun RemoteVariableFontRangeWaveText(
   val base = rememberVariableFontGlyphs(font, characters, emptyMap(), baseLocation)
   val peak = instance(base, peakLocation)
   val lift = if (peakOffsetY.value < 0) -peakOffsetY else peakOffsetY
-  FlatLineCanvas(text, maxLength, base, fontSize, modifier, 6.dp, lift + 6.dp) {
+  FlatLineCanvas(
+    text,
+    maxLength,
+    base,
+    fontSize,
+    modifier,
+    6.dp,
+    lift + 6.dp,
+    instances = listOf(base, peak),
+  ) {
     val peakWritten = peak.write(state)
     val peakAdvances = line.characterArray(peakWritten.advances.map { it * scale })
     val c = RemoteFloat(id(center))
@@ -338,7 +349,8 @@ public fun RemoteVariableFontRangeWaveText(
       val x = id(originX + slot.pen + slot.advance * 0.5f)
       val y = id(baseline + dyPx * w)
       val sid = id(s)
-      val back = id(slot.advance * -0.5f / s)
+      // Back by half the unscaled advance after the scale, so the glyph scales about its middle.
+      val back = id(slot.advance * -0.5f)
       line.drawTween(slot, peakWritten, w) {
         writer.translate(x, y)
         writer.scale(sid, sid)
@@ -375,7 +387,16 @@ public fun RemoteVariableFontKineticCascadeText(
   val rest = rememberVariableFontGlyphs(font, characters, emptyMap(), restLocation)
   val flight = instance(rest, flightLocation)
   val impact = instance(rest, impactLocation)
-  FlatLineCanvas(text, maxLength, rest, fontSize, modifier, 6.dp, jumpHeight + 8.dp) {
+  FlatLineCanvas(
+    text,
+    maxLength,
+    rest,
+    fontSize,
+    modifier,
+    6.dp,
+    jumpHeight + 8.dp,
+    instances = listOf(rest, flight, impact),
+  ) {
     val flightWritten = flight.write(state)
     val impactWritten = impact.write(state)
     val flightAdvances = line.characterArray(flightWritten.advances.map { it * scale })
@@ -411,7 +432,7 @@ public fun RemoteVariableFontKineticCascadeText(
       val y = id(baseline - jump * arc)
       val sxId = id(sx)
       val syId = id(sy)
-      val back = id(slot.advance * -0.5f / sx)
+      val back = id(slot.advance * -0.5f)
       val transform = {
         writer.translate(x, y)
         writer.scale(sxId, syId)
@@ -466,6 +487,7 @@ public fun RemoteVariableFontWigglyText(
     modifier,
     offsetJitter + 6.dp,
     offsetJitter + 6.dp,
+    instances = listOf(low, high),
   ) {
     val highWritten = high.write(state)
     val highAdvances = line.characterArray(highWritten.advances.map { it * scale })
