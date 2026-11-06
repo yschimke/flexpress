@@ -167,7 +167,7 @@ class TweenGridTest {
     val initial = values.toMap()
     val doc = rememberRemoteDocument {
       content(
-        axes.associateWith { a -> rememberNamedRemoteFloat("axis.$a") { initial.getValue(a).rf } }
+        axes.associateWith { a -> rememberNamedRemoteFloat("axis.$a") { initial.getValue(a).rf } },
       )
     }
     doc.value?.let { d -> LaunchedEffect(d) { documents[tag] = d } }

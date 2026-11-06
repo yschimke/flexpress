@@ -128,7 +128,7 @@ class GeneratedVsLibraryTest {
               axes("wght"),
               size,
             )
-          }
+          },
       ) +
         cases.flatMap { (name, library, generated) ->
           listOf("$name library" to library, "$name generated" to generated)
@@ -159,18 +159,18 @@ class GeneratedVsLibraryTest {
     }
     println("\"Hello, Wear OS 12:45!\" wght, median of 41")
     println(
-      "  %-32s %7.2f ms".format("parse font", median { VariableFont.parse(fontFile.readBytes()) })
+      "  %-32s %7.2f ms".format("parse font", median { VariableFont.parse(fontFile.readBytes()) }),
     )
     println(
       "  %-32s %7.2f ms"
         .format(
           "outline from parsed font",
           median { font.outline("Hello, Wear OS 12:45!", listOf("wght")) },
-        )
+        ),
     )
     println(
       "  %-32s %7.2f ms"
-        .format("decode generated outline", median { VariableTextOutline.decode(encoded) })
+        .format("decode generated outline", median { VariableTextOutline.decode(encoded) }),
     )
   }
 

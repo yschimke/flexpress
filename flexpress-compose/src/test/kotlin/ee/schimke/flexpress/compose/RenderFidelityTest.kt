@@ -102,7 +102,7 @@ class RenderFidelityTest {
         Case(robotoFlex, mapOf("wght" to 750f, "wdth" to 120f, "slnt" to -10f)),
         Case(testFonts[2], mapOf("wght" to 900f, "slnt" to -15f, "CASL" to 1f, "MONO" to 1f)),
         Case(testFonts[3], mapOf("wght" to 300f, "opsz" to 144f, "SOFT" to 100f)),
-      )
+      ),
     )
   }
 
@@ -209,9 +209,9 @@ class RenderFidelityTest {
           case.testFont.file,
           variationSettings =
             FontVariation.Settings(
-              *case.values.map { (tag, v) -> FontVariation.Setting(tag, v) }.toTypedArray()
+              *case.values.map { (tag, v) -> FontVariation.Setting(tag, v) }.toTypedArray(),
             ),
-        )
+        ),
       )
     val style =
       TextStyle(
@@ -323,7 +323,7 @@ class RenderFidelityTest {
           case.testFont.font,
           glyph,
           case.values.keys.toList(),
-        )
+        ),
       )
     val renderer = VariableFontTextRenderer(evaluator)
     val scale = SIZE_PX / evaluator.unitsPerEm

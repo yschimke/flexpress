@@ -122,7 +122,7 @@ class SimplifiedOutlineTest {
       val (max, count) = worst.getValue(tag)
       report.appendLine(
         "  %-9s %s  %4d verbs  worst: %3d px differ, max %3d"
-          .format(tag, DocumentStats.of(documents.getValue(tag)), outline.verbs.size, count, max)
+          .format(tag, DocumentStats.of(documents.getValue(tag)), outline.verbs.size, count, max),
       )
     }
     println(report)
@@ -140,7 +140,7 @@ class SimplifiedOutlineTest {
     val initial = values.toMap()
     val doc = rememberRemoteDocument {
       content(
-        axes.associateWith { a -> rememberNamedRemoteFloat("axis.$a") { initial.getValue(a).rf } }
+        axes.associateWith { a -> rememberNamedRemoteFloat("axis.$a") { initial.getValue(a).rf } },
       )
     }
     doc.value?.let { d -> LaunchedEffect(d) { documents[tag] = d } }

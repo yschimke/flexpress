@@ -62,7 +62,7 @@ class OutlineExactnessTest {
         val evaluator = evaluator(testFont, listOf(axis))
         report.appendLine(
           "$testFont $axis: ${evaluator.coordinateCount} ${evaluator.termCount} " +
-            "${evaluator.tentCount} ${evaluator.isKeys}"
+            "${evaluator.tentCount} ${evaluator.isKeys}",
         )
         if (evaluator.isKeys) keys++
         assertThat(evaluator(testFont, listOf(axis), allowKeys = false).isKeys).isFalse()
@@ -115,7 +115,7 @@ class OutlineExactnessTest {
         animated,
         fixed,
         allowKeys = allowKeys,
-      )
+      ),
     )
 
   private fun check(
