@@ -601,6 +601,8 @@ public fun RemoteVariableFontEchoText(
     modifier,
     reachX + 4.dp,
     reachY + 4.dp,
+    // Each echo is laid out with its own advances, so the box fits the widest of them all.
+    instances = glyphsAtLag,
   ) {
     val dx = echoOffsetX.asRdp().toPx()
     val dy = echoOffsetY.asRdp().toPx()
