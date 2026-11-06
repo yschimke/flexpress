@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "f9263575b9331f8b38cb21ec600e0e420609012e",
+    "generatedFrom": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -625,6 +625,201 @@
             "observations": 3,
             "unstable": false,
             "flapCount": 1
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteCurvedClockAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteCurvedClockAnimatedPreview-795b3193.gif",
+            "versions": [
+                {
+                    "blob": "f5b33bb25b0472dd8e3ce827907237ab69c8d237",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectBaselineWaveAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectBaselineWaveAnimatedPreview-70609f07.gif",
+            "versions": [
+                {
+                    "blob": "6623ab77bf0c5efda227eaf365204d22526d24a0",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectEchoAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectEchoAnimatedPreview-a15adeb8.gif",
+            "versions": [
+                {
+                    "blob": "29cde4b60cb81f8b273427b7274835a6844d7c36",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectEmbossAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectEmbossAnimatedPreview-209c2e70.gif",
+            "versions": [
+                {
+                    "blob": "f0b32878754b6bd4f435aba07dcda1031c5e3b2f",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectGlitchAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectGlitchAnimatedPreview-a97d6eb4.gif",
+            "versions": [
+                {
+                    "blob": "ccaea2dea38b26ec8c9a75acdd7ce528f7330424",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectKineticCascadeAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectKineticCascadeAnimatedPreview-a131e483.gif",
+            "versions": [
+                {
+                    "blob": "b461aa8b43d713ef0bb7e14b587f6630a94c55a3",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectNeonAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectNeonAnimatedPreview-1a9b4bd5.gif",
+            "versions": [
+                {
+                    "blob": "4deafc2b8589755fc7f937cb7e4f2ba356992e63",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectPathWarpAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectPathWarpAnimatedPreview-0b1d46d1.gif",
+            "versions": [
+                {
+                    "blob": "0f35ba82ffd0ae9c7b60a52e0dfc9bb584bbb70f",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectRangeWaveAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectRangeWaveAnimatedPreview-85242ff8.gif",
+            "versions": [
+                {
+                    "blob": "34ae95b95034b7ed7f8fba7050336521a78683da",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectShimmerAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectShimmerAnimatedPreview-4e1a18e8.gif",
+            "versions": [
+                {
+                    "blob": "273daa3262da7e69a8fead059e61311ec137f1e1",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectTrimPathAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectTrimPathAnimatedPreview-c966e6de.gif",
+            "versions": [
+                {
+                    "blob": "009efecbc7deb844edb0c42a4cebd1683afe982e",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectWaveWarpAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectWaveWarpAnimatedPreview-c56df3a7.gif",
+            "versions": [
+                {
+                    "blob": "542d771c4825045c2a6837bcf35b5d54ea0ff431",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-remote/ee.schimke.flexpress.RemoteCurvedTextPreviewsKt.RemoteEffectWigglyAnimatedPreview": {
+            "path": "renders/flexpress-remote/RemoteEffectWigglyAnimatedPreview-762720bc.gif",
+            "versions": [
+                {
+                    "blob": "ea6148fb2e849356cf5dca5dad13599b1b074973",
+                    "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+                    "date": "2026-11-06T23:37:53Z",
+                    "sourceSha": "73c14f16",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness0Preview": {
             "path": "renders/flexpress-remote/HelloRoundness0Preview-b38da3bf.png",
