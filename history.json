@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "fbd23cf74491625d969b741c7d615bb4bec63bed",
+    "generatedFrom": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -45,6 +45,156 @@
             "observations": 3,
             "unstable": false,
             "flapCount": 1
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect01RangeSelectorWaveAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect01RangeSelectorWaveAnimatedPreview-78e4c93f.gif",
+            "versions": [
+                {
+                    "blob": "769eb5dbda24e42c47baf46c48f4a330dd2c389d",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect02TrimPathsWriteOnAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect02TrimPathsWriteOnAnimatedPreview-33b3b0d3.gif",
+            "versions": [
+                {
+                    "blob": "1fc7b38c39d8c74aea3627110b6e6756bc5f5687",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect03WaveWarpLiquidAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect03WaveWarpLiquidAnimatedPreview-94e66cef.gif",
+            "versions": [
+                {
+                    "blob": "9b9f1fc32848041eafb2a866c706f7ba6304e0a8",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect04KineticCascadeBounceAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect04KineticCascadeBounceAnimatedPreview-a5edb5f3.gif",
+            "versions": [
+                {
+                    "blob": "cdb9dc69c8af3c1b9f8754e481de0398f71f2d28",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect05EchoMotionTrailAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect05EchoMotionTrailAnimatedPreview-9829ef59.gif",
+            "versions": [
+                {
+                    "blob": "9f6fb3f80b4879dc64f1fc6f9c9c54673182fe7c",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect06ChromaticGlitchAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect06ChromaticGlitchAnimatedPreview-486772cd.gif",
+            "versions": [
+                {
+                    "blob": "463efe928172ca6d1a57728cd854bde7cb7fb05c",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect07SpecularLightSweepAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect07SpecularLightSweepAnimatedPreview-bdab9f62.gif",
+            "versions": [
+                {
+                    "blob": "f9494d3ca32aff0832f7da83a177da58a996f15d",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect08WigglyHandDrawnAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect08WigglyHandDrawnAnimatedPreview-f3f4a946.gif",
+            "versions": [
+                {
+                    "blob": "dec63504628bbf56eccdf1659d235a1e606ba33f",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect09TextOnPathWaveAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect09TextOnPathWaveAnimatedPreview-ecf3ef37.gif",
+            "versions": [
+                {
+                    "blob": "ce5ecd159639e6273d3253570f877107133662fc",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
+        },
+        "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect10NeonGlowPulseAnimatedPreview": {
+            "path": "renders/flexpress-compose/Effect10NeonGlowPulseAnimatedPreview-702969e2.gif",
+            "versions": [
+                {
+                    "blob": "2d9b2608ef46078a125ad06f5b2a9a425b96619e",
+                    "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
+                    "date": "2026-11-06T18:14:20Z",
+                    "sourceSha": "df547056",
+                    "commits": 1
+                }
+            ],
+            "observations": 1,
+            "unstable": false,
+            "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
             "path": "renders/flexpress-compose/GoogleSansFlexWeightAndRoundnessAnimatedPreview-68309301.gif",
