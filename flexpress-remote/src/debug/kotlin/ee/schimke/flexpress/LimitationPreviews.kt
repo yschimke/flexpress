@@ -141,7 +141,7 @@ private fun LimitationComparison(
               Font(
                 fontResId,
                 variationSettings = FontVariation.Settings(FontVariation.weight(weight.toInt())),
-              )
+              ),
             ),
         ),
     )

@@ -72,7 +72,7 @@ class VariableTextOutlineTest {
     val exact = font.outline(TEXT, listOf("wght", "slnt"))
     val simplified = font.outline(TEXT, listOf("wght", "slnt"), pixelSize = 44f)
     println(
-      "exact ${exact.encode().length} chars, simplified at 44 px ${simplified.encode().length}"
+      "exact ${exact.encode().length} chars, simplified at 44 px ${simplified.encode().length}",
     )
     assertThat(simplified.verbs.size).isAtMost(exact.verbs.size)
     assertThat(simplified.encode().length).isLessThan(exact.encode().length)
@@ -135,7 +135,7 @@ class VariableTextOutlineTest {
         }
 
         override fun close() {}
-      }
+      },
     )
     return out.toFloatArray()
   }

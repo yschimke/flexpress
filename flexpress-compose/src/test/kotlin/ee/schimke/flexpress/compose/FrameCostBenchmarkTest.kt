@@ -163,7 +163,7 @@ class FrameCostBenchmarkTest {
             "|---|---|---|---|---|---|",
           ) +
           modelRows)
-        .joinToString("\n")
+        .joinToString("\n"),
     )
   }
 
@@ -180,7 +180,7 @@ class FrameCostBenchmarkTest {
               Font(
                 testFont.file,
                 variationSettings = FontVariation.Settings(FontVariation.Setting("wght", weight)),
-              )
+              ),
             ),
         ),
     )

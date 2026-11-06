@@ -204,7 +204,7 @@ class ClockDrivenAxesTest {
       val lags = (0..LAG_FRAMES).map { difference(embedded, capture("reference$it")) }
       report.appendLine(
         "t=${target / 1000f}s view=$view embedded=" +
-          lags.withIndex().joinToString { (lag, d) -> "-$lag:%.3f".format(d) }
+          lags.withIndex().joinToString { (lag, d) -> "-$lag:%.3f".format(d) },
       )
       assertWithMessage("view player at ${target}ms\n$report").that(view).isLessThan(TOLERANCE)
       assertWithMessage("embedded player near ${target}ms\n$report")

@@ -143,7 +143,7 @@ internal fun variableTextKeyframes(
           path.quadTo(x1, y1, x2, y2)
 
         override fun close() = path.close()
-      }
+      },
     )
     VariableTextFrame(v, path, outline.advance)
   }

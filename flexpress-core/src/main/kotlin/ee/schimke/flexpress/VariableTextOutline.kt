@@ -263,7 +263,7 @@ private object OutlineCache {
   private val entries =
     object : LinkedHashMap<OutlineKey, VariableTextOutline>(SIZE, 0.75f, true) {
       override fun removeEldestEntry(
-        eldest: MutableMap.MutableEntry<OutlineKey, VariableTextOutline>
+        eldest: MutableMap.MutableEntry<OutlineKey, VariableTextOutline>,
       ) = size > SIZE
     }
 
@@ -309,7 +309,7 @@ fun VariableFont.outline(
         verbs += verb
         forms.forEach { coords += specialization.specialize(it) }
       }
-    }
+    },
   )
   val rawCommands = OutlineCommands(verbs, coords)
   val commands =

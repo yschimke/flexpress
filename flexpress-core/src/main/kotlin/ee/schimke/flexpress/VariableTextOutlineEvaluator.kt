@@ -36,7 +36,7 @@ package ee.schimke.flexpress
 @InternalFlexpressApi
 public class VariableTextOutlineEvaluator(
   /** The outline evaluated. */
-  public val outline: VariableTextOutline
+  public val outline: VariableTextOutline,
 ) {
   /** The animated axes' tags, in the order [evaluate] takes their values. */
   public val axes: List<String> = outline.axes
@@ -262,7 +262,7 @@ public class VariableTextOutlineEvaluator(
             }
 
             override fun close() {}
-          }
+          },
         )
       return coordinates.toFloatArray()
     }

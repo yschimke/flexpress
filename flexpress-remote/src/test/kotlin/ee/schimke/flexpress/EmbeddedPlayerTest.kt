@@ -176,7 +176,7 @@ class EmbeddedPlayerTest {
       val (max, count) = diff(view, embedded)
       report.appendLine(
         "  ${location.filterKeys { it in axes }}: view ink ${ink(view)}, embedded ink " +
-          "${ink(embedded)}, $count px differ, max $max"
+          "${ink(embedded)}, $count px differ, max $max",
       )
       assertWithMessage("$report").that(ink(view)).isGreaterThan(0L)
       assertWithMessage("embedded player differs from the View player\n$report")
