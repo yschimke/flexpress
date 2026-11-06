@@ -80,6 +80,36 @@ VariableFontText(outline, axes = mapOf("wght" to { weight }), fontSize = 32.sp,
   contentDescription = "Hello")
 ```
 
+## Curved, path-warped and embossed text
+
+```kotlin
+// Bent around a circle, as Wear Compose's curvedText: 12 o'clock, reading clockwise.
+VariableFontCurvedText("FLEXPRESS", font, mapOf("wght" to { weight }), 18.sp, radius = 86.dp)
+
+// Bent along a path (in pixels), running along it as `offset` moves.
+VariableFontPathWarpText("ALONG", font, mapOf("wght" to { 700f }), 24.sp, path, offset = { t })
+
+// Lit as a relief, the light swinging round with `angle`.
+VariableFontEmbossText("Emboss", font, mapOf("wght" to { weight }), 52.sp,
+  lightAngleDegrees = { angle }, style = EmbossStyle.Raised)
+```
+
+Wear Compose curves text by drawing it flat and warping the pixels in a shader. Flexpress warps
+the outline instead: a point `u` along the line and `v` above the baseline goes to angle
+`anchor + u / radius` at distance `radius ± v` from the center (or `u` along a path, `v` along its
+normal). Each line and curve of the glyph outline is split finely enough to follow the arc, and each
+piece is re-fitted as a quadratic through its warped start, midpoint and end, so stems bend
+smoothly, glyphs pinch toward the inside of the curve and spread on the outside, and the result is
+still a vector path, sharp at any scale and fillable with any `Brush`. Advances are read live, so
+the text stays anchored as the axes change its width. Text that runs past an open path continues
+along its end tangent; a closed path wraps.
+
+`VariableFontEmbossText` is fills of the evaluated outline too: each lit or shaded bevel is the
+glyph minus copies of itself shifted along the light direction (`DST_OUT` in a layer) with a
+rounded-chamfer falloff, plus a specular rim and blurred cast and contact shadows
+(`EmbossStyle.Pressed`: a shadowed near wall, a lit far wall and lip). Blurs use `BlurMaskFilter`,
+which hardware-accelerated canvases honour from API 28.
+
 ## How
 
 Every outline coordinate of a `glyf`/`gvar` variable font is the font's own linear model,

@@ -1,6 +1,16 @@
 // Signature format: 4.0
 package ee.schimke.flexpress.compose {
 
+  public enum CurvedTextDirection {
+    enum_constant public static final ee.schimke.flexpress.compose.CurvedTextDirection Clockwise;
+    enum_constant public static final ee.schimke.flexpress.compose.CurvedTextDirection CounterClockwise;
+  }
+
+  public enum EmbossStyle {
+    enum_constant public static final ee.schimke.flexpress.compose.EmbossStyle Pressed;
+    enum_constant public static final ee.schimke.flexpress.compose.EmbossStyle Raised;
+  }
+
   public final class RangeSelector {
     ctor public RangeSelector(float center, optional float width, optional ee.schimke.flexpress.compose.RangeShape shape, optional boolean wrap);
     method @InaccessibleFromKotlin public float getCenter();
@@ -35,11 +45,20 @@ package ee.schimke.flexpress.compose {
     method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontWigglyText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,java.lang.Float> baseAxes, java.util.Map<java.lang.String,java.lang.Float> axisWiggle, androidx.compose.ui.unit.TextUnit fontSize, kotlin.jvm.functions.Function0<java.lang.Float> timeSeconds, optional androidx.compose.ui.Modifier modifier, optional float stepsPerSecond, optional androidx.compose.ui.unit.Dp offsetJitter, optional float rotationJitterDegrees, optional androidx.compose.ui.unit.Dp vertexJitter, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Brush? brush, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
   }
 
+  public final class VariableFontTextEmbossKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontEmbossText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function0<java.lang.Float> lightAngleDegrees, optional ee.schimke.flexpress.compose.EmbossStyle style, optional androidx.compose.ui.unit.Dp depth, optional androidx.compose.ui.unit.Dp elevation, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Brush? brush, optional androidx.compose.ui.graphics.Color highlightColor, optional androidx.compose.ui.graphics.Color shadowColor, optional kotlin.jvm.functions.Function0<java.lang.Float> lightIntensity, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
+  }
+
   public final class VariableFontTextKt {
     method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontText(ee.schimke.flexpress.VariableTextOutline outline, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, androidx.compose.ui.graphics.Brush brush, optional androidx.compose.ui.Modifier modifier, optional float alpha, optional String? contentDescription);
     method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontText(ee.schimke.flexpress.VariableTextOutline outline, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional String? contentDescription);
     method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, androidx.compose.ui.graphics.Brush brush, optional androidx.compose.ui.Modifier modifier, optional float alpha, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
     method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, optional androidx.compose.ui.Modifier modifier, optional androidx.compose.ui.graphics.Color color, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
+  }
+
+  public final class VariableFontTextWarpKt {
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontCurvedText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, androidx.compose.ui.unit.Dp radius, optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function0<java.lang.Float> anchorAngleDegrees, optional float textAnchor, optional ee.schimke.flexpress.compose.CurvedTextDirection direction, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Brush? brush, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
+    method @KotlinOnly @androidx.compose.runtime.Composable public static void VariableFontPathWarpText(String text, ee.schimke.flexpress.VariableFont font, java.util.Map<java.lang.String,kotlin.jvm.functions.Function0<java.lang.Float>> axes, androidx.compose.ui.unit.TextUnit fontSize, androidx.compose.ui.graphics.Path path, optional androidx.compose.ui.Modifier modifier, optional kotlin.jvm.functions.Function0<java.lang.Float> offset, optional float textAnchor, optional androidx.compose.ui.graphics.Color color, optional androidx.compose.ui.graphics.Brush? brush, optional java.util.Map<java.lang.String,java.lang.Float> location, optional java.util.Map<java.lang.String,java.lang.Float> kerningLocation);
   }
 
 }

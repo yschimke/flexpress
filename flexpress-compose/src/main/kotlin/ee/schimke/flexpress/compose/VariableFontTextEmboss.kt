@@ -1,0 +1,410 @@
+/*
+ * Copyright 2026 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ee.schimke.flexpress.compose
+
+import android.graphics.BlurMaskFilter
+import android.graphics.Canvas as AndroidCanvas
+import android.graphics.Paint as AndroidPaint
+import android.graphics.Path as AndroidPath
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
+import ee.schimke.flexpress.VariableFont
+import ee.schimke.flexpress.VariableTextOutlineEvaluator
+import ee.schimke.flexpress.cachedOutline
+import kotlin.math.PI
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.hypot
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sin
+
+/** Whether [VariableFontEmbossText] raises the letters off the surface or presses them into it. */
+public enum class EmbossStyle {
+  /** Letters stand proud of the surface: a bevelled face, lit edges toward the light, a shadow. */
+  Raised,
+  /** Letters are stamped into the surface: shadowed walls toward the light, a lit far lip. */
+  Pressed,
+}
+
+/**
+ * **Emboss** — variable-font text lit as a physical relief: a bevelled face catching a directional
+ * light, a crisp specular rim, and a soft cast and contact shadow (or, [EmbossStyle.Pressed], a
+ * recess with a shadowed wall and a lit lip).
+ *
+ * Built only from fills of the evaluated outline, no shader: each lit or shaded bevel is the glyph
+ * shape minus copies of itself shifted along the light direction (`DST_OUT` in a layer), with a
+ * falloff shaped like a rounded bevel, and the shadows are blurred, offset fills. Animate
+ * [lightAngleDegrees] to swing the light around the letters, and the axes to watch the bevel follow
+ * the weight.
+ *
+ * Blurs use `BlurMaskFilter`, which hardware-accelerated canvases honour from API 28; below that
+ * the shadows and bevels are drawn unblurred.
+ *
+ * @param lightAngleDegrees The direction toward the light, in degrees clockwise from 3 o'clock
+ *   (`-135f` is the top left). Read while drawing.
+ * @param depth The width of the bevel.
+ * @param elevation How far the letters stand off the surface, which sets the shadow's offset and
+ *   softness. Unused by [EmbossStyle.Pressed].
+ * @param color The material of the face, used unless [brush] is given.
+ * @param lightIntensity Scales the highlights and shadows, `0f` (flat) to about `1.5f`. Read while
+ *   drawing.
+ */
+@Composable
+public fun VariableFontEmbossText(
+  text: String,
+  font: VariableFont,
+  axes: Map<String, () -> Float>,
+  fontSize: TextUnit,
+  modifier: Modifier = Modifier,
+  lightAngleDegrees: () -> Float = { -135f },
+  style: EmbossStyle = EmbossStyle.Raised,
+  depth: Dp = 2.dp,
+  elevation: Dp = 3.dp,
+  color: Color = Color(0xFFC9CDD3),
+  brush: Brush? = null,
+  highlightColor: Color = Color.White,
+  shadowColor: Color = Color.Black,
+  lightIntensity: () -> Float = { 1f },
+  location: Map<String, Float> = emptyMap(),
+  kerningLocation: Map<String, Float> = location,
+) {
+  require(fontSize.isSpecified && fontSize.isSp) { "fontSize must be in sp, was $fontSize" }
+  val tags = axes.keys.toList()
+  val density = LocalDensity.current
+  val pixelSize = with(density) { fontSize.toPx() }
+  val depthPx = with(density) { depth.toPx() }.coerceAtLeast(0.5f)
+  val elevationPx =
+    if (style == EmbossStyle.Raised) with(density) { elevation.toPx() }.coerceAtLeast(0f) else 0f
+  val outline =
+    remember(text, font, tags, location, kerningLocation, pixelSize) {
+      font.cachedOutline(text, tags, location, kerningLocation, pixelSize = pixelSize)
+    }
+  val renderer =
+    remember(outline) { VariableFontTextRenderer(VariableTextOutlineEvaluator(outline)) }
+  val sources = remember(outline, axes) { outline.axes.map { axes.getValue(it) } }
+  val values = remember(outline) { FloatArray(outline.axes.size) }
+  val painter = remember(depthPx, elevationPx) { EmbossPainter(depthPx, elevationPx) }
+  val pad = ceil(elevationPx * 2.5f + depthPx * 2f + 4f).toInt()
+  SingleOutlineEffectLayout(
+    evaluator = renderer.evaluator,
+    fontSize = fontSize,
+    extraHorizontalPx = pad,
+    extraVerticalPx = pad,
+    textSemantics = text,
+    modifier = modifier,
+  ) { scale, ox, oy ->
+    for (i in values.indices) values[i] = sources[i]()
+    renderer.update(values, scale)
+    val rad = lightAngleDegrees() * (PI.toFloat() / 180f)
+    val lx = cos(rad)
+    val ly = sin(rad)
+    val intensity = lightIntensity().coerceIn(0f, 2f)
+    val path = renderer.path.asAndroidPath()
+    val w = size.width
+    val h = size.height
+    withTransform({ translate(ox.toFloat(), oy.toFloat()) }) {
+      drawIntoCanvas { canvas ->
+        val nc = canvas.nativeCanvas
+        if (style == EmbossStyle.Raised) {
+          painter.drawCastShadows(nc, path, lx, ly, shadowColor, intensity)
+        } else {
+          painter.drawLip(nc, path, lx, ly, w, h, highlightColor, intensity)
+        }
+      }
+      // The face.
+      if (brush != null) drawPath(renderer.path, brush) else drawPath(renderer.path, color)
+      // A broad falloff across the face, lighter toward the light.
+      val half = hypot(w, h) * 0.5f
+      val cx = w * 0.5f - ox
+      val cy = h * 0.5f - oy
+      drawPath(
+        renderer.path,
+        painter.faceShading(
+          if (style == EmbossStyle.Raised) highlightColor else shadowColor,
+          shadowColor,
+          Offset(cx + lx * half, cy + ly * half),
+          Offset(cx - lx * half, cy - ly * half),
+          intensity,
+          style,
+        ),
+      )
+      drawIntoCanvas { canvas ->
+        val nc = canvas.nativeCanvas
+        if (style == EmbossStyle.Raised) {
+          painter.drawRaisedBevel(nc, path, lx, ly, w, h, highlightColor, shadowColor, intensity)
+        } else {
+          painter.drawPressedBevel(nc, path, lx, ly, w, h, highlightColor, shadowColor, intensity)
+        }
+      }
+    }
+  }
+}
+
+/**
+ * The paints, blurs and falloff of one [VariableFontEmbossText], reused across frames. Every pass
+ * is a fill of the glyph path, so the relief follows the live outline exactly.
+ */
+internal class EmbossPainter(private val depthPx: Float, private val elevationPx: Float) {
+  private val fill = AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG)
+  private val erase =
+    AndroidPaint(AndroidPaint.ANTI_ALIAS_FLAG).apply {
+      xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+    }
+  private val ambientBlur = blur(elevationPx * 1.1f + 0.5f)
+  private val contactBlur = blur(elevationPx * 0.35f + 0.35f)
+  private val bevelBlur = blur(depthPx / BEVEL_STEPS)
+  private val wideBevelBlur = blur(depthPx * 0.6f)
+  private val rimBlur = blur(0.35f)
+
+  // The bevel's falloff: after k of the BEVEL_STEPS shifted erasures, (1 - k/n)^γ of the light is
+  // left, so the band is brightest at the very edge and rolls off like a rounded chamfer.
+  private val bevelAlphas =
+    FloatArray(BEVEL_STEPS) { i ->
+      val before = (1f - i.toFloat() / BEVEL_STEPS).pow(BEVEL_GAMMA)
+      val after = (1f - (i + 1).toFloat() / BEVEL_STEPS).pow(BEVEL_GAMMA)
+      1f - after / before
+    }
+
+  private var shadingBrush: Brush? = null
+  private var shadingStart = Offset.Zero
+  private var shadingEnd = Offset.Zero
+  private var shadingIntensity = 0f
+  private var shadingStyle = EmbossStyle.Raised
+  private var shadingNear = Color.Unspecified
+  private var shadingFar = Color.Unspecified
+
+  fun drawCastShadows(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    lx: Float,
+    ly: Float,
+    shadowColor: Color,
+    intensity: Float,
+  ) {
+    if (elevationPx <= 0f) return
+    fill.maskFilter = ambientBlur
+    fill.color = shadowColor.copy(alpha = (0.32f * intensity).coerceIn(0f, 1f)).toArgb()
+    drawShifted(nc, path, -lx * elevationPx, -ly * elevationPx * 1.2f, fill)
+    fill.maskFilter = contactBlur
+    fill.color = shadowColor.copy(alpha = (0.5f * intensity).coerceIn(0f, 1f)).toArgb()
+    drawShifted(nc, path, -lx * elevationPx * 0.3f, -ly * elevationPx * 0.35f, fill)
+    fill.maskFilter = null
+  }
+
+  /** The lit lip of the surface just outside the far edge of a pressed letter. */
+  fun drawLip(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    lx: Float,
+    ly: Float,
+    w: Float,
+    h: Float,
+    highlightColor: Color,
+    intensity: Float,
+  ) {
+    val rim = max(0.75f, depthPx * 0.45f)
+    val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
+    fill.maskFilter = rimBlur
+    fill.color = highlightColor.copy(alpha = (0.7f * intensity).coerceIn(0f, 1f)).toArgb()
+    drawShifted(nc, path, -lx * rim, -ly * rim, fill)
+    fill.maskFilter = null
+    erase.maskFilter = null
+    erase.alpha = 255
+    nc.drawPath(path, erase)
+    nc.restoreToCount(layer)
+  }
+
+  fun drawRaisedBevel(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    lx: Float,
+    ly: Float,
+    w: Float,
+    h: Float,
+    highlightColor: Color,
+    shadowColor: Color,
+    intensity: Float,
+  ) {
+    // Faces turned toward the light: the shape minus itself pushed away from the light.
+    band(
+      nc,
+      path,
+      -lx,
+      -ly,
+      depthPx,
+      w,
+      h,
+      highlightColor,
+      0.8f * intensity,
+      bevelBlur,
+      stepped = true,
+    )
+    // Faces turned away.
+    band(nc, path, lx, ly, depthPx, w, h, shadowColor, 0.55f * intensity, bevelBlur, stepped = true)
+    // The specular glint where the face meets the lit bevel, and a dark line on the far edge.
+    val rim = max(0.6f, depthPx * 0.2f)
+    band(nc, path, -lx, -ly, rim, w, h, highlightColor, 0.95f * intensity, rimBlur, stepped = false)
+    band(nc, path, lx, ly, rim, w, h, shadowColor, 0.45f * intensity, rimBlur, stepped = false)
+  }
+
+  fun drawPressedBevel(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    lx: Float,
+    ly: Float,
+    w: Float,
+    h: Float,
+    highlightColor: Color,
+    shadowColor: Color,
+    intensity: Float,
+  ) {
+    // The wall under the near lip is in shadow, and the lip casts a soft shadow onto the floor.
+    band(
+      nc,
+      path,
+      -lx,
+      -ly,
+      depthPx * 1.6f,
+      w,
+      h,
+      shadowColor,
+      0.6f * intensity,
+      wideBevelBlur,
+      true,
+    )
+    band(nc, path, -lx, -ly, depthPx, w, h, shadowColor, 0.55f * intensity, bevelBlur, true)
+    // The far wall faces the light.
+    band(nc, path, lx, ly, depthPx, w, h, highlightColor, 0.55f * intensity, bevelBlur, true)
+    val rim = max(0.6f, depthPx * 0.2f)
+    band(nc, path, -lx, -ly, rim, w, h, shadowColor, 0.7f * intensity, rimBlur, stepped = false)
+  }
+
+  fun faceShading(
+    near: Color,
+    far: Color,
+    start: Offset,
+    end: Offset,
+    intensity: Float,
+    style: EmbossStyle,
+  ): Brush {
+    val cached = shadingBrush
+    if (
+      cached != null &&
+        start == shadingStart &&
+        end == shadingEnd &&
+        intensity == shadingIntensity &&
+        style == shadingStyle &&
+        near == shadingNear &&
+        far == shadingFar
+    ) {
+      return cached
+    }
+    val nearAlpha = if (style == EmbossStyle.Raised) 0.16f else 0.22f
+    val farAlpha = if (style == EmbossStyle.Raised) 0.2f else 0.04f
+    val brush =
+      Brush.linearGradient(
+        0f to near.copy(alpha = (nearAlpha * intensity).coerceIn(0f, 1f)),
+        0.5f to Color.Transparent,
+        1f to far.copy(alpha = (farAlpha * intensity).coerceIn(0f, 1f)),
+        start = start,
+        end = end,
+      )
+    shadingBrush = brush
+    shadingStart = start
+    shadingEnd = end
+    shadingIntensity = intensity
+    shadingStyle = style
+    shadingNear = near
+    shadingFar = far
+    return brush
+  }
+
+  /**
+   * Fills the band of the glyph within [width] of its edges facing away from ([dx], [dy]): the
+   * glyph in [color], with copies shifted by up to [width] along ([dx], [dy]) erased from it.
+   * [stepped] erases [BEVEL_STEPS] copies along the bevel falloff instead of one.
+   */
+  private fun band(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    dx: Float,
+    dy: Float,
+    width: Float,
+    w: Float,
+    h: Float,
+    color: Color,
+    alpha: Float,
+    softness: BlurMaskFilter?,
+    stepped: Boolean,
+  ) {
+    if (alpha <= 0f) return
+    val layer = nc.saveLayer(-w, -h, w * 2f, h * 2f, null)
+    fill.maskFilter = null
+    fill.color = color.copy(alpha = alpha.coerceIn(0f, 1f)).toArgb()
+    nc.drawPath(path, fill)
+    erase.maskFilter = softness
+    if (stepped) {
+      for (k in 0 until BEVEL_STEPS) {
+        val d = width * (k + 1) / BEVEL_STEPS
+        erase.alpha = (bevelAlphas[k] * 255f).toInt().coerceIn(0, 255)
+        drawShifted(nc, path, dx * d, dy * d, erase)
+      }
+    } else {
+      erase.alpha = 255
+      drawShifted(nc, path, dx * width, dy * width, erase)
+    }
+    nc.restoreToCount(layer)
+  }
+
+  private fun drawShifted(
+    nc: AndroidCanvas,
+    path: AndroidPath,
+    dx: Float,
+    dy: Float,
+    paint: AndroidPaint,
+  ) {
+    nc.save()
+    nc.translate(dx, dy)
+    nc.drawPath(path, paint)
+    nc.restore()
+  }
+
+  private companion object {
+    const val BEVEL_STEPS = 6
+    const val BEVEL_GAMMA = 1.6f
+
+    fun blur(radius: Float): BlurMaskFilter? =
+      if (radius >= 0.1f) BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL) else null
+  }
+}
