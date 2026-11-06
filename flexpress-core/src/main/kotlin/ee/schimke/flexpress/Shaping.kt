@@ -44,8 +44,13 @@ internal fun shapeText(
   gsub: Gsub?,
   marks: MarkAttachment? = null,
   coords: FloatArray = FloatArray(0),
+  features: Set<String> = emptySet(),
 ): List<ShapedGlyph> {
   if (text.isEmpty()) return emptyList()
+  val defaultStages = listOf(DEFAULT_FEATURES + features)
+  val joiningStages =
+    if (features.isEmpty()) JOINING_STAGES
+    else JOINING_STAGES.dropLast(1) + listOf(JOINING_STAGES.last() + features)
   val glyphs = mutableListOf<ShapedGlyph>()
   for ((start, limit, rtl) in bidiRuns(text)) {
     val runText = text.substring(start, limit)
@@ -70,7 +75,7 @@ internal fun shapeText(
               ids,
               joiningForms(part).toList(),
               script,
-              JOINING_STAGES,
+              joiningStages,
               FORMS,
               coords,
             )
@@ -79,7 +84,7 @@ internal fun shapeText(
               ids,
               List(ids.size) { 0 },
               script,
-              listOf(DEFAULT_FEATURES),
+              defaultStages,
               emptyMap(),
               coords,
             )

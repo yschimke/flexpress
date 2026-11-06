@@ -251,6 +251,7 @@ private data class OutlineKey(
   val allowKeys: Boolean,
   val pixelSize: Float?,
   val tolerancePixels: Float,
+  val features: Set<String> = emptySet(),
 )
 
 /**
@@ -302,15 +303,23 @@ fun VariableFont.outline(
 
 /**
  * One shaped base glyph (together with any marks attached to it) from [glyphOutlines], at its own
- * local origin `(0, 0)`, plus its variable [advance] (as a single `MOVE(advance, 0)` outline) and
- * the constant pair [kerningBefore] from the preceding base glyph.
+ * local origin `(0, 0)`, plus its variable [advance] (as a single `MOVE(advance, 0)` outline), the
+ * constant pair [kerningBefore] from the preceding base glyph, and the base glyph's [glyphId] after
+ * substitution (`-1` when unknown).
  */
 @InternalFlexpressApi
 class VariableGlyphOutline(
   val outline: VariableTextOutline,
   val advance: VariableTextOutline,
   val kerningBefore: Float,
-)
+  val glyphId: Int,
+) {
+  constructor(
+    outline: VariableTextOutline,
+    advance: VariableTextOutline,
+    kerningBefore: Float,
+  ) : this(outline, advance, kerningBefore, -1)
+}
 
 @InternalFlexpressApi
 fun VariableFont.cachedGlyphOutlines(
@@ -321,13 +330,58 @@ fun VariableFont.cachedGlyphOutlines(
   pixelSize: Float? = null,
   tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
   allowKeys: Boolean = true,
+): List<VariableGlyphOutline> =
+  cachedGlyphOutlines(
+    text,
+    axes,
+    location,
+    kerningLocation,
+    pixelSize,
+    tolerancePixels,
+    allowKeys,
+    emptySet(),
+  )
+
+/**
+ * [cachedGlyphOutlines] with the `GSUB` lookups of [features] (such as `tnum`) applied alongside
+ * the default ones.
+ */
+@InternalFlexpressApi
+fun VariableFont.cachedGlyphOutlines(
+  text: String,
+  axes: List<String>,
+  location: Map<String, Float>,
+  kerningLocation: Map<String, Float>,
+  pixelSize: Float?,
+  tolerancePixels: Float,
+  allowKeys: Boolean,
+  features: Set<String>,
 ): List<VariableGlyphOutline> {
   val simplifiedSize = pixelSize?.takeIf { tolerancePixels > 0f }
   val tolerance = if (simplifiedSize != null) tolerancePixels else 0f
   val key =
-    OutlineKey(this, text, axes, location, kerningLocation, allowKeys, simplifiedSize, tolerance)
+    OutlineKey(
+      this,
+      text,
+      axes,
+      location,
+      kerningLocation,
+      allowKeys,
+      simplifiedSize,
+      tolerance,
+      features,
+    )
   return GlyphOutlineCache.get(key) {
-    glyphOutlines(text, axes, location, kerningLocation, simplifiedSize, tolerance, allowKeys)
+    glyphOutlines(
+      text,
+      axes,
+      location,
+      kerningLocation,
+      simplifiedSize,
+      tolerance,
+      allowKeys,
+      features,
+    )
   }
 }
 
@@ -354,10 +408,33 @@ fun VariableFont.glyphOutlines(
   pixelSize: Float? = null,
   tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
   allowKeys: Boolean = true,
+): List<VariableGlyphOutline> =
+  glyphOutlines(
+    text,
+    axes,
+    location,
+    kerningLocation,
+    pixelSize,
+    tolerancePixels,
+    allowKeys,
+    emptySet(),
+  )
+
+/** [glyphOutlines] with the `GSUB` lookups of [features] applied alongside the default ones. */
+@InternalFlexpressApi
+fun VariableFont.glyphOutlines(
+  text: String,
+  axes: List<String>,
+  location: Map<String, Float>,
+  kerningLocation: Map<String, Float>,
+  pixelSize: Float?,
+  tolerancePixels: Float,
+  allowKeys: Boolean,
+  features: Set<String>,
 ): List<VariableGlyphOutline> {
   val indices = axisIndices(axes)
   val shapingLocation = location + kerningLocation
-  val glyphs = shapePositioned(text, shapingLocation)
+  val glyphs = shapePositioned(text, shapingLocation, features)
   val outlines = glyphs.map { variedOutline(it.id) }
   val fixed = normalize(location)
   val kerningCoords = normalize(kerningLocation)
@@ -437,7 +514,7 @@ fun VariableFont.glyphOutlines(
         tolerancePixels = 0f,
         allowKeys = allowKeys,
       )
-    result += VariableGlyphOutline(compiledOutline, compiledAdvance, kern)
+    result += VariableGlyphOutline(compiledOutline, compiledAdvance, kern, glyphs[i].id)
   }
   return result
 }

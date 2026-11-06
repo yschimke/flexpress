@@ -39,6 +39,9 @@ internal val googleSansFlex =
 internal val robotoFlex =
   TestFont("Roboto Flex", "roboto_flex", listOf("wght", "wdth", "slnt", "opsz", "GRAD", "XTRA"))
 
+/** Inter keeping its `tnum` feature: proportional default figures, tabular ones by `GSUB`. */
+internal val interTnum = TestFont("Inter (tnum)", "inter_tnum", listOf("wght"))
+
 internal val testFonts: List<TestFont> =
   listOf(
     googleSansFlex,

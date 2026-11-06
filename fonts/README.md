@@ -15,6 +15,7 @@ characters listed, then `varLib.instancer` to pin every axis not listed to its d
 | `res/raw/noto_sans_syriac.ttf` | Noto Sans Syriac, keeping its shaping features, for the Syriac joining tests | U+0020, U+0640, U+0700–074F, U+200C–200D | `wght` | [`ofl/notosanssyriac`](https://github.com/google/fonts/tree/main/ofl/notosanssyriac) |
 | `res/raw/noto_sans.ttf` | Noto Sans | U+0020–007E | `wght`, `wdth` | [`ofl/notosans`](https://github.com/google/fonts/tree/main/ofl/notosans) |
 | `res/raw/inter.ttf` | Inter | U+0020–007E | `wght`, `opsz` | [`ofl/inter`](https://github.com/google/fonts/tree/main/ofl/inter) |
+| `res/raw/inter_tnum.ttf` | Inter, keeping its `tnum` tabular figures (its default figures are proportional) for the tabular-figures tests | U+0020–007E | `wght` | [`ofl/inter`](https://github.com/google/fonts/tree/main/ofl/inter) |
 
 Recursive's `CRSV` and Fraunces' `WONK` are pinned: they mostly swap glyphs through GSUB feature
 variations, which the module's cmap-only layout does not apply.

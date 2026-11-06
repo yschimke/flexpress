@@ -37,6 +37,15 @@ internal class Gsub(
 ) {
   private val lookupList = offset + data.u16(offset + 8)
 
+  /** Whether the table's feature list has a feature tagged [tag], for any script. */
+  fun hasFeature(tag: String): Boolean {
+    val featureList = offset + data.u16(offset + 6)
+    for (f in 0 until data.u16(featureList)) {
+      if (data.tag(featureList + 2 + f * 6) == tag) return true
+    }
+    return false
+  }
+
   /** [glyphs], with the lookups of [features] for [script] (an OpenType script tag) applied. */
   fun substitute(
     glyphs: List<Int>,
