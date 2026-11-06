@@ -15,6 +15,86 @@
     "sha256": "a8176cabaf81b7d1fa3386b46fdfb9479b04c9d86608dfe789fe507569c87c74",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/GeneratedTextPreviews.kt"
   },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect01RangeSelectorWaveAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect01RangeSelectorWaveAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect01RangeSelectorWaveAnimatedPreview-78e4c93f.gif",
+    "sha256": "b4e2e9627fe79ba37cc6bbb6d37715519b3b9387362f3dcf209b1c9176a18d6e",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect02TrimPathsWriteOnAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect02TrimPathsWriteOnAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect02TrimPathsWriteOnAnimatedPreview-33b3b0d3.gif",
+    "sha256": "d23b766cb24a0432875916d2e98e69fc7a759e461ecf8edc31fca84c9f51b258",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect03WaveWarpLiquidAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect03WaveWarpLiquidAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect03WaveWarpLiquidAnimatedPreview-94e66cef.gif",
+    "sha256": "afd37718fa64586d7cd82c5b2d40a0b91030074485d2bcf5c69935f389109fa9",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect04KineticCascadeBounceAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect04KineticCascadeBounceAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect04KineticCascadeBounceAnimatedPreview-a5edb5f3.gif",
+    "sha256": "2bb7a43a20414ab8cb8bcf0a38d35d3f18e409ad55e892fad41f446b5072814b",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect05EchoMotionTrailAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect05EchoMotionTrailAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect05EchoMotionTrailAnimatedPreview-9829ef59.gif",
+    "sha256": "145ac494f6aa53133c90ff642163a94fa780e1a38ce9449b55c05fd7000327af",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect06ChromaticGlitchAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect06ChromaticGlitchAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect06ChromaticGlitchAnimatedPreview-486772cd.gif",
+    "sha256": "bfcadfe5ca4a2e67beb497c0af6dca72e7e36028f6be16543ec0464640a0fa7c",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect07SpecularLightSweepAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect07SpecularLightSweepAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect07SpecularLightSweepAnimatedPreview-bdab9f62.gif",
+    "sha256": "18fee1f783d51a56313c21945a38c65eb15a62b565e618f4bf6d7b095cd028f7",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect08WigglyHandDrawnAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect08WigglyHandDrawnAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect08WigglyHandDrawnAnimatedPreview-f3f4a946.gif",
+    "sha256": "62d7c00c1bf3edbaaf8f273df553a928139e275252255eef1f3366d70526944d",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect09TextOnPathWaveAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect09TextOnPathWaveAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect09TextOnPathWaveAnimatedPreview-ecf3ef37.gif",
+    "sha256": "654444704e2c7d5030fdb8369c0a5f4d1a78ed32be76cb412b95170af7665879",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
+  "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect10NeonGlowPulseAnimatedPreview": {
+    "captureLabel": "",
+    "functionName": "Effect10NeonGlowPulseAnimatedPreview",
+    "module": "flexpress-compose",
+    "renderBasename": "Effect10NeonGlowPulseAnimatedPreview-702969e2.gif",
+    "sha256": "df225d699077b21a84454f23a159c3875ca98808b3283dfc35955246230eac56",
+    "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/VariableFontTextEffectPreviews.kt"
+  },
   "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextPreviewsKt.GoogleSansFlexWeightAndRoundnessAnimatedPreview": {
     "captureLabel": "",
     "functionName": "GoogleSansFlexWeightAndRoundnessAnimatedPreview",
