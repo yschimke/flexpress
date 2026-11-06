@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0](https://github.com/yschimke/flexpress/compare/v0.3.0...v0.4.0) (2026-11-06)
+
+
+### Features
+
+* add 10 motion-design variable font text animation effects ([#99](https://github.com/yschimke/flexpress/issues/99)) ([a67d548](https://github.com/yschimke/flexpress/commit/a67d54819cf54644858fa3dbd3b81b145aa21a54))
+* add curved/path-warped text and embossed text effects ([#102](https://github.com/yschimke/flexpress/issues/102)) ([2497852](https://github.com/yschimke/flexpress/commit/249785258b5913cd4fb86bc7cf2fb56fdf97e98a))
+* RemoteString versions of every text effect ([#104](https://github.com/yschimke/flexpress/issues/104)) ([73c14f1](https://github.com/yschimke/flexpress/commit/73c14f163aaee5fac022961a2be386e623bb08e4))
+
 ## [0.3.0](https://github.com/yschimke/flexpress/compare/v0.2.0...v0.3.0) (2026-11-06)
 
 
