@@ -127,7 +127,7 @@ class SharedGlyphsTest {
     val doc = rememberRemoteDocument { content() }
     Box(Modifier.size(WIDTH.dp, HEIGHT.dp).testTag(tag)) {
       doc.value?.let { document: CoreDocument ->
-        LaunchedEffect(document) { sizes[tag] = document.buffer.buffer.size }
+        LaunchedEffect(document) { sizes[tag] = document.toWireBuffer().size }
         RemoteDocumentPlayer(
           document,
           WIDTH,

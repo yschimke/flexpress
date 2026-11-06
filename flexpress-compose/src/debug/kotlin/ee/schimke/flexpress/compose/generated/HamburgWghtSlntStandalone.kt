@@ -31,11 +31,13 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.LastBaseline
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
+import androidx.compose.ui.unit.isSpecified
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -190,24 +192,29 @@ private object HamburgWghtSlntStandaloneOutline {
    */
   @Composable
   fun Draw(axes: Array<() -> Float>, fontSize: TextUnit, modifier: Modifier, color: Color) {
+    require(fontSize.isSpecified && fontSize.isSp) { "fontSize must be in sp, was $fontSize" }
     val renderer = remember { Renderer() }
     val fill = if (color.isSpecified) color else Color.Black
+    val measurePolicy =
+      remember(fontSize) {
+        MeasurePolicy { _, constraints ->
+          val scale = fontSize.toPx() / unitsPerEm
+          val boxWidth = ceil(width * scale).toInt()
+          val boxHeight = ceil((ascender - descender) * scale).toInt()
+          val baseline = (ascender * scale).roundToInt()
+          layout(
+            constraints.constrainWidth(boxWidth),
+            constraints.constrainHeight(boxHeight),
+            mapOf(FirstBaseline to baseline, LastBaseline to baseline),
+          ) {}
+        }
+      }
     Layout(
       modifier =
         modifier
           .semantics { contentDescription = TEXT }
           .drawBehind { renderer.draw(this, fontSize.toPx() / unitsPerEm, axes, fill) },
-      measurePolicy = { _, constraints ->
-        val scale = fontSize.toPx() / unitsPerEm
-        val boxWidth = ceil(width * scale).toInt()
-        val boxHeight = ceil((ascender - descender) * scale).toInt()
-        val baseline = (ascender * scale).roundToInt()
-        layout(
-          constraints.constrainWidth(boxWidth),
-          constraints.constrainHeight(boxHeight),
-          mapOf(FirstBaseline to baseline, LastBaseline to baseline),
-        ) {}
-      },
+      measurePolicy = measurePolicy,
     )
   }
 

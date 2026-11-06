@@ -18,6 +18,8 @@ package ee.schimke.flexpress
 
 import kotlin.math.abs
 import kotlin.math.hypot
+import kotlin.math.nextDown
+import kotlin.math.nextUp
 
 /**
  * One line of text in a variable font, worked out for a set of animated axes: everything
@@ -222,6 +224,55 @@ public fun VariableFont.outline(
 public const val DEFAULT_TOLERANCE_PIXELS: Float = 1f / 16
 
 @InternalFlexpressApi
+fun VariableFont.cachedOutline(
+  text: String,
+  axes: List<String>,
+  location: Map<String, Float> = emptyMap(),
+  kerningLocation: Map<String, Float> = location,
+  pixelSize: Float? = null,
+  tolerancePixels: Float = DEFAULT_TOLERANCE_PIXELS,
+  allowKeys: Boolean = true,
+): VariableTextOutline {
+  val simplifiedSize = pixelSize?.takeIf { tolerancePixels > 0f }
+  val tolerance = if (simplifiedSize != null) tolerancePixels else 0f
+  val key =
+    OutlineKey(this, text, axes, location, kerningLocation, allowKeys, simplifiedSize, tolerance)
+  return OutlineCache.get(key) {
+    outline(text, axes, location, kerningLocation, simplifiedSize, tolerance, allowKeys)
+  }
+}
+
+private data class OutlineKey(
+  val font: VariableFont,
+  val text: String,
+  val axes: List<String>,
+  val location: Map<String, Float>,
+  val kerningLocation: Map<String, Float>,
+  val allowKeys: Boolean,
+  val pixelSize: Float?,
+  val tolerancePixels: Float,
+)
+
+/**
+ * The outlines of recent texts. Working one out from the font is most of the cost of making a
+ * document or re-entering composition, and a widget, lazy list or server often draws the same text
+ * again in a new composition where `remember` starts afresh.
+ */
+private object OutlineCache {
+  private const val SIZE = 32
+  private val entries =
+    object : LinkedHashMap<OutlineKey, VariableTextOutline>(SIZE, 0.75f, true) {
+      override fun removeEldestEntry(
+        eldest: MutableMap.MutableEntry<OutlineKey, VariableTextOutline>
+      ) = size > SIZE
+    }
+
+  fun get(key: OutlineKey, make: () -> VariableTextOutline): VariableTextOutline =
+    synchronized(entries) { entries[key] }
+      ?: make().also { synchronized(entries) { entries[key] = it } }
+}
+
+@InternalFlexpressApi
 fun VariableFont.outline(
   text: String,
   axes: List<String>,
@@ -235,9 +286,10 @@ fun VariableFont.outline(
   require(indices.none { it < 0 }) {
     "${axes.filterIndexed { i, _ -> indices[i] < 0 }} not among ${this.axes.map { it.tag }}"
   }
-  val varied = variedLayout(text, kerningLocation)
+  val varied = variedLayout(text, location, kerningLocation)
   val fixed = normalize(location)
-  val specialization = AxisSpecialization(indices.toSet(), fixed)
+  val animatedSet = indices.toSet()
+  val specialization = AxisSpecialization(animatedSet, fixed)
   val verbs = mutableListOf<Int>()
   val coords = mutableListOf<AnimatedForm>()
   varied.emit(
@@ -259,13 +311,16 @@ fun VariableFont.outline(
       }
     }
   )
-  var commands = OutlineCommands(verbs, coords)
-  if (pixelSize != null) {
-    val tolerance = tolerancePixels * unitsPerEm / pixelSize
-    commands = commands.pruneTerms(tolerance / 2).removePoints(tolerance / 2)
-  }
-
+  val rawCommands = OutlineCommands(verbs, coords)
+  val commands =
+    if (pixelSize != null) {
+      val tolerance = tolerancePixels * unitsPerEm / pixelSize
+      rawCommands.pruneTerms(tolerance / 2).removePoints(tolerance / 2)
+    } else {
+      rawCommands
+    }
   val tents = commands.coords.flatMap { it.terms.keys }.flatten().distinct()
+  val body = (if (allowKeys) commands.keys(tents) else null) ?: commands.forms(tents)
   val ramps = tents.map { t ->
     val r = tentRamps(t)
     VariableTextOutline.TentRamps(
@@ -276,8 +331,7 @@ fun VariableFont.outline(
       r.second.map { it.third }.toFloatArray(),
     )
   }
-  val width = maxAdvance(text, varied.advance, indices.toSet(), fixed)
-  val body = (if (allowKeys) commands.keys(tents) else null) ?: commands.forms(tents)
+  val width = maxAdvance(text, varied.advance, animatedSet, fixed)
   return VariableTextOutline(
     axes,
     unitsPerEm,
@@ -387,16 +441,19 @@ private class OutlineCommands(val verbs: List<Int>, val coords: List<AnimatedFor
   }
 
   /**
-   * The key outlines, when one axis moves the outline, its tents never overlap, and keys are
-   * smaller.
+   * The key outlines, when at most one axis moves the outline, its tents never overlap, and keys
+   * are smaller.
    */
   fun keys(tents: List<Tent>): VariableTextOutline.Keys? {
-    if (tents.isEmpty() || tents.map { it.axis }.distinct().size != 1) return null
+    if (tents.map { it.axis }.distinct().size > 1) return null
     if (coords.any { form -> form.terms.keys.any { it.size != 1 } }) return null
     val disjoint =
       tents.indices.all { i ->
         (i + 1 until tents.size).all { j ->
-          tents[i].end <= tents[j].start || tents[j].end <= tents[i].start
+          val a = tents[i]
+          val b = tents[j]
+          (a.end < b.start || (a.end == b.start && !(a.peak == a.end && b.start == b.peak))) ||
+            (b.end < a.start || (b.end == a.start && !(b.peak == b.end && a.start == a.peak)))
         }
       }
     if (!disjoint) return null
@@ -566,6 +623,7 @@ private const val SMALL = 0xD000 - FIRST
  * the AndroidX player.) The advance is linear in each axis between the corners of the regions that
  * vary it, so its maximum is at one of the grid points those corners make.
  */
+@Suppress("UNUSED_PARAMETER")
 @InternalFlexpressApi
 fun VariableFont.maxAdvance(
   text: String,
@@ -573,11 +631,39 @@ fun VariableFont.maxAdvance(
   animated: Set<Int>,
   fixed: FloatArray,
 ): Float {
-  val glyphs = glyphIds(text).toSet()
-  var points = listOf(fixed)
-  for (axis in animated) {
-    val values = normalizedBreakpoints(axis, glyphs)
+  val specialized = AxisSpecialization(animated, fixed).specialize(advance)
+  if (specialized.isConstant) return specialized.constant
+  val coupledAxes = specialized.terms.keys.filter { it.size > 1 }.flatten().map { it.axis }.toSet()
+  val (coupledTerms, independentTerms) =
+    specialized.terms.entries.partition { (tents, _) -> tents.any { it.axis in coupledAxes } }
+  fun breakpoints(tents: Iterable<Tent>): Set<Float> {
+    val pts = sortedSetOf(-1f, 0f, 1f)
+    for (t in tents) {
+      pts += t.start
+      pts += t.peak
+      pts += t.end
+      if (t.start == t.peak && t.start > -1f) pts += t.start.nextDown().coerceAtLeast(-1f)
+      if (t.peak == t.end && t.end < 1f) pts += t.end.nextUp().coerceAtMost(1f)
+    }
+    return pts
+  }
+  val independentDelta =
+    independentTerms
+      .groupBy { it.key.single().axis }
+      .values
+      .sumOf { axisTerms ->
+        val tents = axisTerms.map { it.key.single() }
+        breakpoints(tents).maxOf { v ->
+          axisTerms.sumOf { (t, k) -> (k * t.single().evaluate(v)).toDouble() }
+        }
+      }
+      .toFloat()
+  if (coupledTerms.isEmpty()) return specialized.constant + independentDelta
+  val coupledForm = AnimatedForm(0f, coupledTerms.associate { it.toPair() })
+  var points = listOf(fixed.copyOf())
+  for (axis in coupledAxes) {
+    val values = breakpoints(coupledTerms.flatMap { it.key }.filter { it.axis == axis })
     points = points.flatMap { p -> values.map { v -> p.copyOf().also { it[axis] = v } } }
   }
-  return points.maxOf { advance.evaluate(it) }
+  return specialized.constant + independentDelta + points.maxOf { coupledForm.evaluate(it) }
 }

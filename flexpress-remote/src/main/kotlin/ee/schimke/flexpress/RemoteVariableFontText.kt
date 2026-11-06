@@ -129,43 +129,9 @@ internal fun VariableFontText(
   val tolerance = if (pixelSize != null) tolerancePixels else 0f
   val outline =
     remember(text, font, tags, location, kerningLocation, allowKeys, pixelSize, tolerance) {
-      val key =
-        OutlineKey(font, text, tags, location, kerningLocation, allowKeys, pixelSize, tolerance)
-      OutlineCache.get(key) {
-        font.outline(text, tags, location, kerningLocation, pixelSize, tolerance, allowKeys)
-      }
+      font.cachedOutline(text, tags, location, kerningLocation, pixelSize, tolerance, allowKeys)
     }
   RemoteVariableFontText(outline, axes, fontSize, modifier, color)
-}
-
-private data class OutlineKey(
-  val font: VariableFont,
-  val text: String,
-  val axes: List<String>,
-  val location: Map<String, Float>,
-  val kerningLocation: Map<String, Float>,
-  val allowKeys: Boolean,
-  val pixelSize: Float?,
-  val tolerancePixels: Float,
-)
-
-/**
- * The outlines of recent texts. Working one out from the font is most of the cost of making a
- * document, and a widget or server often makes the same text's document again and again, each time
- * in a new composition where `remember` starts afresh.
- */
-private object OutlineCache {
-  private const val SIZE = 32
-  private val entries =
-    object : LinkedHashMap<OutlineKey, VariableTextOutline>(SIZE, 0.75f, true) {
-      override fun removeEldestEntry(
-        eldest: MutableMap.MutableEntry<OutlineKey, VariableTextOutline>
-      ) = size > SIZE
-    }
-
-  fun get(key: OutlineKey, make: () -> VariableTextOutline): VariableTextOutline =
-    synchronized(entries) { entries[key] }
-      ?: make().also { synchronized(entries) { entries[key] = it } }
 }
 
 /**
@@ -208,18 +174,22 @@ public fun RemoteVariableFontText(
         // At most one tent is above zero: tween from the default outline towards its key. The
         // first tent's tween also draws the default outline, when none is.
         val base = outline.path(body.base) { it }
-        val keys = body.keys.map { key -> outline.path(key) { it } }
-        tents.forEachIndexed { i, scalar ->
-          val draw = { drawTweenPath(base, keys[i], scalar, 0f.rf, 1f.rf, paint) }
-          val others = tents.filterIndexed { j, _ -> j != i }
-          when {
-            i > 0 -> remoteCanvas.drawConditionally(scalar.isGreaterThan(0f.rf), draw)
-            others.isEmpty() -> draw()
-            else ->
-              remoteCanvas.drawConditionally(
-                others.reduce { a, b -> a + b }.isLessThanOrEqualTo(0f.rf),
-                draw,
-              )
+        if (tents.isEmpty()) {
+          drawPath(base, paint)
+        } else {
+          val keys = body.keys.map { key -> outline.path(key) { it } }
+          tents.forEachIndexed { i, scalar ->
+            val draw = { drawTweenPath(base, keys[i], scalar, 0f.rf, 1f.rf, paint) }
+            val others = tents.filterIndexed { j, _ -> j != i }
+            when {
+              i > 0 -> remoteCanvas.drawConditionally(scalar.isGreaterThan(0f.rf), draw)
+              others.isEmpty() -> draw()
+              else ->
+                remoteCanvas.drawConditionally(
+                  others.reduce { a, b -> a + b }.isLessThanOrEqualTo(0f.rf),
+                  draw,
+                )
+            }
           }
         }
       }

@@ -348,11 +348,13 @@ public object VariableFontCodegen {
           "androidx.compose.ui.layout.FirstBaseline",
           "androidx.compose.ui.layout.LastBaseline",
           "androidx.compose.ui.layout.Layout",
+          "androidx.compose.ui.layout.MeasurePolicy",
           "androidx.compose.ui.semantics.contentDescription",
           "androidx.compose.ui.semantics.semantics",
           "androidx.compose.ui.unit.TextUnit",
           "androidx.compose.ui.unit.constrainHeight",
           "androidx.compose.ui.unit.constrainWidth",
+          "androidx.compose.ui.unit.isSpecified",
           "kotlin.math.ceil",
           "kotlin.math.roundToInt",
         )

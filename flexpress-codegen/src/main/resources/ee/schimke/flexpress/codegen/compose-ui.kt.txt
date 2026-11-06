@@ -6,24 +6,29 @@
    */
   @Composable
   fun Draw(axes: Array<() -> Float>, fontSize: TextUnit, modifier: Modifier, color: Color) {
+    require(fontSize.isSpecified && fontSize.isSp) { "fontSize must be in sp, was $fontSize" }
     val renderer = remember { Renderer() }
     val fill = if (color.isSpecified) color else Color.Black
+    val measurePolicy =
+      remember(fontSize) {
+        MeasurePolicy { _, constraints ->
+          val scale = fontSize.toPx() / unitsPerEm
+          val boxWidth = ceil(width * scale).toInt()
+          val boxHeight = ceil((ascender - descender) * scale).toInt()
+          val baseline = (ascender * scale).roundToInt()
+          layout(
+            constraints.constrainWidth(boxWidth),
+            constraints.constrainHeight(boxHeight),
+            mapOf(FirstBaseline to baseline, LastBaseline to baseline),
+          ) {}
+        }
+      }
     Layout(
       modifier =
         modifier
           .semantics { contentDescription = TEXT }
           .drawBehind { renderer.draw(this, fontSize.toPx() / unitsPerEm, axes, fill) },
-      measurePolicy = { _, constraints ->
-        val scale = fontSize.toPx() / unitsPerEm
-        val boxWidth = ceil(width * scale).toInt()
-        val boxHeight = ceil((ascender - descender) * scale).toInt()
-        val baseline = (ascender * scale).roundToInt()
-        layout(
-          constraints.constrainWidth(boxWidth),
-          constraints.constrainHeight(boxHeight),
-          mapOf(FirstBaseline to baseline, LastBaseline to baseline),
-        ) {}
-      },
+      measurePolicy = measurePolicy,
     )
   }
 

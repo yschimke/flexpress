@@ -143,3 +143,17 @@ fun RemoteStringClockPreview() {
     )
   }
 }
+
+@Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 240, heightDp = 60)
+@AnimatedPreview(durationMs = 2000, frameIntervalMs = 100, showCurves = false)
+@Composable
+fun NotoSansArabicLigatureMarksRemotePreview() {
+  VariableFontTextAnimatedPreview(
+    "السَّلَامُ لَا",
+    from = mapOf("wght" to 200f),
+    to = mapOf("wght" to 800f),
+    modifier = Modifier.size(240.dp, 60.dp),
+    fontResId = R.raw.noto_sans_arabic,
+    fontSize = 28.dp,
+  )
+}

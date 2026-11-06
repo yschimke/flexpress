@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.remote.core.CoreDocument
-import androidx.compose.remote.creation.compose.capture.LocalRemoteComposeCreationState
 import androidx.compose.remote.creation.compose.capture.RemoteDensity
 import androidx.compose.remote.creation.compose.capture.rememberRemoteDocument
 import androidx.compose.remote.creation.compose.state.asRdp
@@ -101,8 +100,7 @@ class DensityTest {
   @SuppressLint("RestrictedApi")
   @Composable
   private fun Player(tag: String, host: Boolean) {
-    val doc = rememberRemoteDocument {
-      if (host) LocalRemoteComposeCreationState.current.remoteDensity = RemoteDensity.Host
+    val content: @Composable () -> Unit = {
       val wght = rememberNamedRemoteFloat("axis.wght") { 400f.rf }
       RemoteVariableFontText(
         TEXT,
@@ -112,6 +110,12 @@ class DensityTest {
         color = Color.White.rc,
       )
     }
+    val doc =
+      if (host) {
+        rememberRemoteDocument(remoteDensity = RemoteDensity.Host, content = content)
+      } else {
+        rememberRemoteDocument(content = content)
+      }
     doc.value?.let { d -> LaunchedEffect(d) { documents[tag] = d } }
     Box(Modifier.size(WIDTH.dp, HEIGHT.dp).testTag(tag)) {
       doc.value?.let {

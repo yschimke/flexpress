@@ -58,6 +58,66 @@ class GsubTest {
     assertThat(gsub.substitute(listOf(1, 1), "DFLT", emptySet())).containsExactly(1, 1)
   }
 
+  @Test
+  fun featureVariationsSubstituteAlternateFeatureAtMatchingCoords() {
+    val scriptList = u16(1) + tag("DFLT") + u16(8) + u16(4, 0) + u16(0, 0xFFFF, 1, 0)
+    // Default feature 0 ("rvrn") has 0 lookups; FeatureVariations substitutes lookup 0 when
+    // axis 0 is in [0.5, 1.0].
+    val featureList = u16(1) + tag("rvrn") + u16(8) + u16(0, 0)
+    val subtable = u16(1, 6, 5) + u16(1, 1, 1) // format 1, coverage [1], delta +5 (1 -> 6)
+    val lookupList = u16(1, 4) + u16(SINGLE, 0, 1, 8) + subtable
+    val conditionSet = u16(1, 0, 6) + u16(1, 0, 0x2000, 0x4000) // axis 0 in [0.5, 1.0]
+    val featureSubst = u16(1, 0, 1, 0, 0, 12) + u16(0, 1, 0) // feature 0 -> lookup [0]
+    val featureVariations =
+      u16(1, 0, 0, 1, 0, 16, 0, 16 + conditionSet.size) + conditionSet + featureSubst
+    val header = 14
+    val flOffset = header + scriptList.size
+    val llOffset = flOffset + featureList.size
+    val fvOffset = llOffset + lookupList.size
+    val table =
+      u16(1, 1, header, flOffset, llOffset, 0, fvOffset) +
+        scriptList +
+        featureList +
+        lookupList +
+        featureVariations
+    val gsub = Gsub(FontBytes(table), 0) { 0 }
+    assertThat(gsub.substitute(listOf(1), "DFLT", setOf("rvrn"), floatArrayOf(0f)))
+      .containsExactly(1)
+    assertThat(gsub.substitute(listOf(1), "DFLT", setOf("rvrn"), floatArrayOf(0.25f)))
+      .containsExactly(1)
+    assertThat(gsub.substitute(listOf(1), "DFLT", setOf("rvrn"), floatArrayOf(0.75f)))
+      .containsExactly(6)
+  }
+
+  @Test
+  fun ligatureTracksSkippedMarkComponents() {
+    // Ligature subtable: 1 + 2 -> 9 (format 1, coverage [1], 1 ligature set, 1 ligature 9 with
+    // [2]).
+    val subtable = u16(1, 8, 1, 14) + u16(1, 1, 1) + u16(1, 4) + u16(9, 2, 2)
+    // Lookup flag 0x0008 (IGNORE_MARKS), GDEF class 3 (mark) for glyphs 10 and 11.
+    val lookupList = u16(1, 4) + u16(4, 0x0008, 1, 8) + subtable
+    val scriptList = u16(1) + tag("DFLT") + u16(8) + u16(4, 0) + u16(0, 0xFFFF, 1, 0)
+    val featureList = u16(1) + tag("liga") + u16(8) + u16(0, 1, 0)
+    val header = 10
+    val table =
+      u16(1, 0, header, header + scriptList.size, header + scriptList.size + featureList.size) +
+        scriptList +
+        featureList +
+        lookupList
+    val gsub = Gsub(FontBytes(table), 0) { if (it in 10..11) 3 else 1 }
+    // Input: base 1, mark 10 (on component 0), base 2, mark 11 (after component 1).
+    val (ids, components) =
+      gsub.substituteWithComponents(
+        listOf(1, 10, 2, 11),
+        listOf(0, 0, 0, 0),
+        "DFLT",
+        listOf(setOf("liga")),
+        emptyMap(),
+      )
+    assertThat(ids).containsExactly(9, 10, 11).inOrder()
+    assertThat(components).containsExactly(-1, 0, -1).inOrder()
+  }
+
   /**
    * A `GSUB` table whose `DFLT` script's default language system has one required feature, with one
    * lookup of [type] holding one [subtable].

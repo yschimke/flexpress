@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.Preview
@@ -132,5 +133,62 @@ fun RobotoFlexWidthAndSlantPreview() {
     modifier = Modifier.padding(8.dp),
     color = Color.White,
     location = mapOf("slnt" to -10f, "wght" to 700f),
+  )
+}
+
+@Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 220, heightDp = 60)
+@AnimatedPreview(durationMs = 2000, frameIntervalMs = 100, showCurves = false)
+@Composable
+fun RobotoFlexBrushGradientAnimatedPreview() {
+  val font = rememberVariableFont(R.raw.roboto_flex)
+  val transition = rememberInfiniteTransition(label = "brushAxes")
+  val weight by
+    transition.animateFloat(
+      initialValue = 200f,
+      targetValue = 900f,
+      animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing), RepeatMode.Reverse),
+      label = "wght",
+    )
+  val slant by
+    transition.animateFloat(
+      initialValue = 0f,
+      targetValue = -10f,
+      animationSpec = infiniteRepeatable(tween(2000, easing = LinearEasing), RepeatMode.Reverse),
+      label = "slnt",
+    )
+  val brush = remember {
+    Brush.horizontalGradient(listOf(Color(0xFF4FC3F7), Color(0xFFBA68C8), Color(0xFFFF8A65)))
+  }
+  VariableFontText(
+    "Flexpress",
+    font,
+    axes = mapOf("wght" to { weight }, "slnt" to { slant }),
+    fontSize = 32.sp,
+    brush = brush,
+    modifier = Modifier.padding(8.dp),
+  )
+}
+
+@Preview(backgroundColor = 0xff000000, showBackground = true, widthDp = 240, heightDp = 70)
+@AnimatedPreview(durationMs = 2000, frameIntervalMs = 100, showCurves = false)
+@Composable
+fun NotoSansArabicLigatureMarksPreview() {
+  val font = rememberVariableFont(R.raw.noto_sans_arabic)
+  val weight by
+    rememberInfiniteTransition(label = "arabicWght")
+      .animateFloat(
+        initialValue = 200f,
+        targetValue = 800f,
+        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing), RepeatMode.Reverse),
+        label = "wght",
+      )
+  val brush = remember { Brush.horizontalGradient(listOf(Color(0xFF81C784), Color(0xFF4DD0E1))) }
+  VariableFontText(
+    "السَّلَامُ لَا",
+    font,
+    axes = mapOf("wght" to { weight }),
+    fontSize = 28.sp,
+    brush = brush,
+    modifier = Modifier.padding(8.dp),
   )
 }

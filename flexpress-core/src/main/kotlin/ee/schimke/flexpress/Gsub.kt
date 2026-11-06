@@ -38,8 +38,13 @@ internal class Gsub(
   private val lookupList = offset + data.u16(offset + 8)
 
   /** [glyphs], with the lookups of [features] for [script] (an OpenType script tag) applied. */
-  fun substitute(glyphs: List<Int>, script: String, features: Set<String>): List<Int> =
-    substitute(glyphs, List(glyphs.size) { 0 }, script, listOf(features), emptyMap())
+  fun substitute(
+    glyphs: List<Int>,
+    script: String,
+    features: Set<String>,
+    coords: FloatArray = FloatArray(0),
+  ): List<Int> =
+    substitute(glyphs, List(glyphs.size) { 0 }, script, listOf(features), emptyMap(), coords)
 
   /**
    * [glyphs], with the lookups of each stage's features for [script] applied, stage by stage. A
@@ -53,8 +58,23 @@ internal class Gsub(
     script: String,
     stages: List<Set<String>>,
     featureMasks: Map<String, Int>,
-  ): List<Int> {
-    val buffer = Buffer(glyphs.toMutableList(), masks.toMutableList())
+    coords: FloatArray = FloatArray(0),
+  ): List<Int> = substituteWithComponents(glyphs, masks, script, stages, featureMasks, coords).first
+
+  /**
+   * As [substitute], also returning for each output glyph the ligature component index (`0 until
+   * componentCount`) that a mark skipped inside a ligature followed, or `-1` otherwise.
+   */
+  fun substituteWithComponents(
+    glyphs: List<Int>,
+    masks: List<Int>,
+    script: String,
+    stages: List<Set<String>>,
+    featureMasks: Map<String, Int>,
+    coords: FloatArray = FloatArray(0),
+  ): Pair<List<Int>, List<Int>> {
+    val buffer =
+      Buffer(glyphs.toMutableList(), masks.toMutableList(), MutableList(glyphs.size) { -1 })
     // The language system's required feature, if any, applies once: in the stage of its tag, as
     // HarfBuzz schedules it, or the first stage when no stage names it.
     val requiredTag = data.requiredFeature(offset, script)
@@ -62,7 +82,7 @@ internal class Gsub(
     for ((index, stage) in stages.withIndex()) {
       val lookupMasks = sortedMapOf<Int, Int>()
       val required = index == requiredStage
-      for ((feature, lookups) in data.featureLookups(offset, script, stage, required)) {
+      for ((feature, lookups) in data.featureLookups(offset, script, stage, required, coords)) {
         val mask = featureMasks[feature] ?: 0
         for (lookup in lookups) {
           // A lookup shared by several features applies wherever any of them does.
@@ -77,11 +97,18 @@ internal class Gsub(
       }
       for ((lookup, mask) in lookupMasks) applyLookup(buffer, lookup, mask)
     }
-    return buffer.ids
+    return buffer.ids to buffer.components
   }
 
-  /** A run of glyphs, each with the mask of the features that apply to it. */
-  private class Buffer(val ids: MutableList<Int>, val masks: MutableList<Int>) {
+  /**
+   * A run of glyphs, each with the mask of the features that apply to it and the ligature component
+   * index it followed when skipped inside a ligature.
+   */
+  private class Buffer(
+    val ids: MutableList<Int>,
+    val masks: MutableList<Int>,
+    val components: MutableList<Int>,
+  ) {
     val size: Int
       get() = ids.size
 
@@ -97,6 +124,7 @@ internal class Gsub(
     fun removeAt(i: Int) {
       ids.removeAt(i)
       masks.removeAt(i)
+      components.removeAt(i)
     }
 
     /** Replaces glyph [i] with [glyphs], each with [i]'s mask. */
@@ -105,6 +133,7 @@ internal class Gsub(
       removeAt(i)
       ids.addAll(i, glyphs)
       masks.addAll(i, List(glyphs.size) { mask })
+      components.addAll(i, List(glyphs.size) { -1 })
     }
   }
 
@@ -267,6 +296,12 @@ internal class Gsub(
         }
         if (!ok) continue
         buffer[i] = data.u16(lig)
+        buffer.components[i] = -1
+        for (k in 0 until count - 1) {
+          for (m in (positions[k] + 1) until positions[k + 1]) {
+            buffer.components[m] = k
+          }
+        }
         for (k in count - 1 downTo 1) buffer.removeAt(positions[k])
         return i + 1
       }

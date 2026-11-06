@@ -50,42 +50,56 @@ internal class MarkAttachment(
   private class Lookup(val type: Int, val flag: Int, val filterSet: Int, val subtables: List<Int>)
 
   private val lookupsByScript = ConcurrentHashMap<String, List<Lookup>>()
+  private val hasFeatureVariations =
+    data.u16(offset) == 1 && data.u16(offset + 2) >= 1 && data.u32(offset + 10) != 0L
 
   /** The mark lookups of [script]'s default language system's `mark` and `mkmk`, in order. */
-  private fun lookups(script: String): List<Lookup> =
-    lookupsByScript.computeIfAbsent(script) {
-      val lookupList = offset + data.u16(offset + 8)
-      val indices = sortedSetOf<Int>()
-      data.featureLookups(offset, script, MARK_FEATURES, required = false).values.forEach {
-        indices += it
-      }
-      indices.mapNotNull { index ->
-        val lookup = lookupList + data.u16(lookupList + 2 + index * 2)
-        var type = data.u16(lookup)
-        val flag = data.u16(lookup + 2)
-        val count = data.u16(lookup + 4)
-        var subtables = List(count) { s -> lookup + data.u16(lookup + 6 + s * 2) }
-        val filterSet =
-          if (flag and USE_MARK_FILTERING_SET != 0) data.u16(lookup + 6 + count * 2) else -1
-        if (type == EXTENSION && subtables.isNotEmpty()) {
-          type = data.u16(subtables[0] + 2)
-          subtables = subtables.map { it + data.u32(it + 4).toInt() }
-        }
-        if (type in MARK_TO_BASE..MARK_TO_MARK) Lookup(type, flag, filterSet, subtables) else null
-      }
+  private fun lookups(script: String, coords: FloatArray): List<Lookup> {
+    if (!hasFeatureVariations || coords.isEmpty()) {
+      return lookupsByScript.computeIfAbsent(script) { buildLookups(script, FloatArray(0)) }
     }
+    return buildLookups(script, coords)
+  }
+
+  private fun buildLookups(script: String, coords: FloatArray): List<Lookup> {
+    val lookupList = offset + data.u16(offset + 8)
+    val indices = sortedSetOf<Int>()
+    data.featureLookups(offset, script, MARK_FEATURES, required = false, coords).values.forEach {
+      indices += it
+    }
+    return indices.mapNotNull { index ->
+      val lookup = lookupList + data.u16(lookupList + 2 + index * 2)
+      var type = data.u16(lookup)
+      val flag = data.u16(lookup + 2)
+      val count = data.u16(lookup + 4)
+      var subtables = List(count) { s -> lookup + data.u16(lookup + 6 + s * 2) }
+      val filterSet =
+        if (flag and USE_MARK_FILTERING_SET != 0) data.u16(lookup + 6 + count * 2) else -1
+      if (type == EXTENSION && subtables.isNotEmpty()) {
+        type = data.u16(subtables[0] + 2)
+        subtables = subtables.map { it + data.u32(it + 4).toInt() }
+      }
+      if (type in MARK_TO_BASE..MARK_TO_MARK) Lookup(type, flag, filterSet, subtables) else null
+    }
+  }
 
   /**
    * The attachment of each of [glyphs], a run of [script] in logical order, at normalized [coords];
    * null for a glyph that does not attach. Later lookups override earlier ones, as a shaper applies
-   * them.
+   * them. [components], when given, holds the ligature component index each mark followed when
+   * skipped inside a ligature substitution, or `-1`.
    */
-  fun attach(glyphs: List<Int>, script: String, coords: FloatArray): List<Attachment?> {
+  fun attach(
+    glyphs: List<Int>,
+    script: String,
+    coords: FloatArray,
+    components: List<Int> = emptyList(),
+  ): List<Attachment?> {
     val result = arrayOfNulls<Attachment>(glyphs.size)
     // Only marks attach: a run without them has nothing to look up. Without GDEF glyph classes
     // marks are known only by the lookups' coverage, so every run is looked up.
     if (hasGlyphClasses && glyphs.none(::isMark)) return result.toList()
-    for (lookup in lookups(script)) {
+    for (lookup in lookups(script, coords)) {
       for (i in glyphs.indices) {
         // The lookup applies only to the marks its flag and filtering set admit.
         if (skips(lookup, glyphs[i])) continue
@@ -93,8 +107,8 @@ internal class MarkAttachment(
           val attachment =
             when (lookup.type) {
               MARK_TO_BASE,
-              MARK_TO_LIGATURE -> toBase(sub, lookup.type, glyphs, i, coords)
-              else -> toMark(sub, lookup, glyphs, i, coords)
+              MARK_TO_LIGATURE -> toBase(sub, lookup.type, glyphs, i, coords, result, components)
+              else -> toMark(sub, lookup, glyphs, i, coords, result)
             } ?: continue
           result[i] = attachment
           break
@@ -134,10 +148,12 @@ internal class MarkAttachment(
     glyphs: List<Int>,
     i: Int,
     coords: FloatArray,
+    result: Array<Attachment?>,
+    components: List<Int>,
   ): Attachment? {
     val markIndex = data.coverageIndex(sub + data.u16(sub + 2), glyphs[i]) ?: return null
     var b = i - 1
-    while (b >= 0 && isMark(glyphs[b])) b--
+    while (b >= 0 && (isMark(glyphs[b]) || result[b] != null)) b--
     if (b < 0) return null
     val baseIndex = data.coverageIndex(sub + data.u16(sub + 4), glyphs[b]) ?: return null
     val classCount = data.u16(sub + 6)
@@ -153,9 +169,14 @@ internal class MarkAttachment(
     } else {
       val ligatureArray = sub + data.u16(sub + 10)
       val attach = ligatureArray + data.u16(ligatureArray + 2 + baseIndex * 2)
-      val components = data.u16(attach)
-      if (components == 0) return null
-      val component = components - 1
+      val componentCount = data.u16(attach)
+      if (componentCount == 0) return null
+      val component =
+        if (i in components.indices && components[i] >= 0) {
+          components[i].coerceAtMost(componentCount - 1)
+        } else {
+          componentCount - 1
+        }
       baseAnchorOffset = data.u16(attach + 2 + (component * classCount + markClass) * 2)
       anchorBase = attach
     }
@@ -171,12 +192,14 @@ internal class MarkAttachment(
     glyphs: List<Int>,
     i: Int,
     coords: FloatArray,
+    result: Array<Attachment?>,
   ): Attachment? {
     val markIndex = data.coverageIndex(sub + data.u16(sub + 2), glyphs[i]) ?: return null
+    fun isKnownMark(index: Int) = isMark(glyphs[index]) || result[index] != null
     // The mark before it, passing over marks the lookup's filter excludes, as HarfBuzz does.
     var m = i - 1
-    while (m >= 0 && isMark(glyphs[m]) && skips(lookup, glyphs[m], ignoreFlags = false)) m--
-    if (m < 0 || !isMark(glyphs[m])) return null
+    while (m >= 0 && isKnownMark(m) && skips(lookup, glyphs[m], ignoreFlags = false)) m--
+    if (m < 0 || !isKnownMark(m)) return null
     val mark2Index = data.coverageIndex(sub + data.u16(sub + 4), glyphs[m]) ?: return null
     val classCount = data.u16(sub + 6)
     val mark1Array = sub + data.u16(sub + 8)

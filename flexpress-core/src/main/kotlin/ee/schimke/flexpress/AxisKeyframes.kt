@@ -36,7 +36,8 @@ fun VariableFont.layout(
   kerningLocation: Map<String, Float>? = null,
 ): TextOutline {
   val coords = normalize(location)
-  val glyphs = shapePositioned(text, kerningLocation ?: location)
+  val shapingLocation = if (kerningLocation != null) location + kerningLocation else location
+  val glyphs = shapePositioned(text, shapingLocation)
   val outlines = glyphs.map { outline(it.id, coords) }
   val placement =
     placeGlyphs(glyphs, kerningLocation, 0f, { outlines[it].advance }, { it }, Float::plus)
@@ -59,8 +60,15 @@ fun VariableFont.layout(
 fun VariableFont.variedLayout(
   text: String,
   kerningLocation: Map<String, Float>? = null,
+): VariedOutline = variedLayout(text, emptyMap(), kerningLocation)
+
+internal fun VariableFont.variedLayout(
+  text: String,
+  location: Map<String, Float>,
+  kerningLocation: Map<String, Float>?,
 ): VariedOutline {
-  val glyphs = shapePositioned(text, kerningLocation ?: emptyMap())
+  val shapingLocation = if (kerningLocation != null) location + kerningLocation else location
+  val glyphs = shapePositioned(text, shapingLocation)
   val outlines = glyphs.map { variedOutline(it.id) }
   val placement =
     placeGlyphs(
@@ -98,15 +106,16 @@ internal fun <T : Any> VariableFont.placeGlyphs(
   plus: (T, T) -> T,
 ): Placement<T> {
   val x = arrayOfNulls<Any>(glyphs.size)
+  val kerningCoords = kerningLocation?.let(::normalize)
   var pen = zero
   var previous = -1
   for (i in glyphs.indices) {
     if (glyphs[i].base >= 0) continue
-    if (previous >= 0 && kerningLocation != null) {
+    if (previous >= 0 && kerningCoords != null) {
       val rtl = glyphs[i].rtl && glyphs[previous].rtl
       val first = glyphs[if (rtl) i else previous].id
       val second = glyphs[if (rtl) previous else i].id
-      pen = plus(pen, constant(kerning(first, second, kerningLocation)))
+      pen = plus(pen, constant(kerning(first, second, kerningCoords)))
     }
     x[i] = pen
     pen = plus(pen, advance(i))
