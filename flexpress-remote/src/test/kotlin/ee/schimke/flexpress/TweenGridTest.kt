@@ -137,7 +137,7 @@ class TweenGridTest {
     grid?.let { assertWithMessage("$report").that(usesGrid).isEqualTo(it) }
     System.getenv("TWEEN_GRID_EXPORT")?.let { dir ->
       variants.keys.forEach { tag ->
-        val buffer = documents.getValue(tag).buffer.buffer
+        val buffer = documents.getValue(tag).toWireBuffer()
         File(dir, "${testFont.resource}_${axes.joinToString("_")}_$tag.rc")
           .apply { parentFile!!.mkdirs() }
           .writeBytes(buffer.buffer.copyOf(buffer.size))

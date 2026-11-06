@@ -18,9 +18,13 @@ package ee.schimke.flexpress
 
 import androidx.compose.remote.core.CoreDocument
 import androidx.compose.remote.core.Operation
+import androidx.compose.remote.core.WireBuffer
 import androidx.compose.remote.core.operations.FloatExpression
 import androidx.compose.remote.core.operations.PathData
 import androidx.compose.remote.core.operations.layout.Container
+
+internal fun CoreDocument.toWireBuffer(): WireBuffer =
+  WireBuffer().also { wire -> operations.forEach { Operation.writeRecursive(it, wire) } }
 
 /** What a document spends its bytes and its per-frame evaluation on. */
 internal data class DocumentStats(
@@ -46,7 +50,7 @@ internal data class DocumentStats(
       val ops = flatten(document.operations)
       val expressions = ops.filterIsInstance<FloatExpression>()
       return DocumentStats(
-        bytes = document.buffer.buffer.size,
+        bytes = document.toWireBuffer().size,
         operations = ops.size,
         expressions = expressions.size,
         expressionTokens = expressions.sumOf { it.mSrcValue.size },

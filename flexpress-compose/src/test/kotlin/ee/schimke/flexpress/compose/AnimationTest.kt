@@ -139,6 +139,24 @@ class AnimationTest {
     assertThat(node.config[SemanticsProperties.Text].single().text).isEqualTo("Hello")
   }
 
+  @Test
+  fun brushOverloadDrawsText() {
+    composeRule.setContent {
+      Box(Modifier.background(Color.Black)) {
+        VariableFontText(
+          "Hello",
+          robotoFlex.font,
+          axes = mapOf("wght" to { 700f }),
+          fontSize = 28.sp,
+          brush = androidx.compose.ui.graphics.SolidColor(Color.White),
+          modifier = Modifier.testTag("text"),
+        )
+      }
+    }
+    composeRule.waitForIdle()
+    assertThat(ink(capture())).isGreaterThan(100)
+  }
+
   private fun capture(): Bitmap {
     val root = composeRule.activity.window.decorView
     val whole = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)

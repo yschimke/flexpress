@@ -60,7 +60,7 @@ public class VariableFont private constructor(private val data: FontBytes) {
   private val avarMaps: List<List<Pair<Float, Float>>>? = readAvar()
   private val gvar: Gvar? = tables["gvar"]?.let { Gvar(data, it, axes.size) }
   private val hvar: Hvar? = tables["HVAR"]?.let { Hvar(data, it) }
-  private val cmap: Map<Int, Int> = readCmap()
+  private val cmapOffset: Int = findCmapSubtable()
   /** `GDEF` 1.3's item variation store, which `GPOS` device tables index into. */
   private val gdefStore: ItemVariationStore? = tables["GDEF"]?.let { gdefVariations(it) }
   private val gpos: Gpos? = tables["GPOS"]?.let { Gpos(data, it, gdefStore) }
@@ -136,7 +136,10 @@ public class VariableFont private constructor(private val data: FontBytes) {
    */
   @InternalFlexpressApi
   fun kerning(first: Int, second: Int, location: Map<String, Float>): Float =
-    gpos?.kerning(first, second, normalize(location)) ?: 0f
+    kerning(first, second, normalize(location))
+
+  internal fun kerning(first: Int, second: Int, coords: FloatArray): Float =
+    gpos?.kerning(first, second, coords) ?: 0f
 
   /** The item variation store of the `GDEF` table at [gdef], from version 1.3. */
   private fun gdefVariations(gdef: Int): ItemVariationStore? {
@@ -146,7 +149,7 @@ public class VariableFont private constructor(private val data: FontBytes) {
   }
 
   /** Returns the glyph id for [codePoint], or 0 (`.notdef`) when the font has none. */
-  public fun glyphId(codePoint: Int): Int = cmap[codePoint] ?: 0
+  public fun glyphId(codePoint: Int): Int = lookupCmap(codePoint)
 
   /**
    * Normalizes a user-space [location] (axis tag to value) to the font's normalized coordinates,
@@ -154,17 +157,20 @@ public class VariableFont private constructor(private val data: FontBytes) {
    */
   @InternalFlexpressApi
   fun normalize(location: Map<String, Float>): FloatArray =
-    FloatArray(axes.size) { i ->
-      val axis = axes[i]
-      val v = (location[axis.tag] ?: axis.defaultValue).coerceIn(axis.minValue, axis.maxValue)
-      val n =
-        when {
-          v < axis.defaultValue -> (v - axis.defaultValue) / (axis.defaultValue - axis.minValue)
-          v > axis.defaultValue -> (v - axis.defaultValue) / (axis.maxValue - axis.defaultValue)
-          else -> 0f
-        }
-      avarMaps?.getOrNull(i)?.let { piecewiseLinear(it, n) } ?: n
-    }
+    FloatArray(axes.size) { i -> normalize(i, location[axes[i].tag] ?: axes[i].defaultValue) }
+
+  /** Normalizes user-space [value] on axis [axisIndex] to `[-1, 1]`, applying `avar`. */
+  internal fun normalize(axisIndex: Int, value: Float): Float {
+    val axis = axes[axisIndex]
+    val v = value.coerceIn(axis.minValue, axis.maxValue)
+    val n =
+      when {
+        v < axis.defaultValue -> (v - axis.defaultValue) / (axis.defaultValue - axis.minValue)
+        v > axis.defaultValue -> (v - axis.defaultValue) / (axis.maxValue - axis.defaultValue)
+        else -> 0f
+      }
+    return avarMaps?.getOrNull(axisIndex)?.let { piecewiseLinear(it, n) } ?: n
+  }
 
   /**
    * The user-space values of axis [axisIndex] where its `avar` mapping bends: the inputs of each
@@ -187,7 +193,7 @@ public class VariableFont private constructor(private val data: FontBytes) {
     val axis = axes[axisIndex]
     val n =
       avarMaps?.getOrNull(axisIndex)?.let { map ->
-        piecewiseLinear(map.map { (from, to) -> to to from }, normalized)
+        piecewiseLinear(map.map { (from, to) -> to to from }.sortedBy { it.first }, normalized)
       } ?: normalized
     return if (n < 0) axis.defaultValue + n * (axis.defaultValue - axis.minValue)
     else axis.defaultValue + n * (axis.maxValue - axis.defaultValue)
@@ -229,13 +235,21 @@ public class VariableFont private constructor(private val data: FontBytes) {
     return out
   }
 
+  // Guarded by itself: a parsed font is shared across calls and threads.
+  private val variedOutlineCache = HashMap<Int, VariedOutline>()
+
   /**
    * The outline and advance of [glyphId] everywhere in the design space at once: each coordinate as
    * its default plus a delta per variation region. [outline] at any location equals this evaluated
    * there.
    */
   @InternalFlexpressApi
-  fun variedOutline(glyphId: Int): VariedOutline {
+  fun variedOutline(glyphId: Int): VariedOutline =
+    synchronized(variedOutlineCache) {
+      variedOutlineCache.getOrPut(glyphId) { readVariedOutline(glyphId) }
+    }
+
+  private fun readVariedOutline(glyphId: Int): VariedOutline {
     val glyph = glyph(glyphId)
     val (advance, lsb) = hMetrics(glyphId)
     val points: Int
@@ -370,8 +384,8 @@ public class VariableFont private constructor(private val data: FontBytes) {
                 c.xy,
                 c.yx,
                 c.yy,
-                c.offsetX(xs[i], ys[i]),
-                c.offsetY(xs[i], ys[i]),
+                c.offsetX(c.dx.toFloat(), c.dy.toFloat()) + (xs[i] - c.dx),
+                c.offsetY(c.dx.toFloat(), c.dy.toFloat()) + (ys[i] - c.dy),
               )
             }
           }
@@ -441,11 +455,11 @@ public class VariableFont private constructor(private val data: FontBytes) {
     return List(data.u16(avar + 6)) {
       val count = data.u16(p)
       p += 2
-      List(count) { (data.f2dot14(p) to data.f2dot14(p + 2)).also { p += 4 } }
+      List(count) { (data.f2dot14(p) to data.f2dot14(p + 2)).also { p += 4 } }.sortedBy { it.first }
     }
   }
 
-  private fun readCmap(): Map<Int, Int> {
+  private fun findCmapSubtable(): Int {
     val cmap = table("cmap")
     val count = data.u16(cmap + 2)
     val subtables =
@@ -456,49 +470,70 @@ public class VariableFont private constructor(private val data: FontBytes) {
     fun find(platform: Int, encoding: Int, format: Int) = subtables.firstOrNull {
       it.first == platform && it.second == encoding && data.u16(it.third) == format
     }
-    val chosen =
-      find(3, 10, 12)
+    return (find(3, 10, 12)
         ?: find(0, 4, 12)
         ?: find(3, 1, 4)
         ?: find(0, 3, 4)
-        ?: subtables.firstOrNull { data.u16(it.third) == 4 || data.u16(it.third) == 12 }
-        ?: return emptyMap()
-    val p = chosen.third
-    val out = HashMap<Int, Int>()
-    if (data.u16(p) == 12) {
+        ?: subtables.firstOrNull { data.u16(it.third) == 4 || data.u16(it.third) == 12 })
+      ?.third ?: 0
+  }
+
+  private fun lookupCmap(codePoint: Int): Int {
+    val p = cmapOffset
+    if (p == 0 || codePoint < 0) return 0
+    return if (data.u16(p) == 12) {
       val groups = data.u32(p + 12).toInt()
-      for (g in 0 until groups) {
-        val r = p + 16 + g * 12
-        val startChar = data.u32(r).toInt()
+      var lo = 0
+      var hi = groups - 1
+      while (lo <= hi) {
+        val mid = (lo + hi) ushr 1
+        val r = p + 16 + mid * 12
         val endChar = data.u32(r + 4).toInt()
-        val startGlyph = data.u32(r + 8).toInt()
-        for (c in startChar..endChar) out[c] = startGlyph + (c - startChar)
+        if (codePoint > endChar) {
+          lo = mid + 1
+        } else {
+          val startChar = data.u32(r).toInt()
+          if (codePoint < startChar) {
+            hi = mid - 1
+          } else {
+            return data.u32(r + 8).toInt() + (codePoint - startChar)
+          }
+        }
       }
+      0
     } else {
+      if (codePoint >= 0xFFFF) return 0
       val segX2 = data.u16(p + 6)
       val ends = p + 14
       val starts = ends + segX2 + 2
       val deltas = starts + segX2
       val rangeOffsets = deltas + segX2
-      for (s in 0 until segX2 / 2) {
+      var lo = 0
+      var hi = segX2 / 2 - 1
+      while (lo <= hi) {
+        val s = (lo + hi) ushr 1
         val end = data.u16(ends + s * 2)
-        val start = data.u16(starts + s * 2)
-        val delta = data.i16(deltas + s * 2)
-        val rangeOffsetAt = rangeOffsets + s * 2
-        val rangeOffset = data.u16(rangeOffsetAt)
-        for (c in start..end) {
-          if (c == 0xFFFF) continue
-          val glyph =
-            if (rangeOffset == 0) (c + delta) and 0xFFFF
-            else {
-              val g = data.u16(rangeOffsetAt + rangeOffset + (c - start) * 2)
+        if (codePoint > end) {
+          lo = s + 1
+        } else {
+          val start = data.u16(starts + s * 2)
+          if (codePoint < start) {
+            hi = s - 1
+          } else {
+            val delta = data.i16(deltas + s * 2)
+            val rangeOffsetAt = rangeOffsets + s * 2
+            val rangeOffset = data.u16(rangeOffsetAt)
+            return if (rangeOffset == 0) {
+              (codePoint + delta) and 0xFFFF
+            } else {
+              val g = data.u16(rangeOffsetAt + rangeOffset + (codePoint - start) * 2)
               if (g == 0) 0 else (g + delta) and 0xFFFF
             }
-          if (glyph != 0) out[c] = glyph
+          }
         }
       }
+      0
     }
-    return out
   }
 
   public companion object {
@@ -515,9 +550,8 @@ public class VariableFont private constructor(private val data: FontBytes) {
       }
     }
 
-    private fun piecewiseLinear(map: List<Pair<Float, Float>>, v: Float): Float {
-      if (map.isEmpty()) return v
-      val sorted = map.sortedBy { it.first }
+    private fun piecewiseLinear(sorted: List<Pair<Float, Float>>, v: Float): Float {
+      if (sorted.isEmpty()) return v
       if (v <= sorted.first().first) return sorted.first().second + (v - sorted.first().first)
       if (v >= sorted.last().first) return sorted.last().second + (v - sorted.last().first)
       for (i in 0 until sorted.size - 1) {

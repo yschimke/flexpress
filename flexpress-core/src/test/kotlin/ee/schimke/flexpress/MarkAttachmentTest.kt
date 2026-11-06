@@ -36,6 +36,15 @@ class MarkAttachmentTest {
     val attachments = noClasses.attach(glyphs, "arab", FloatArray(1))
     assertThat(attachments[0]).isNull()
     assertThat(attachments[1]?.base).isEqualTo(0)
+
+    // Two marks on one base (Meem + shadda + fatha) without GDEF glyph classes: the second mark
+    // skips the already-attached first mark to attach to the base (or first mark via mkmk).
+    val twoMarks = VariableFont.parse(bytes).shape("مَّ").reversed()
+    val twoAttachments = noClasses.attach(twoMarks, "arab", FloatArray(1))
+    assertThat(twoAttachments).hasSize(3)
+    assertThat(twoAttachments[0]).isNull()
+    assertThat(twoAttachments[1]).isNotNull()
+    assertThat(twoAttachments[2]).isNotNull()
   }
 
   /** The offset of table [tag] in the font [data], from its table directory. */

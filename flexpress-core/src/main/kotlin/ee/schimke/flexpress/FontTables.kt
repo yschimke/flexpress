@@ -75,14 +75,21 @@ sealed class Glyf(val xMin: Int) {
      */
     val scaledOffset: Boolean = false,
   ) {
-    /** The offset ([x], [y]) as it applies to the component's transformed points. */
+    /**
+     * The offset ([x], [y]) as it applies to the component's transformed points. Per the OpenType
+     * `gvar` spec, `SCALED_COMPONENT_OFFSET` scales the static `glyf` offset, whereas `gvar`
+     * component-offset variation deltas are in the composite glyph's coordinate space and are added
+     * unscaled.
+     */
     fun offsetX(x: Float, y: Float): Float = if (scaledOffset) x * xx + y * yx else x
 
     fun offsetY(x: Float, y: Float): Float = if (scaledOffset) x * xy + y * yy else y
 
-    fun offsetX(x: LinearForm, y: LinearForm): LinearForm = if (scaledOffset) x * xx + y * yx else x
+    fun offsetX(x: LinearForm, y: LinearForm): LinearForm =
+      if (scaledOffset) LinearForm(x.constant * xx + y.constant * yx, x.terms) else x
 
-    fun offsetY(x: LinearForm, y: LinearForm): LinearForm = if (scaledOffset) x * xy + y * yy else y
+    fun offsetY(x: LinearForm, y: LinearForm): LinearForm =
+      if (scaledOffset) LinearForm(x.constant * xy + y.constant * yy, y.terms) else y
   }
 
   class Composite(xMin: Int, val components: List<Component>) : Glyf(xMin)

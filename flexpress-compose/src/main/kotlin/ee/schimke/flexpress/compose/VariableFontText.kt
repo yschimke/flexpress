@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -40,7 +41,7 @@ import androidx.compose.ui.unit.isSpecified
 import ee.schimke.flexpress.VariableFont
 import ee.schimke.flexpress.VariableTextOutline
 import ee.schimke.flexpress.VariableTextOutlineEvaluator
-import ee.schimke.flexpress.outline
+import ee.schimke.flexpress.cachedOutline
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -104,9 +105,54 @@ public fun VariableFontText(
   val pixelSize = with(LocalDensity.current) { fontSize.toPx() }
   val outline =
     remember(text, font, tags, location, kerningLocation, pixelSize) {
-      font.outline(text, tags, location, kerningLocation, pixelSize = pixelSize)
+      font.cachedOutline(text, tags, location, kerningLocation, pixelSize = pixelSize)
     }
-  OutlineText(outline, axes, fontSize, modifier, color, semantics = text, isText = true)
+  OutlineText(
+    outline,
+    axes,
+    fontSize,
+    modifier,
+    color = color,
+    brush = null,
+    alpha = Float.NaN,
+    semantics = text,
+    isText = true,
+  )
+}
+
+/**
+ * Draws one line of [text] in a variable [font] filled with [brush], with any of its axes animated.
+ */
+@Composable
+public fun VariableFontText(
+  text: String,
+  font: VariableFont,
+  axes: Map<String, () -> Float>,
+  fontSize: TextUnit,
+  brush: Brush,
+  modifier: Modifier = Modifier,
+  alpha: Float = Float.NaN,
+  location: Map<String, Float> = emptyMap(),
+  kerningLocation: Map<String, Float> = location,
+) {
+  requireSp(fontSize)
+  val tags = axes.keys.toList()
+  val pixelSize = with(LocalDensity.current) { fontSize.toPx() }
+  val outline =
+    remember(text, font, tags, location, kerningLocation, pixelSize) {
+      font.cachedOutline(text, tags, location, kerningLocation, pixelSize = pixelSize)
+    }
+  OutlineText(
+    outline,
+    axes,
+    fontSize,
+    modifier,
+    color = Color.Unspecified,
+    brush = brush,
+    alpha = alpha,
+    semantics = text,
+    isText = true,
+  )
 }
 
 /**
@@ -131,7 +177,45 @@ public fun VariableFontText(
   contentDescription: String? = null,
 ) {
   requireSp(fontSize)
-  OutlineText(outline, axes, fontSize, modifier, color, contentDescription, isText = false)
+  OutlineText(
+    outline,
+    axes,
+    fontSize,
+    modifier,
+    color = color,
+    brush = null,
+    alpha = Float.NaN,
+    semantics = contentDescription,
+    isText = false,
+  )
+}
+
+/**
+ * Draws a [VariableTextOutline] filled with [brush], with its axes animated, as [VariableFontText]
+ * does.
+ */
+@Composable
+public fun VariableFontText(
+  outline: VariableTextOutline,
+  axes: Map<String, () -> Float>,
+  fontSize: TextUnit,
+  brush: Brush,
+  modifier: Modifier = Modifier,
+  alpha: Float = Float.NaN,
+  contentDescription: String? = null,
+) {
+  requireSp(fontSize)
+  OutlineText(
+    outline,
+    axes,
+    fontSize,
+    modifier,
+    color = Color.Unspecified,
+    brush = brush,
+    alpha = alpha,
+    semantics = contentDescription,
+    isText = false,
+  )
 }
 
 private fun requireSp(fontSize: TextUnit) {
@@ -145,6 +229,8 @@ private fun OutlineText(
   fontSize: TextUnit,
   modifier: Modifier,
   color: Color,
+  brush: Brush?,
+  alpha: Float,
   semantics: String?,
   isText: Boolean,
 ) {
@@ -158,6 +244,7 @@ private fun OutlineText(
       }
     }
   val fill = if (color.isSpecified) color else Color.Black
+  val drawAlpha = if (alpha.isNaN()) 1f else alpha.coerceIn(0f, 1f)
   val measurePolicy =
     remember(evaluator, fontSize) {
       MeasurePolicy { _, constraints ->
@@ -181,7 +268,12 @@ private fun OutlineText(
   Layout(
     modifier =
       modifier.then(semanticsModifier).drawBehind {
-        renderer.draw(this, fontSize.toPx() / evaluator.unitsPerEm, sources, fill)
+        val scale = fontSize.toPx() / evaluator.unitsPerEm
+        if (brush != null) {
+          renderer.draw(this, scale, sources, brush, drawAlpha)
+        } else {
+          renderer.draw(this, scale, sources, fill)
+        }
       },
     measurePolicy = measurePolicy,
   )
@@ -208,6 +300,18 @@ internal class VariableFontTextRenderer(val evaluator: VariableTextOutlineEvalua
     for (i in values.indices) values[i] = sources[i]()
     update(values, scale)
     scope.drawPath(path, color)
+  }
+
+  fun draw(
+    scope: DrawScope,
+    scale: Float,
+    sources: List<() -> Float>,
+    brush: Brush,
+    alpha: Float,
+  ) {
+    for (i in values.indices) values[i] = sources[i]()
+    update(values, scale)
+    scope.drawPath(path, brush, alpha = alpha)
   }
 
   /** Brings [path] up to date with [axisValues] (one per axis) at [scale] pixels per font unit. */

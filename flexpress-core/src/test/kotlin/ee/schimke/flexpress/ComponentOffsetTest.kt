@@ -33,9 +33,13 @@ class ComponentOffsetTest {
     val c = Glyf.Component(0, 10, 20, 2f, 0.5f, 0.25f, 3f, scaledOffset = true)
     assertThat(c.offsetX(10f, 20f)).isEqualTo(10f * 2f + 20f * 0.25f)
     assertThat(c.offsetY(10f, 20f)).isEqualTo(10f * 0.5f + 20f * 3f)
-    val x = LinearForm(10f)
-    val y = LinearForm(20f)
+    val region = TupleRegion(floatArrayOf(0f), floatArrayOf(1f), floatArrayOf(1f))
+    val x = LinearForm(10f, mapOf(region to 4f))
+    val y = LinearForm(20f, mapOf(region to 6f))
+    // Static offset is scaled by (xx, xy, yx, yy); gvar delta terms are already in composite units.
     assertThat(c.offsetX(x, y).constant).isEqualTo(25f)
+    assertThat(c.offsetX(x, y).terms).containsExactly(region, 4f)
     assertThat(c.offsetY(x, y).constant).isEqualTo(65f)
+    assertThat(c.offsetY(x, y).terms).containsExactly(region, 6f)
   }
 }

@@ -36,18 +36,22 @@
         // At most one tent is above zero: tween from the default outline towards its key. The
         // first tent's tween also draws the default outline, when none is.
         val basePath = path(base)
-        val keyPaths = keys.map { path(it) }
-        tents.forEachIndexed { i, scalar ->
-          val draw = { drawTweenPath(basePath, keyPaths[i], scalar, 0f.rf, 1f.rf, paint) }
-          val others = tents.filterIndexed { j, _ -> j != i }
-          when {
-            i > 0 -> remoteCanvas.drawConditionally(scalar.isGreaterThan(0f.rf), draw)
-            others.isEmpty() -> draw()
-            else ->
-              remoteCanvas.drawConditionally(
-                others.reduce { a, b -> a + b }.isLessThanOrEqualTo(0f.rf),
-                draw,
-              )
+        if (tents.isEmpty()) {
+          drawPath(basePath, paint)
+        } else {
+          val keyPaths = keys.map { path(it) }
+          tents.forEachIndexed { i, scalar ->
+            val draw = { drawTweenPath(basePath, keyPaths[i], scalar, 0f.rf, 1f.rf, paint) }
+            val others = tents.filterIndexed { j, _ -> j != i }
+            when {
+              i > 0 -> remoteCanvas.drawConditionally(scalar.isGreaterThan(0f.rf), draw)
+              others.isEmpty() -> draw()
+              else ->
+                remoteCanvas.drawConditionally(
+                  others.reduce { a, b -> a + b }.isLessThanOrEqualTo(0f.rf),
+                  draw,
+                )
+            }
           }
         }
       } else {
