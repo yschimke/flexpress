@@ -18,7 +18,7 @@ kotlinxSerialization = "1.13.0"
 ktfmt = "0.28.0"
 mavenPublish = "0.37.0"
 metalava = "0.5.1"
-robolectric = "4.17"
+robolectric = "4.18"
 truth = "1.4.5"
 # Debug previews only: compares VariableFontCurvedText with Wear's TimeText (curvedText).
 wearCompose = "1.7.1"
