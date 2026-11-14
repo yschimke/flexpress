@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.1](https://github.com/yschimke/flexpress/compare/v0.4.0...v0.4.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.27.3 ([#106](https://github.com/yschimke/flexpress/issues/106)) ([f0cdea2](https://github.com/yschimke/flexpress/commit/f0cdea22748af6d0879ad91c5b9826cca96d1ddd))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.27.4 ([#108](https://github.com/yschimke/flexpress/issues/108)) ([e828cbe](https://github.com/yschimke/flexpress/commit/e828cbe07fd9075d3bde5a360a53e756e51632b3))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.27.5 ([#111](https://github.com/yschimke/flexpress/issues/111)) ([f9ff3bc](https://github.com/yschimke/flexpress/commit/f9ff3bc0dd268a20a737232c5a18df2f05808afd))
+* **deps:** update dependency ee.schimke.composeai:compose-preview-daemon-bom to v3.27.7 ([#114](https://github.com/yschimke/flexpress/issues/114)) ([59bc609](https://github.com/yschimke/flexpress/commit/59bc6097b761a1ea0ac7f143146bba02ac6b4f93))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.13.0 ([#110](https://github.com/yschimke/flexpress/issues/110)) ([f1b7fdf](https://github.com/yschimke/flexpress/commit/f1b7fdf13af7ee21c5f5f664e720c6f14683a64b))
+* **deps:** update dependency org.robolectric:robolectric to v4.18 ([#116](https://github.com/yschimke/flexpress/issues/116)) ([132fe90](https://github.com/yschimke/flexpress/commit/132fe90bf31b6e4037a43ebc618bbe7f9d7c7c97))
+
 ## [0.4.0](https://github.com/yschimke/flexpress/compare/v0.3.0...v0.4.0) (2026-11-06)
 
 
