@@ -34,6 +34,7 @@ import androidx.compose.remote.creation.compose.state.RemoteString
 import androidx.compose.remote.creation.compose.state.abs
 import androidx.compose.remote.creation.compose.state.max
 import androidx.compose.remote.creation.compose.state.min
+import androidx.compose.remote.creation.compose.state.rb
 import androidx.compose.remote.creation.compose.state.rc
 import androidx.compose.remote.creation.compose.state.rf
 import androidx.compose.remote.creation.compose.state.ri
@@ -371,7 +372,7 @@ internal fun lookupFonts(
   location: Map<String, Float>,
   advances: List<Float>? = null,
 ): LookupFonts {
-  val pixel = ImageBitmap(1, 1)
+  val pixel = ImageBitmap(1, 1).rb
   // A glyph is marginLeft + width + marginRight wide: index + 1 here, so 0 means no character.
   val index =
     RemoteBitmapFont(

@@ -168,7 +168,7 @@ private fun EmbeddedVariableFontText(
   val context = LocalContext.current
   val font = remember(fontResId) { context.variableFont(fontResId) }
   val doc = rememberRemoteDocument {
-    val wght = rememberNamedRemoteFloat("axis.wght") { weight.rf }
+    val wght = rememberNamedRemoteFloat("axis.wght", weight.rf)
     RemoteVariableFontText(
       text,
       font,

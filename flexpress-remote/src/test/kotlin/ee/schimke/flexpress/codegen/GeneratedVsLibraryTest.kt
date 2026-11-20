@@ -176,6 +176,6 @@ class GeneratedVsLibraryTest {
 
   @Composable
   private fun axes(vararg tags: String): Map<String, RemoteFloat> = tags.associateWith {
-    rememberNamedRemoteFloat("axis.$it") { 400f.rf }
+    rememberNamedRemoteFloat("axis.$it", 400f.rf)
   }
 }

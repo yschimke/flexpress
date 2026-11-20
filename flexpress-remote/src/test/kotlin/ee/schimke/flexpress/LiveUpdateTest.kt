@@ -120,7 +120,7 @@ class LiveUpdateTest {
     axis: String,
     content: @Composable (androidx.compose.remote.creation.compose.state.RemoteFloat) -> Unit,
   ) {
-    val doc = rememberRemoteDocument { content(rememberNamedRemoteFloat("axis") { 0f.rf }) }
+    val doc = rememberRemoteDocument { content(rememberNamedRemoteFloat("axis", 0f.rf)) }
     Box(Modifier.size(WIDTH.dp, HEIGHT.dp).testTag(tag)) {
       doc.value?.let {
         RemoteDocumentPlayer(
