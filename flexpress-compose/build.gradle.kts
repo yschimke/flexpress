@@ -10,7 +10,7 @@ description = "Variable-font axis animation for Compose UI, without re-instancin
 
 android {
   namespace = "ee.schimke.flexpress.compose"
-  compileSdk = 37
+  compileSdk { version = release(37) { minorApiLevel = 1 } }
 
   defaultConfig { minSdk = 26 }
 
