@@ -101,7 +101,7 @@ class DensityTest {
   @Composable
   private fun Player(tag: String, host: Boolean) {
     val content: @Composable () -> Unit = {
-      val wght = rememberNamedRemoteFloat("axis.wght") { 400f.rf }
+      val wght = rememberNamedRemoteFloat("axis.wght", 400f.rf)
       RemoteVariableFontText(
         TEXT,
         testFonts[1].font,

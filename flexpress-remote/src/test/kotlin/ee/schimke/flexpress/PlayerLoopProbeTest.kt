@@ -36,6 +36,7 @@ import androidx.compose.remote.creation.compose.state.RemoteFloat
 import androidx.compose.remote.creation.compose.state.RemotePaint
 import androidx.compose.remote.creation.compose.state.RemoteString
 import androidx.compose.remote.creation.compose.state.min
+import androidx.compose.remote.creation.compose.state.rb
 import androidx.compose.remote.creation.compose.state.rc
 import androidx.compose.remote.creation.compose.state.rdp
 import androidx.compose.remote.creation.compose.state.rf
@@ -76,7 +77,7 @@ class PlayerLoopProbeTest {
   @SuppressLint("RestrictedApi")
   @Test
   fun loopBodiesReadTheirIndexTextAndMeasures() {
-    val pixel = ImageBitmap(1, 1)
+    val pixel = ImageBitmap(1, 1).rb
     // 'a' is 1 wide, 'b' 2, 'c' 3: a bar's height says which character a slot read.
     val font =
       RemoteBitmapFont(
@@ -140,7 +141,7 @@ class PlayerLoopProbeTest {
   @SuppressLint("RestrictedApi")
   @Test
   fun aDynamicArrayGivesEachSlotItsPen() {
-    val pixel = ImageBitmap(1, 1)
+    val pixel = ImageBitmap(1, 1).rb
     val font =
       RemoteBitmapFont(
         "abc"

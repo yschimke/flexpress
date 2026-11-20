@@ -126,7 +126,7 @@ fun VariableFontTweenTextPreview(
   val initial = remember { value }
   val doc =
     rememberRemoteDocument(clock = clock) {
-      val axisValue = rememberNamedRemoteFloat("axis") { initial.rf }
+      val axisValue = rememberNamedRemoteFloat("axis", initial.rf)
       RemoteVariableFontTweenText(
         text = text,
         font = font,
@@ -175,7 +175,7 @@ fun VariableFontTextPreview(
   val initial = remember { values }
   val doc =
     rememberRemoteDocument(clock = clock) {
-      val axes = initial.mapValues { (tag, v) -> rememberNamedRemoteFloat("axis.$tag") { v.rf } }
+      val axes = initial.mapValues { (tag, v) -> rememberNamedRemoteFloat("axis.$tag", v.rf) }
       RemoteVariableFontText(
         text = text,
         font = font,

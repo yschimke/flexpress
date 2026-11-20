@@ -34,6 +34,7 @@ import androidx.compose.remote.creation.compose.modifier.padding
 import androidx.compose.remote.creation.compose.shapes.RemoteRoundedCornerShape
 import androidx.compose.remote.creation.compose.state.RemoteFloat
 import androidx.compose.remote.creation.compose.state.RemotePaint
+import androidx.compose.remote.creation.compose.state.RemotePaintingStyle
 import androidx.compose.remote.creation.compose.state.RemoteString
 import androidx.compose.remote.creation.compose.state.cos
 import androidx.compose.remote.creation.compose.state.min
@@ -41,9 +42,9 @@ import androidx.compose.remote.creation.compose.state.rc
 import androidx.compose.remote.creation.compose.state.rdp
 import androidx.compose.remote.creation.compose.state.rf
 import androidx.compose.remote.creation.compose.state.sin
+import androidx.compose.remote.creation.compose.state.toRemoteString
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle
 import kotlin.math.PI
 
 /**
@@ -294,7 +295,7 @@ private fun Orbit() {
     val r = min(width, height) / 2f - 16f
     val track = RemotePaint {
       color = SizzlePalette.primaryContainer.rc
-      style = PaintingStyle.Stroke
+      style = RemotePaintingStyle.Stroke
       strokeWidth = 6f.rf
     }
     drawCircle(track, r, center)
