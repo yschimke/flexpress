@@ -1,6 +1,6 @@
 {
     "formatVersion": "compose-preview-history/v1",
-    "generatedFrom": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
+    "generatedFrom": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
     "previews": {
         "flexpress-compose/ee.schimke.flexpress.compose.GeneratedTextPreviewsKt.GeneratedTextWeightAnimatedPreview": {
             "path": "renders/flexpress-compose/GeneratedTextWeightAnimatedPreview-b63c5ec1.gif",
@@ -95,6 +95,13 @@
             "path": "renders/flexpress-compose/Effect04KineticCascadeBounceAnimatedPreview-a5edb5f3.gif",
             "versions": [
                 {
+                    "blob": "22b31fa124b89d24f34417f1e2050c8134ea4013",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "cdb9dc69c8af3c1b9f8754e481de0398f71f2d28",
                     "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
                     "date": "2026-11-06T18:14:20Z",
@@ -102,7 +109,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -125,6 +132,13 @@
             "path": "renders/flexpress-compose/Effect06ChromaticGlitchAnimatedPreview-486772cd.gif",
             "versions": [
                 {
+                    "blob": "8b4fa2e6611379c20b1578516640f96e2dc482e8",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "463efe928172ca6d1a57728cd854bde7cb7fb05c",
                     "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
                     "date": "2026-11-06T18:14:20Z",
@@ -132,13 +146,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.VariableFontTextEffectPreviewsKt.Effect07SpecularLightSweepAnimatedPreview": {
             "path": "renders/flexpress-compose/Effect07SpecularLightSweepAnimatedPreview-bdab9f62.gif",
             "versions": [
+                {
+                    "blob": "30cd657f25ecc9a8a6c6d1a0b9a5d4199ba88401",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "f9494d3ca32aff0832f7da83a177da58a996f15d",
                     "commit": "3229e72e44798aa3550ce5c386d1b94628ff4dcf",
@@ -147,7 +168,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -363,6 +384,13 @@
             "path": "renders/flexpress-compose/WarpCurvedTextSpinAnimatedPreview-f865b0dd.gif",
             "versions": [
                 {
+                    "blob": "fd910a7b54397b2ed061861a02cf848f65e9217c",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "8c0af323cef102c1d4ae5e160bd3d36f73aad024",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
                     "date": "2026-11-06T23:00:05Z",
@@ -370,7 +398,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -393,6 +421,13 @@
             "path": "renders/flexpress-compose/CompareCurvedFlexpressPreview-935baadc.png",
             "versions": [
                 {
+                    "blob": "26a6d1c598f9c04c855f54e016f7ad85bb79de97",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "a5704e8c2854ea8ee857bb21b30740f6caa30dab",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
                     "date": "2026-11-06T23:00:05Z",
@@ -400,13 +435,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayShaderPreview": {
             "path": "renders/flexpress-compose/CompareCurvedOverlayShaderPreview-ac2e0e58.png",
             "versions": [
+                {
+                    "blob": "158f07b0d33cc3ef46760062aa64f412a061ed06",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "ce3f31607452ffb03606ecb4f21129598fbc9300",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -415,13 +457,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextBaselinePreview": {
             "path": "renders/flexpress-compose/CompareCurvedOverlayTimeTextBaselinePreview-fd7f9e32.png",
             "versions": [
+                {
+                    "blob": "4a3cc8369637d843ae92ef2c50b6bd9f3ea2a1b7",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "2c549da554765211b8d13e883cb37474bebcdd77",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -430,13 +479,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextPreview": {
             "path": "renders/flexpress-compose/CompareCurvedOverlayTimeTextPreview-fcd9427c.png",
             "versions": [
+                {
+                    "blob": "164886897d40ce6248adc98bfd8fb497e8c8a2a1",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "a518869ec499d2aac06f1aab2c30c1c266609d68",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -445,13 +501,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearCurveToEdgeShaderPreview": {
             "path": "renders/flexpress-compose/CompareCurvedWearCurveToEdgeShaderPreview-85788c10.png",
             "versions": [
+                {
+                    "blob": "52c7fafde5a91b0dd7a5751270f991eb79b3e673",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "f0cd2d7672c9d514e4ac8c6b22c5a4eb8031fc7c",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -460,13 +523,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearTimeTextPreview": {
             "path": "renders/flexpress-compose/CompareCurvedWearTimeTextPreview-725e91a6.png",
             "versions": [
+                {
+                    "blob": "02d1733757cb1d5520fa6170dcee3d1b18ed31ef",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "b4aa0d3416c049bf945d4b99652910833d0339eb",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -475,13 +545,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockAdaptiveTabularAnimatedPreview": {
             "path": "renders/flexpress-compose/CurvedClockAdaptiveTabularAnimatedPreview-ffa33f07.gif",
             "versions": [
+                {
+                    "blob": "76240c6deedd90fb852587ea88e250974834e49c",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "349e28c6f43e08f7cec0c30af8a579110ca014be",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -490,13 +567,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockFlexpressAnimatedPreview": {
             "path": "renders/flexpress-compose/CurvedClockFlexpressAnimatedPreview-4e0c580b.gif",
             "versions": [
+                {
+                    "blob": "2687df43ec3bd9e7978a7092426f036c5bbc3bdd",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "a3a433055afdcbb86c6b046bfeef4df96455f538",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -505,13 +589,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
         "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockWearTimeTextAnimatedPreview": {
             "path": "renders/flexpress-compose/CurvedClockWearTimeTextAnimatedPreview-a806e07c.gif",
             "versions": [
+                {
+                    "blob": "90760833e764cc7e505a126ad1ad6667d1ec4b6f",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "31ed78e3740537854f1c8724e3170fc88668ebde",
                     "commit": "f9263575b9331f8b38cb21ec600e0e420609012e",
@@ -520,7 +611,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -630,6 +721,13 @@
             "path": "renders/flexpress-remote/RemoteCurvedClockAnimatedPreview-795b3193.gif",
             "versions": [
                 {
+                    "blob": "741654f09760c93c1dab253f5d65cedf77e0a624",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "f5b33bb25b0472dd8e3ce827907237ab69c8d237",
                     "commit": "2593596e59a2b0f0d3a59be4d2c8bbdb1ba62d87",
                     "date": "2026-11-06T23:37:53Z",
@@ -637,7 +735,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 1,
+            "observations": 2,
             "unstable": false,
             "flapCount": 0
         },
@@ -825,6 +923,13 @@
             "path": "renders/flexpress-remote/HelloRoundness0Preview-b38da3bf.png",
             "versions": [
                 {
+                    "blob": "d0b39efd58453d7a5f42aeeebdc18cb44700aac9",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "4937c143216e761e801198238a3d409dcbc9dc65",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
                     "date": "2026-10-27T00:01:01Z",
@@ -846,7 +951,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
@@ -854,6 +959,13 @@
             "path": "renders/flexpress-remote/HelloRoundness100Preview-f0616a07.png",
             "versions": [
                 {
+                    "blob": "ac39d12584c917155a6e1d96cacdcf27d7429804",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
+                {
                     "blob": "c4b950e95802ac3db723cbe69492da6ed789c64a",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
                     "date": "2026-10-27T00:01:01Z",
@@ -875,13 +987,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundnessAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloRoundnessAnimatedPreview-3885a1ae.gif",
             "versions": [
+                {
+                    "blob": "35d2f2317b67d27a97b7108c40714ebdc9c17be2",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "a89c92fc6125aee60b2adeb696714a0c6459b721",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -904,13 +1023,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAndRoundnessExpressionAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloWeightAndRoundnessExpressionAnimatedPreview-fed1ecd1.gif",
             "versions": [
+                {
+                    "blob": "865e94443ebd85f6739a5c764b8011393fe704f7",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "8eaaeb69c2333bc10ac20b6833d7c4c80e8028c3",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -933,13 +1059,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloWeightAnimatedPreview": {
             "path": "renders/flexpress-remote/HelloWeightAnimatedPreview-e7c9afce.gif",
             "versions": [
+                {
+                    "blob": "840d3c5c3ab9cb99316e3fe59620cf8c3132f65f",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "a0e8d4890de50076a17dfb5f7a0fdb1537d70c0e",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -962,7 +1095,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 0
         },
@@ -984,6 +1117,13 @@
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RemoteStringClockPreview": {
             "path": "renders/flexpress-remote/RemoteStringClockPreview-0298239f.gif",
             "versions": [
+                {
+                    "blob": "086a94d35bb610916b1a040307537cf4410c5daf",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "c92cda3e0a8ddc49374e46a3b59567ea18023626",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -1013,13 +1153,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 4,
+            "observations": 5,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantPreview": {
             "path": "renders/flexpress-remote/RobotoFlexSlantPreview-73a88f6f.png",
             "versions": [
+                {
+                    "blob": "df19458d60543878f74e88514b24901c3972d420",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "fcbdbbc31ed0bd9a2a6047b0b58b5e677f159c20",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -1042,13 +1189,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantWidthExpressionAnimatedPreview": {
             "path": "renders/flexpress-remote/RobotoFlexSlantWidthExpressionAnimatedPreview-08efc93a.gif",
             "versions": [
+                {
+                    "blob": "9cd1e3ed6f33f2b723b818feb8736e99dc1bab8f",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "d7bd019cfab677283ad4d05ed34104355374b764",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -1071,13 +1225,20 @@
                     "commits": 1
                 }
             ],
-            "observations": 3,
+            "observations": 4,
             "unstable": false,
             "flapCount": 1
         },
         "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexWeightAndSlantSelfAnimatedPreview": {
             "path": "renders/flexpress-remote/RobotoFlexWeightAndSlantSelfAnimatedPreview-28bd7e27.gif",
             "versions": [
+                {
+                    "blob": "be54e848112db48409743a0fbdba4ef39d8d55af",
+                    "commit": "20c61ffb77181a1c6ea96264c3a7490d27d45833",
+                    "date": "2026-11-21T13:13:39Z",
+                    "sourceSha": "268739bf",
+                    "commits": 1
+                },
                 {
                     "blob": "d567bb3e655959e724d2b5c5bf7a213e7abf3d33",
                     "commit": "e8dd0f8b6a0d1df05eaa8e6eee42129d0c945da4",
@@ -1107,7 +1268,7 @@
                     "commits": 1
                 }
             ],
-            "observations": 4,
+            "observations": 5,
             "unstable": false,
             "flapCount": 1
         }
