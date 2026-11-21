@@ -188,7 +188,7 @@
     "functionName": "CompareCurvedFlexpressPreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedFlexpressPreview-935baadc.png",
-    "sha256": "693bc29c1a9334bddd66cf14b3206469add1610e83adb6510096e5f91e16866b",
+    "sha256": "5f423592186cb908215318ba33316dac60f161763b25b88724a5a9ba0fb9fd7e",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayShaderPreview": {
@@ -196,7 +196,7 @@
     "functionName": "CompareCurvedOverlayShaderPreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedOverlayShaderPreview-ac2e0e58.png",
-    "sha256": "3f36bc51a663e94b9d8007cf54930fab8e84c4dcca5684a98f34f5505c30dbf7",
+    "sha256": "e2cc7d7320f1b2245946451165469b784abdf7a81d1965b2d03ecc13f433bd65",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextBaselinePreview": {
@@ -204,7 +204,7 @@
     "functionName": "CompareCurvedOverlayTimeTextBaselinePreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedOverlayTimeTextBaselinePreview-fd7f9e32.png",
-    "sha256": "f0309c35faf566d7ac2d2db6d68f2267deda531c7f3f633be503ebb41cdd0f12",
+    "sha256": "2b831d33db17b72c88d0153bc43f53008880475d4ae642ed0e89ec8612c7fced",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedOverlayTimeTextPreview": {
@@ -212,7 +212,7 @@
     "functionName": "CompareCurvedOverlayTimeTextPreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedOverlayTimeTextPreview-fcd9427c.png",
-    "sha256": "dc0b39e3aa421752fe2e21b649bd0a2c52570f79d45ee5158ce4d2081b3a0bb8",
+    "sha256": "bf05e5f38dcb12064f223889b6d2dc5b5ca1e7dba3d2d936e8535b28a8fd62d9",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearCurveToEdgeShaderPreview": {
@@ -220,7 +220,7 @@
     "functionName": "CompareCurvedWearCurveToEdgeShaderPreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedWearCurveToEdgeShaderPreview-85788c10.png",
-    "sha256": "dd19e97e1643a02bd660e664ae7ca543174997748d4f012c86ee9f33fbbfb451",
+    "sha256": "4d2126709bea377fc33f828e697ce59c4b1421b7a226517452da590f58aa34f3",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CompareCurvedWearTimeTextPreview": {
@@ -228,7 +228,7 @@
     "functionName": "CompareCurvedWearTimeTextPreview",
     "module": "flexpress-compose",
     "renderBasename": "CompareCurvedWearTimeTextPreview-725e91a6.png",
-    "sha256": "a6274dd8d4e3f18bec04a963d99f4f82c0afc18840cc8268b7099c70c31183ee",
+    "sha256": "04a711a2fa546ecf2bf79629c77ae08e52cbf48c63b7843cb9b9c19b3063af8f",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/compose/WearCurvedTextComparisonPreviews.kt"
   },
   "flexpress-compose/ee.schimke.flexpress.compose.WearCurvedTextComparisonPreviewsKt.CurvedClockAdaptiveTabularAnimatedPreview": {
@@ -396,7 +396,7 @@
     "functionName": "HelloRoundness0Preview",
     "module": "flexpress-remote",
     "renderBasename": "HelloRoundness0Preview-b38da3bf.png",
-    "sha256": "f1e6b2f8a78b0ca29be352ee1bc64a8527e7536f2dc4714b798b46f9771e8421",
+    "sha256": "9cee692dabea7fba673f188383255e938501d0f77a4a358a7061d8458492437c",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundness100Preview": {
@@ -404,7 +404,7 @@
     "functionName": "HelloRoundness100Preview",
     "module": "flexpress-remote",
     "renderBasename": "HelloRoundness100Preview-f0616a07.png",
-    "sha256": "0020f4edfdaaf3b263bf554a07b535d527403a1e5c4e8fb7bff69e63821c99c2",
+    "sha256": "5e86d003a84552e094f6d83e3b6b375972efb235817fd05da6fcbf88a05ac5bd",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.HelloRoundnessAnimatedPreview": {
@@ -452,7 +452,7 @@
     "functionName": "RobotoFlexSlantPreview",
     "module": "flexpress-remote",
     "renderBasename": "RobotoFlexSlantPreview-73a88f6f.png",
-    "sha256": "ccc64a28698560cdd2c2a96f7c7758e45c5af9278d6f0d9cc3c33bb367ea2e1d",
+    "sha256": "9bfe079604ad64c4fdfdf734f2dad4e8e34aeb61637b29b1d86ab64dc95ec3e9",
     "sourceFile": "src/debug/kotlin/ee/schimke/flexpress/VariableFontPreviews.kt"
   },
   "flexpress-remote/ee.schimke.flexpress.VariableFontPreviewsKt.RobotoFlexSlantWidthExpressionAnimatedPreview": {
